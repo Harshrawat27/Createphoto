@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
       // Add reference image instruction if provided
       if (referenceImage) {
-        enhancedPrompt += ` The person should be in a similar pose or style as shown in the style reference image.`;
+        enhancedPrompt += ` The person should be in a similar pose or style as shown in the style reference image. but never use face of this image.`;
       }
     } else {
       enhancedPrompt = prompt;
@@ -72,7 +72,11 @@ export async function POST(request: NextRequest) {
     contents.push({ text: enhancedPrompt });
 
     // Add training images if model is selected (limit to 5 images)
-    if (modelData && modelData.trainingImages && modelData.trainingImages.length > 0) {
+    if (
+      modelData &&
+      modelData.trainingImages &&
+      modelData.trainingImages.length > 0
+    ) {
       console.log('Fetching training images from R2...');
       const trainingImages = modelData.trainingImages.slice(0, 5); // Max 5 images
 
