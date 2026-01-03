@@ -1,45 +1,35 @@
-import { Plus } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Plus, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Model, ModelCard } from "@/components/dashboard/models/ModelCard";
 
-// Mock Data
-const models: Model[] = [
-  {
-    id: "m1",
-    name: "My Professional Self",
-    type: "Man",
-    status: "Ready",
-    thumbnailUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&q=80",
-    createdAt: "2 days ago"
-  },
-  {
-    id: "m2",
-    name: "Cyberpunk Avatar",
-    type: "Style",
-    status: "Training",
-    thumbnailUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=400&h=400&fit=crop&q=80",
-    createdAt: "Just now",
-    progress: 45
-  },
-  {
-    id: "m3",
-    name: "Instagram Influencer V2",
-    type: "Woman",
-    status: "Ready",
-    thumbnailUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&q=80",
-    createdAt: "1 week ago"
-  },
-  {
-    id: "m4",
-    name: "Failed Test Run",
-    type: "Person",
-    status: "Failed",
-    thumbnailUrl: "https://images.unsplash.com/photo-1590086782957-93c06ef51608?w=400&h=400&fit=crop&q=80",
-    createdAt: "1 month ago"
-  }
-];
-
 export default function ModelsPage() {
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchModels();
+
+    // Poll for updates every 5 seconds
+    const interval = setInterval(fetchModels, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchModels = async () => {
+    try {
+      const response = await fetch("/api/models");
+      if (response.ok) {
+        const data = await response.json();
+        setModels(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch models:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen space-y-8">
       {/* Header */}
@@ -58,20 +48,26 @@ export default function ModelsPage() {
       </div>
 
       {/* Model Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {models.map((model) => (
-            <ModelCard key={model.id} model={model} />
-        ))}
-        
-        {/* Placeholder 'Add New' Card */}
-        <Link href="/dashboard/models/train" className="group flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl aspect-[3/4] hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer">
-            <div className="w-16 h-16 rounded-full bg-secondary group-hover:bg-primary/10 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors mb-4">
-                <Plus className="w-8 h-8" />
-            </div>
-            <p className="font-bold text-lg">Train New Model</p>
-            <p className="text-sm text-muted-foreground">Create a new digital persona</p>
-        </Link>
-      </div>
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {models.map((model) => (
+              <ModelCard key={model.id} model={model} />
+          ))}
+
+          {/* Placeholder 'Add New' Card */}
+          <Link href="/dashboard/models/train" className="group flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl aspect-[3/4] hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer">
+              <div className="w-16 h-16 rounded-full bg-secondary group-hover:bg-primary/10 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors mb-4">
+                  <Plus className="w-8 h-8" />
+              </div>
+              <p className="font-bold text-lg">Train New Model</p>
+              <p className="text-sm text-muted-foreground">Create a new digital persona</p>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

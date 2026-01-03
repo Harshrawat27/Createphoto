@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Upload, Info, X, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Upload, Info, X, Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function TrainModelPage() {
+  const router = useRouter();
   const [modelName, setModelName] = useState("");
   const [modelType, setModelType] = useState("man");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [isTraining, setIsTraining] = useState(false);
+  const [error, setError] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -18,6 +22,49 @@ export default function TrainModelPage() {
 
   const removeFile = (index: number) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleStartTraining = async () => {
+    setError("");
+
+    if (!modelName.trim()) {
+      setError("Please enter a model name");
+      return;
+    }
+
+    if (uploadedFiles.length < 10) {
+      setError("Please upload at least 10 images");
+      return;
+    }
+
+    setIsTraining(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("modelName", modelName);
+      formData.append("modelType", modelType);
+
+      uploadedFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      const response = await fetch("/api/models/train", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start training");
+      }
+
+      const data = await response.json();
+
+      // Redirect to models page
+      router.push("/dashboard/models");
+    } catch (err: any) {
+      setError(err.message || "Failed to start training");
+      setIsTraining(false);
+    }
   };
 
   return (
@@ -113,15 +160,35 @@ export default function TrainModelPage() {
             </div>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
         {/* Submit */}
         <div className="flex items-center justify-between p-6 border border-primary/20 bg-primary/5 rounded-xl">
             <div>
                 <p className="font-bold">Cost: 100 Credits</p>
-                <p className="text-sm text-muted-foreground">You have 150 credits remaining</p>
+                <p className="text-sm text-muted-foreground">Training takes ~2-3 minutes</p>
             </div>
-            <button className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-medium shadow-lg shadow-primary/20 button-highlighted-shadow flex items-center gap-2">
-                <Check className="w-5 h-5" />
-                Start Training
+            <button
+              onClick={handleStartTraining}
+              disabled={isTraining || uploadedFiles.length < 10}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-medium shadow-lg shadow-primary/20 button-highlighted-shadow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {isTraining ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-5 h-5" />
+                    Start Training
+                  </>
+                )}
             </button>
         </div>
       </div>

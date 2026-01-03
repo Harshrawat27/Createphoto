@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Model {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // "man", "woman", "person"
+  status      String   @default("training") // "training", "ready", "failed"
+  progress    Int      @default(0) // 0-100
+  thumbnailUrl String?
+  trainingImages String[] // Array of Cloudflare URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  generations Generation[]
+}
+
+model Generation {
+  id        String   @id @default(cuid())
+  modelId   String?
+  model     Model?   @relation(fields: [modelId], references: [id], onDelete: SetNull)
+  prompt    String
+  imageUrl  String
+  aspectRatio String @default("1:1")
+  resolution  String @default("2K")
+  createdAt DateTime @default(now())
+}
