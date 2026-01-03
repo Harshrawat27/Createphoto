@@ -86,6 +86,13 @@ export function CreationControls() {
             </div>
         </div>
         <div className="space-y-2">
+            <label className="text-sm font-medium">Resolution</label>
+            <div className="flex gap-2">
+                <button className="flex-1 py-2 text-xs border rounded-md bg-primary/10 border-primary text-primary">2K</button>
+                <button className="flex-1 py-2 text-xs border rounded-md hover:bg-secondary/50 focus:ring-2 focus:ring-primary">4K</button>
+            </div>
+        </div>
+        <div className="space-y-2">
             <label className="text-sm font-medium">Image Count</label>
              <select className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm">
                 <option>1 Image</option>
