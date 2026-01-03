@@ -37,48 +37,48 @@
 :root {
   --background: #ffffff;
   --foreground: #09090b;
-  
-  --primary: #4f46e5; /* Indigo 600 */
+
+  --primary: #ee575a; /* Indigo 600 */
   --primary-foreground: #ffffff;
-  
+
   --secondary: #f4f4f5; /* Zinc 100 */
   --secondary-foreground: #18181b;
-  
+
   --muted: #f4f4f5;
   --muted-foreground: #71717a; /* Zinc 500 */
-  
+
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
-  
+
   --card: #ffffff;
   --card-foreground: #09090b;
-  
+
   --border: #e4e4e7; /* Zinc 200 */
-  --ring: #4f46e5;
+  --ring: #ee575a;
 }
 
 /* Dark mode colors */
 .dark {
   --background: #020617; /* Slate 950 - slightly colored black */
   --foreground: #f8fafc;
-  
-  --primary: #6366f1; /* Indigo 500 */
+
+  --primary: #ee575a; /* Indigo 500 */
   --primary-foreground: #ffffff;
-  
+
   --secondary: #1e293b; /* Slate 800 */
   --secondary-foreground: #f8fafc;
-  
+
   --muted: #1e293b;
   --muted-foreground: #94a3b8; /* Slate 400 */
-  
+
   --accent: #1e293b;
   --accent-foreground: #f8fafc;
-  
+
   --card: #0f172a; /* Slate 900 */
   --card-foreground: #f8fafc;
-  
+
   --border: #1e293b;
-  --ring: #6366f1;
+  --ring: #ee575a;
 }
 
 @layer base {
