@@ -26,10 +26,14 @@ export async function POST(request: NextRequest) {
     const resolution = (formData.get('resolution') as string) || '1K';
     const imageCount = parseInt(formData.get('imageCount') as string) || 1;
     const referenceImage = formData.get('referenceImage') as File | null;
+    const referenceOptionsStr = formData.get('referenceOptions') as string;
+    const referenceOptions: string[] = referenceOptionsStr ? JSON.parse(referenceOptionsStr) : [];
 
-    if (!prompt) {
+    // Prompt is optional if reference image with options is provided
+    const hasReferenceWithOptions = referenceImage && referenceOptions.length > 0;
+    if (!prompt && !hasReferenceWithOptions) {
       return NextResponse.json(
-        { error: 'Prompt is required' },
+        { error: 'Prompt is required or provide a reference image with options' },
         { status: 400 }
       );
     }
@@ -57,15 +61,21 @@ export async function POST(request: NextRequest) {
     // Build the smart prompt
     let enhancedPrompt = '';
     if (modelData) {
-      // Prompt that tells the AI to use the training images
-      enhancedPrompt = `Generate a photo of this ${modelData.type} (shown in the reference images). ${prompt}`;
+      // Base prompt that tells the AI to use the training images
+      enhancedPrompt = `Generate a photo of this ${modelData.type} (shown in the reference images).`;
 
-      // Add reference image instruction if provided
-      if (referenceImage) {
-        enhancedPrompt += ` The person should be in a similar pose or style as shown in the style reference image. but never use face of this image.`;
+      // Add reference image instructions with specific options
+      if (referenceImage && referenceOptions.length > 0) {
+        const optionsText = referenceOptions.join(', ');
+        enhancedPrompt += ` Use ONLY the ${optionsText} from the last reference image, but KEEP the face and body of the ${modelData.type} from the training images.`;
+      }
+
+      // Add user's custom prompt if provided
+      if (prompt) {
+        enhancedPrompt += ` ${prompt}`;
       }
     } else {
-      enhancedPrompt = prompt;
+      enhancedPrompt = prompt || 'Generate a photo';
     }
 
     // Add text prompt

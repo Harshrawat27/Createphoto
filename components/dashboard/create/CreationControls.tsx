@@ -18,6 +18,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [referenceOptions, setReferenceOptions] = useState<string[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>("");
   const [aspectRatio, setAspectRatio] = useState("9:16");
@@ -56,9 +57,20 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
     }
   };
 
+  const toggleReferenceOption = (option: string) => {
+    setReferenceOptions((prev) =>
+      prev.includes(option)
+        ? prev.filter((o) => o !== option)
+        : [...prev, option]
+    );
+  };
+
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
-      setError("Please enter a prompt");
+    // Prompt is optional if reference image with options is provided
+    const hasReferenceWithOptions = selectedImageFile && referenceOptions.length > 0;
+
+    if (!prompt.trim() && !hasReferenceWithOptions) {
+      setError("Please enter a prompt or upload a reference image with options");
       return;
     }
 
@@ -76,6 +88,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       // Add reference image if uploaded
       if (selectedImageFile) {
         formData.append("referenceImage", selectedImageFile);
+        formData.append("referenceOptions", JSON.stringify(referenceOptions));
       }
 
       const response = await fetch("/api/generate", {
@@ -137,12 +150,14 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       {/* Prompt Input */}
       <div className="space-y-3">
         <div className="flex justify-between">
-            <label className="text-sm font-medium">Prompt</label>
+            <label className="text-sm font-medium">
+              Prompt {selectedImageFile && referenceOptions.length > 0 && <span className="text-muted-foreground font-normal">(Optional)</span>}
+            </label>
             <span className="text-xs text-muted-foreground">Try "wearing a suit"</span>
         </div>
         <textarea
           className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-          placeholder="Describe the image you want to generate..."
+          placeholder={selectedImageFile && referenceOptions.length > 0 ? "Add additional details (optional)..." : "Describe the image you want to generate..."}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
@@ -172,12 +187,38 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
                     onClick={() => {
                       setSelectedImage(null);
                       setSelectedImageFile(null);
+                      setReferenceOptions([]);
                     }}
                     className="absolute top-2 right-2 p-1.5 bg-background/80 text-foreground rounded-full hover:bg-red-500 hover:text-white transition-colors"
                 >
                     <X className="w-4 h-4" />
                 </button>
             </div>
+        )}
+
+        {/* Reference Image Options */}
+        {selectedImage && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium">What to take from reference?</label>
+            <p className="text-xs text-muted-foreground">
+              Select what aspects to copy (face will always be from your model)
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {['pose', 'clothes', 'lighting', 'background'].map((option) => (
+                <button
+                  key={option}
+                  onClick={() => toggleReferenceOption(option)}
+                  className={`px-3 py-2 text-sm border rounded-md capitalize transition-colors ${
+                    referenceOptions.includes(option)
+                      ? 'bg-primary/10 border-primary text-primary'
+                      : 'hover:bg-secondary/50 border-border'
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
@@ -240,7 +281,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       {/* Generate Button */}
       <button
         onClick={handleGenerate}
-        disabled={isGenerating || !prompt.trim()}
+        disabled={isGenerating || (!prompt.trim() && !(selectedImageFile && referenceOptions.length > 0))}
         className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 mt-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         {isGenerating ? (

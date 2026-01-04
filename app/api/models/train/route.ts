@@ -16,9 +16,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (files.length < 10) {
+    if (files.length < 3) {
       return NextResponse.json(
-        { error: 'Please upload at least 10 images' },
+        { error: 'Please upload at least 3 images' },
+        { status: 400 }
+      );
+    }
+
+    if (files.length > 5) {
+      return NextResponse.json(
+        { error: 'Maximum 5 images allowed' },
         { status: 400 }
       );
     }

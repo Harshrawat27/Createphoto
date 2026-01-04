@@ -16,7 +16,12 @@ export default function TrainModelPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-        setUploadedFiles((prev) => [...prev, ...Array.from(e.target.files || [])]);
+        const newFiles = Array.from(e.target.files || []);
+        setUploadedFiles((prev) => {
+          const combined = [...prev, ...newFiles];
+          // Limit to maximum 5 images
+          return combined.slice(0, 5);
+        });
     }
   };
 
@@ -32,8 +37,13 @@ export default function TrainModelPage() {
       return;
     }
 
-    if (uploadedFiles.length < 10) {
-      setError("Please upload at least 10 images");
+    if (uploadedFiles.length < 3) {
+      setError("Please upload at least 3 images");
+      return;
+    }
+
+    if (uploadedFiles.length > 5) {
+      setError("Maximum 5 images allowed");
       return;
     }
 
@@ -125,10 +135,10 @@ export default function TrainModelPage() {
             <div className="flex justify-between items-start">
                 <h2 className="text-lg font-bold flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">2</span>
-                    Upload Photos (10-20)
+                    Upload Photos (3-5)
                 </h2>
                 <span className="text-xs bg-secondary px-2 py-1 rounded text-muted-foreground">
-                    {uploadedFiles.length} / 20 selected
+                    {uploadedFiles.length} / 5 selected
                 </span>
             </div>
 
@@ -175,7 +185,7 @@ export default function TrainModelPage() {
             </div>
             <button
               onClick={handleStartTraining}
-              disabled={isTraining || uploadedFiles.length < 10}
+              disabled={isTraining || uploadedFiles.length < 3 || uploadedFiles.length > 5}
               className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-medium shadow-lg shadow-primary/20 button-highlighted-shadow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isTraining ? (
