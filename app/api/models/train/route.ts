@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadToR2 } from '@/lib/r2-upload';
+import { getAuthenticatedUser } from '@/lib/get-user';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const user = await getAuthenticatedUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const modelName = formData.get('modelName') as string;
     const modelType = formData.get('modelType') as string;
@@ -47,6 +57,7 @@ export async function POST(request: NextRequest) {
         progress: 0,
         thumbnailUrl: imageUrls[0],
         trainingImages: imageUrls,
+        userId: user.id,
       },
     });
 

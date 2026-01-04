@@ -1,9 +1,22 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/get-user';
 
 export async function GET() {
   try {
+    // Check authentication
+    const user = await getAuthenticatedUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const models = await prisma.model.findMany({
+      where: {
+        userId: user.id,
+      },
       orderBy: {
         createdAt: 'desc',
       },

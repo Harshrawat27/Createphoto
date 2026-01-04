@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/get-user';
 
 // Helper function to fetch image from URL and convert to base64
 async function fetchImageAsBase64(url: string): Promise<string> {
@@ -19,6 +20,15 @@ async function fileToBase64(file: File): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const user = await getAuthenticatedUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const prompt = formData.get('prompt') as string;
     const modelId = formData.get('modelId') as string;
@@ -207,6 +217,7 @@ export async function POST(request: NextRequest) {
             modelId: modelId || null,
             aspectRatio,
             resolution,
+            userId: user.id,
           },
         });
 
