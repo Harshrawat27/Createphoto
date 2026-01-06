@@ -23,10 +23,7 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const user = await getAuthenticatedUser();
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const formData = await request.formData();
@@ -37,13 +34,18 @@ export async function POST(request: NextRequest) {
     const imageCount = parseInt(formData.get('imageCount') as string) || 1;
     const referenceImage = formData.get('referenceImage') as File | null;
     const referenceOptionsStr = formData.get('referenceOptions') as string;
-    const referenceOptions: string[] = referenceOptionsStr ? JSON.parse(referenceOptionsStr) : [];
+    const referenceOptions: string[] = referenceOptionsStr
+      ? JSON.parse(referenceOptionsStr)
+      : [];
 
     // Prompt is optional if reference image with options is provided
-    const hasReferenceWithOptions = referenceImage && referenceOptions.length > 0;
+    const hasReferenceWithOptions =
+      referenceImage && referenceOptions.length > 0;
     if (!prompt && !hasReferenceWithOptions) {
       return NextResponse.json(
-        { error: 'Prompt is required or provide a reference image with options' },
+        {
+          error: 'Prompt is required or provide a reference image with options',
+        },
         { status: 400 }
       );
     }
@@ -148,7 +150,8 @@ export async function POST(request: NextRequest) {
 
         // Generate image with Gemini Image API
         const response = await ai.models.generateContent({
-          model: 'gemini-3-pro-image-preview',
+          model: 'gemini-3-pro-image',
+          // model: 'gemini-2.5-flash-preview-image',
           contents: contents,
           config: {
             responseModalities: ['IMAGE'],
