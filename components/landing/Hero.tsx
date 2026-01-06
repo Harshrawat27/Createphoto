@@ -27,14 +27,14 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link
               href="/dashboard"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-lg text-base font-medium transition-all hover:scale-105 button-highlighted-shadow"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3.5 rounded-lg text-base font-medium transition-colors button-highlighted-shadow"
             >
               <Sparkles className="w-5 h-5" />
               Create Your Model
             </Link>
             <Link
               href="#how-it-works"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-8 py-3.5 rounded-lg text-base font-medium transition-all"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-8 py-3.5 rounded-lg text-base font-medium transition-colors"
             >
               See How It Works
               <ArrowRight className="w-4 h-4" />

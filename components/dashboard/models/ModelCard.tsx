@@ -23,13 +23,13 @@ export function ModelCard({ model }: ModelCardProps) {
     <div className="group relative bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300">
       {/* Thumbnail / Status Overlay */}
       <div className="aspect-square relative bg-secondary/30">
-        <img 
-            src={model.thumbnailUrl} 
+        <img
+            src={model.thumbnailUrl}
             alt={model.name}
             className={cn(
                 "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
                 model.status !== "Ready" && "opacity-50 blur-sm"
-            )} 
+            )}
         />
         
         {/* Status Indicators */}

@@ -282,7 +282,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       <button
         onClick={handleGenerate}
         disabled={isGenerating || (!prompt.trim() && !(selectedImageFile && referenceOptions.length > 0))}
-        className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg flex items-center justify-center gap-2 mt-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-lg flex items-center justify-center gap-2 mt-auto disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isGenerating ? (
           <>
