@@ -1,7 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, Maximize2, Trash2, Loader2, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Download,
+  Maximize2,
+  Trash2,
+  Loader2,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import {
@@ -84,9 +92,14 @@ export default function GalleryPage() {
       });
 
       if (response.ok) {
-        setGeneratedImages((prev) => prev.filter((img) => img.id !== imageToDelete));
+        setGeneratedImages((prev) =>
+          prev.filter((img) => img.id !== imageToDelete)
+        );
         // Close lightbox if deleted image was open
-        if (lightboxOpen && generatedImages[currentImageIndex]?.id === imageToDelete) {
+        if (
+          lightboxOpen &&
+          generatedImages[currentImageIndex]?.id === imageToDelete
+        ) {
           setLightboxOpen(false);
         }
         toast.success('Image deleted successfully');
@@ -116,7 +129,9 @@ export default function GalleryPage() {
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + generatedImages.length) % generatedImages.length);
+    setCurrentImageIndex(
+      (prev) => (prev - 1 + generatedImages.length) % generatedImages.length
+    );
   };
 
   useEffect(() => {
@@ -150,11 +165,11 @@ export default function GalleryPage() {
         </div>
 
         {loading ? (
-          <div className='flex items-center justify-center min-h-[400px]'>
+          <div className='flex items-center justify-center min-h-100'>
             <Loader2 className='w-8 h-8 animate-spin text-primary' />
           </div>
         ) : generatedImages.length === 0 ? (
-          <div className='flex flex-col items-center justify-center min-h-[400px] text-center'>
+          <div className='flex flex-col items-center justify-center min-h-100 text-center'>
             <div className='w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4'>
               <Maximize2 className='w-8 h-8 text-muted-foreground' />
             </div>
@@ -168,7 +183,7 @@ export default function GalleryPage() {
             {generatedImages.map((img, index) => (
               <div
                 key={img.id}
-                className='group relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary/20 border border-border'
+                className='group relative aspect-2/3 rounded-xl overflow-hidden bg-secondary/20 border border-border'
               >
                 {img.url ? (
                   <img
@@ -238,7 +253,7 @@ export default function GalleryPage() {
         {/* Lightbox Modal */}
         {lightboxOpen && generatedImages[currentImageIndex] && (
           <div
-            className='fixed inset-0 z-[9999] bg-black/90 backdrop-blur-md flex items-center justify-center'
+            className='fixed inset-0 z-9999 bg-black/90 backdrop-blur-md flex items-center justify-center'
             onClick={closeLightbox}
           >
             {/* Close Button */}
@@ -282,7 +297,9 @@ export default function GalleryPage() {
             >
               <img
                 src={generatedImages[currentImageIndex].url}
-                alt={generatedImages[currentImageIndex].prompt || 'Generated image'}
+                alt={
+                  generatedImages[currentImageIndex].prompt || 'Generated image'
+                }
                 className='max-w-full max-h-[90vh] object-contain rounded-lg'
               />
 
@@ -293,15 +310,24 @@ export default function GalleryPage() {
                 </p>
                 <div className='flex gap-2'>
                   <button
-                    onClick={() => handleDownload(generatedImages[currentImageIndex].url, generatedImages[currentImageIndex].id)}
+                    onClick={() =>
+                      handleDownload(
+                        generatedImages[currentImageIndex].url,
+                        generatedImages[currentImageIndex].id
+                      )
+                    }
                     className='px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors flex items-center gap-2'
                   >
                     <Download className='w-4 h-4' />
                     Download
                   </button>
                   <button
-                    onClick={() => openDeleteDialog(generatedImages[currentImageIndex].id)}
-                    disabled={deleting === generatedImages[currentImageIndex].id}
+                    onClick={() =>
+                      openDeleteDialog(generatedImages[currentImageIndex].id)
+                    }
+                    disabled={
+                      deleting === generatedImages[currentImageIndex].id
+                    }
                     className='px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-500 transition-colors flex items-center gap-2 ml-auto disabled:opacity-50'
                   >
                     {deleting === generatedImages[currentImageIndex].id ? (
@@ -335,7 +361,8 @@ export default function GalleryPage() {
             <DialogHeader>
               <DialogTitle>Delete Image</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this image? This action cannot be undone.
+                Are you sure you want to delete this image? This action cannot
+                be undone.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

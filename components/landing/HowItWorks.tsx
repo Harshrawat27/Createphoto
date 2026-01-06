@@ -25,7 +25,7 @@ export function HowItWorks() {
   return (
     <section id='how-it-works' className='py-24 relative overflow-hidden'>
       {/* Background blobs */}
-      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10' />
+      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-200 bg-primary/5 rounded-full blur-3xl -z-10' />
 
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='text-center mb-16'>
@@ -39,7 +39,7 @@ export function HowItWorks() {
 
         <div className='grid grid-cols-1 md:grid-cols-3 gap-12 relative'>
           {/* Connector Line (Desktop) */}
-          <div className='hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-transparent via-border to-transparent' />
+          <div className='hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-linear-to-r from-transparent via-border to-transparent' />
 
           {steps.map((step, index) => (
             <div

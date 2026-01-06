@@ -42,7 +42,7 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
       </div>
 
       {generatedImages.length === 0 ? (
-        <div className='flex flex-col items-center justify-center min-h-[400px] text-center'>
+        <div className='flex flex-col items-center justify-center min-h-100 text-center'>
           <div className='w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4'>
             <Maximize2 className='w-8 h-8 text-muted-foreground' />
           </div>
@@ -59,7 +59,7 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
           {generatedImages.map((img) => (
             <div
               key={img.id}
-              className='group relative aspect-[2/3] rounded-xl overflow-hidden bg-secondary/20 border border-border'
+              className='group relative aspect-2/3 rounded-xl overflow-hidden bg-secondary/20 border border-border'
             >
               {img.url ? (
                 <img
