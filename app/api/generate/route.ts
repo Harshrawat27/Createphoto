@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
 
         // Generate image with Gemini Image API
         const response = await ai.models.generateContent({
-          model: 'gemini-3-pro-image',
+          model: 'gemini-3-pro-image-preview',
           // model: 'gemini-2.5-flash-preview-image',
           contents: contents,
           config: {
