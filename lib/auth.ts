@@ -20,21 +20,6 @@ export const auth = betterAuth({
     'https://picloreai.com',
   ],
 
-  advanced: {
-    cookiePrefix: 'better-auth',
-    cookies: {
-      sessionToken: {
-        name: 'session_token',
-        options: {
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/',
-          secure: process.env.NODE_ENV === 'production',
-        },
-      },
-    },
-  },
-
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,

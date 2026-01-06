@@ -7,7 +7,9 @@ export async function middleware(request: NextRequest) {
   // Protect /dashboard routes
   if (pathname.startsWith('/dashboard')) {
     // Check for better-auth session token
-    const sessionToken = request.cookies.get('better-auth.session_token');
+    const sessionToken =
+      request.cookies.get('better-auth.session_token') ||
+      request.cookies.get('__Secure-better-auth.session_token');
 
     if (!sessionToken) {
       // Redirect to home page if no session
