@@ -16,8 +16,8 @@ export const auth = betterAuth({
 
   trustedOrigins: [
     'http://localhost:3000',
-    'https://www.picloreai.com/',
-    'https://picloreai.com/',
+    'https://www.picloreai.com',
+    'https://picloreai.com',
   ],
 
   socialProviders: {
