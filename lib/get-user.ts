@@ -1,19 +1,12 @@
-import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 import { auth } from './auth';
 
 export async function getAuthenticatedUser() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('better-auth.session_token');
-
-  if (!sessionToken) {
-    return null;
-  }
-
   try {
+    const headersList = await headers();
+
     const session = await auth.api.getSession({
-      headers: {
-        cookie: `better-auth.session_token=${sessionToken.value}`,
-      },
+      headers: headersList,
     });
 
     return session?.user || null;
