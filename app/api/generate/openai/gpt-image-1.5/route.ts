@@ -10,12 +10,12 @@ const openai = new OpenAI({
 });
 
 // Helper function to fetch image from URL and convert to base64
-async function fetchImageAsBase64(url: string): Promise<string> {
-  const response = await fetch(url);
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  return buffer.toString('base64');
-}
+// async function fetchImageAsBase64(url: string): Promise<string> {
+//   const response = await fetch(url);
+//   const arrayBuffer = await response.arrayBuffer();
+//   const buffer = Buffer.from(arrayBuffer);
+//   return buffer.toString('base64');
+// }
 
 // Helper function to convert File to base64
 async function fileToBase64(file: File): Promise<string> {

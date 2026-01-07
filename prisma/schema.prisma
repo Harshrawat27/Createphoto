@@ -17,7 +17,7 @@ model User {
   email          String
   emailVerified  Boolean
   image          String?
-  credits        Int           @default(0)
+  credits        Int           @default(100)
   createdAt      DateTime
   updatedAt      DateTime
   sessions       Session[]
