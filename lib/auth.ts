@@ -31,7 +31,7 @@ export const auth = betterAuth({
     additionalFields: {
       credits: {
         type: 'number',
-        defaultValue: 0,
+        defaultValue: 100,
         input: false,
       },
     },
