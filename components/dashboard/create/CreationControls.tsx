@@ -17,6 +17,25 @@ interface Model {
   status: string;
 }
 
+interface AIModel {
+  id: string;
+  provider: string;
+  displayName: string;
+  description: string;
+  creditCost: number;
+  isActive: boolean;
+  capabilities: {
+    aspectRatios: string[];
+    resolutions: string[];
+    features: {
+      supportsReferenceImage: boolean;
+      supportsModelTraining: boolean;
+      maxImageCount: number;
+    };
+  };
+  apiPath: string;
+}
+
 interface CreationControlsProps {
   onGenerate?: (images: any[]) => void;
 }
@@ -29,6 +48,9 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   const [referenceOptions, setReferenceOptions] = useState<string[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>('');
+  const [aiModels, setAiModels] = useState<AIModel[]>([]);
+  const [selectedAiModel, setSelectedAiModel] = useState<string>('');
+  const [userCredits, setUserCredits] = useState(0);
   const [aspectRatio, setAspectRatio] = useState('9:16');
   const [resolution, setResolution] = useState('1K');
   const [imageCount, setImageCount] = useState(1);
@@ -37,6 +59,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
 
   useEffect(() => {
     fetchModels();
+    fetchAIModels();
   }, []);
 
   const fetchModels = async () => {
@@ -53,6 +76,22 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       }
     } catch (error) {
       console.error('Failed to fetch models:', error);
+    }
+  };
+
+  const fetchAIModels = async () => {
+    try {
+      const response = await fetch('/api/ai-models');
+      if (response.ok) {
+        const data = await response.json();
+        setAiModels(data.models);
+        setUserCredits(data.userCredits);
+        if (data.models.length > 0) {
+          setSelectedAiModel(data.models[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch AI models:', error);
     }
   };
 
@@ -85,6 +124,22 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       return;
     }
 
+    // Get selected AI model details
+    const aiModel = aiModels.find((m) => m.id === selectedAiModel);
+    if (!aiModel) {
+      setError('Please select an AI model');
+      return;
+    }
+
+    // Check credits
+    const totalCreditsNeeded = aiModel.creditCost * imageCount;
+    if (userCredits < totalCreditsNeeded) {
+      setError(
+        `Insufficient credits. Need ${totalCreditsNeeded}, have ${userCredits}`
+      );
+      return;
+    }
+
     setError('');
     setIsGenerating(true);
 
@@ -92,6 +147,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       const formData = new FormData();
       formData.append('prompt', prompt);
       formData.append('modelId', selectedModel || '');
+      formData.append('aiModelId', selectedAiModel);
       formData.append('aspectRatio', aspectRatio);
       formData.append('resolution', resolution);
       formData.append('imageCount', imageCount.toString());
@@ -102,13 +158,15 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         formData.append('referenceOptions', JSON.stringify(referenceOptions));
       }
 
-      const response = await fetch('/api/generate', {
+      // Use the AI model's apiPath to call the correct endpoint
+      const response = await fetch(`/api/generate/${aiModel.apiPath}`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate images');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate images');
       }
 
       const data = await response.json();
@@ -117,6 +175,8 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       if (data.success && data.images) {
         console.log('Generated images:', data.images);
         onGenerate?.(data.images);
+        // Update credits
+        setUserCredits(data.remainingCredits);
       } else {
         console.error('No images in response:', data);
       }
@@ -129,14 +189,53 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
 
   return (
     <div className='flex flex-col gap-8 p-6 h-full overflow-y-auto custom-scrollbar'>
-      {/* Model Selection */}
+      {/* Credits Display */}
+      <div className='p-4 bg-primary/10 border border-primary/20 rounded-lg'>
+        <div className='flex items-center justify-between'>
+          <span className='text-sm font-medium'>Available Credits</span>
+          <span className='text-2xl font-bold text-primary'>{userCredits}</span>
+        </div>
+      </div>
+
+      {/* AI Model Selection */}
       <Field>
-        <FieldLabel htmlFor='select-model'>Select Model</FieldLabel>
+        <FieldLabel htmlFor='select-ai-model'>AI Model</FieldLabel>
+        <Select value={selectedAiModel} onValueChange={setSelectedAiModel}>
+          <SelectTrigger className='bg-background' id='select-ai-model'>
+            <SelectValue
+              placeholder={
+                aiModels.length === 0 ? 'No AI models available' : 'Select AI model'
+              }
+            />
+          </SelectTrigger>
+          <SelectContent className='bg-background'>
+            {aiModels.map((aiModel) => (
+              <SelectItem key={aiModel.id} value={aiModel.id}>
+                <div className='flex items-center justify-between w-full'>
+                  <span>{aiModel.displayName}</span>
+                  <span className='text-xs text-muted-foreground ml-2'>
+                    {aiModel.creditCost} credits
+                  </span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {selectedAiModel && aiModels.find((m) => m.id === selectedAiModel) && (
+          <p className='text-xs text-muted-foreground mt-1'>
+            {aiModels.find((m) => m.id === selectedAiModel)?.description}
+          </p>
+        )}
+      </Field>
+
+      {/* Trained Model Selection */}
+      <Field>
+        <FieldLabel htmlFor='select-model'>Your Trained Model (Optional)</FieldLabel>
         <Select value={selectedModel} onValueChange={setSelectedModel}>
           <SelectTrigger className='bg-background' id='select-model'>
             <SelectValue
               placeholder={
-                models.length === 0 ? 'No models available' : 'Select a model'
+                models.length === 0 ? 'No trained models available' : 'Select a trained model'
               }
             />
           </SelectTrigger>
@@ -343,6 +442,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         onClick={handleGenerate}
         disabled={
           isGenerating ||
+          !selectedAiModel ||
           (!prompt.trim() &&
             !(selectedImageFile && referenceOptions.length > 0))
         }
@@ -357,6 +457,14 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
           <>
             <Wand2 className='w-5 h-5' />
             Generate Images
+            {selectedAiModel &&
+              aiModels.find((m) => m.id === selectedAiModel) && (
+                <span className='text-sm'>
+                  ({aiModels.find((m) => m.id === selectedAiModel)!.creditCost *
+                    imageCount}{' '}
+                  credits)
+                </span>
+              )}
           </>
         )}
       </button>

@@ -17,6 +17,7 @@ model User {
   email          String
   emailVerified  Boolean
   image          String?
+  credits        Int           @default(0)
   createdAt      DateTime
   updatedAt      DateTime
   sessions       Session[]
@@ -93,16 +94,18 @@ model Model {
 }
 
 model Generation {
-  id        String   @id @default(cuid())
-  modelId   String?
-  model     Model?   @relation(fields: [modelId], references: [id], onDelete: SetNull)
-  prompt    String
-  imageUrl  String
-  aspectRatio String @default("1:1")
-  resolution  String @default("2K")
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  modelId     String?
+  model       Model?   @relation(fields: [modelId], references: [id], onDelete: SetNull)
+  aiModelId   String?  // Static reference to AI model (e.g., "gemini-3-pro")
+  prompt      String
+  imageUrl    String
+  aspectRatio String   @default("1:1")
+  resolution  String   @default("2K")
+  creditsCost Int      @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 
   @@map("generation")
 }
