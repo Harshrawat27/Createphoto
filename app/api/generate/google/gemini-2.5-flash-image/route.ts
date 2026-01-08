@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     const prompt = formData.get('prompt') as string;
     const modelId = formData.get('modelId') as string;
     const aspectRatio = (formData.get('aspectRatio') as string) || '1:1';
-    const resolution = (formData.get('resolution') as string) || '1K';
+    const resolution = (formData.get('resolution') as string) || '1k';
     const imageCount = parseInt(formData.get('imageCount') as string) || 1;
     const referenceImage = formData.get('referenceImage') as File | null;
     const referenceOptionsStr = formData.get('referenceOptions') as string;
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       // Add reference image instructions with specific options
       if (referenceImage && referenceOptions.length > 0) {
         const optionsText = referenceOptions.join(', ');
-        enhancedPrompt += ` Use ONLY the ${optionsText} from the last reference image, but KEEP the face and body of the ${modelData.type} from the training images.`;
+        enhancedPrompt += ` Use ONLY the ${optionsText} from the last reference image, but KEEP the face and body of the ${modelData.type} from the training images. create image in 9:16 ratio`;
       }
 
       // Add user's custom prompt if provided
@@ -173,15 +173,15 @@ export async function POST(request: NextRequest) {
 
         // Generate image with Gemini Flash Image API
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash-preview-image',
+          model: 'gemini-2.5-flash-image',
           contents: contents,
-          config: {
-            responseModalities: ['IMAGE'],
-            imageConfig: {
-              aspectRatio: aspectRatio, // "1:1", "9:16", "16:9"
-              imageSize: resolution, // "1K", "2K"
-            },
-          },
+          // config: {
+          //   responseModalities: ['IMAGE'],
+          //   imageConfig: {
+          //     aspectRatio: aspectRatio, // "1:1", "9:16", "16:9"
+          //     imageSize: '1K', // "1k", "2k" (lowercase required)
+          //   },
+          // },
         });
 
         console.log('Gemini Image API response received');

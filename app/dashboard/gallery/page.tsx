@@ -253,7 +253,7 @@ export default function GalleryPage() {
         {/* Lightbox Modal */}
         {lightboxOpen && generatedImages[currentImageIndex] && (
           <div
-            className='fixed inset-0 z-9999 bg-black/90 backdrop-blur-md flex items-center justify-center'
+            className='fixed inset-0 z-9999 bg-black/50 backdrop-blur-md flex items-center justify-center'
             onClick={closeLightbox}
           >
             {/* Close Button */}

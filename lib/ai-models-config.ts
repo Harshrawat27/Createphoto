@@ -36,24 +36,24 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
       },
     },
   },
-  'gemini-flash': {
-    id: 'gemini-flash',
-    provider: 'google',
-    displayName: 'Gemini 2.5 Flash Image',
-    description: 'Fast image generation with good quality',
-    creditCost: 5,
-    isActive: true,
-    apiPath: 'google/gemini-2.5-flash-image',
-    capabilities: {
-      aspectRatios: ['1:1', '9:16', '16:9'],
-      resolutions: ['1K', '2K'],
-      features: {
-        supportsReferenceImage: true,
-        supportsModelTraining: true,
-        maxImageCount: 4,
-      },
-    },
-  },
+  // 'gemini-flash': {
+  //   id: 'gemini-flash',
+  //   provider: 'google',
+  //   displayName: 'Gemini 2.5 Flash Image',
+  //   description: 'Fast image generation with good quality',
+  //   creditCost: 5,
+  //   isActive: true,
+  //   apiPath: 'google/gemini-2.5-flash-image',
+  //   capabilities: {
+  //     aspectRatios: ['1:1', '9:16', '16:9'],
+  //     resolutions: ['1K', '2K'],
+  //     features: {
+  //       supportsReferenceImage: true,
+  //       supportsModelTraining: true,
+  //       maxImageCount: 4,
+  //     },
+  //   },
+  // },
   // 'gpt-image-1.5': {
   //   id: 'gpt-image-1.5',
   //   provider: 'openai',

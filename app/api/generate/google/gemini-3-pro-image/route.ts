@@ -44,7 +44,10 @@ export async function POST(request: NextRequest) {
     const aiModel = getModelById(aiModelId);
 
     if (!aiModel) {
-      return NextResponse.json({ error: 'AI model not found' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'AI model not found' },
+        { status: 400 }
+      );
     }
 
     // Check if user has enough credits
@@ -281,7 +284,8 @@ export async function POST(request: NextRequest) {
       success: true,
       images: generatedImages,
       creditsUsed: aiModel.creditCost * generatedImages.length,
-      remainingCredits: user.credits - aiModel.creditCost * generatedImages.length,
+      remainingCredits:
+        user.credits - aiModel.creditCost * generatedImages.length,
     });
   } catch (error: any) {
     console.error('Generate API error:', error);
