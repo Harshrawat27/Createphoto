@@ -54,24 +54,24 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
       },
     },
   },
-  'gpt-image-1.5': {
-    id: 'gpt-image-1.5',
-    provider: 'openai',
-    displayName: 'GPT Image 1.5',
-    description: 'OpenAI\'s latest image generation model with reference image support',
-    creditCost: 12,
-    isActive: true,
-    apiPath: 'openai/gpt-image-1.5',
-    capabilities: {
-      aspectRatios: ['1:1', '16:9', '9:16'],
-      resolutions: ['1K', '2K', '4K'],
-      features: {
-        supportsReferenceImage: true,
-        supportsModelTraining: true,
-        maxImageCount: 1,
-      },
-    },
-  },
+  // 'gpt-image-1.5': {
+  //   id: 'gpt-image-1.5',
+  //   provider: 'openai',
+  //   displayName: 'GPT Image 1.5',
+  //   description: 'OpenAI\'s latest image generation model with reference image support',
+  //   creditCost: 12,
+  //   isActive: true,
+  //   apiPath: 'openai/gpt-image-1.5',
+  //   capabilities: {
+  //     aspectRatios: ['1:1', '16:9', '9:16'],
+  //     resolutions: ['1K', '2K', '4K'],
+  //     features: {
+  //       supportsReferenceImage: true,
+  //       supportsModelTraining: true,
+  //       maxImageCount: 1,
+  //     },
+  //   },
+  // },
   // Add more models here as needed
   // Example for OpenAI:
   // 'dall-e-3': {
@@ -111,7 +111,9 @@ export function getActiveModels(): AIModelConfig[] {
 
 // Helper function to get models by provider
 export function getModelsByProvider(provider: string): AIModelConfig[] {
-  return Object.values(AI_MODELS).filter((model) => model.provider === provider);
+  return Object.values(AI_MODELS).filter(
+    (model) => model.provider === provider
+  );
 }
 
 // Helper function to get all models as array
