@@ -8,64 +8,39 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const user = await getAuthenticatedUser();
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const formData = await request.formData();
-    const modelName = formData.get('modelName') as string;
-    const modelType = formData.get('modelType') as string;
-    const files = formData.getAll('files') as File[];
+    // Parse JSON body
+    const body = await request.json();
+    const { modelName, modelType } = body;
 
-    if (!modelName || !modelType || files.length === 0) {
+    if (!modelName || !modelType) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    if (files.length < 3) {
-      return NextResponse.json(
-        { error: 'Please upload at least 3 images' },
-        { status: 400 }
-      );
-    }
-
-    if (files.length > 5) {
-      return NextResponse.json(
-        { error: 'Maximum 5 images allowed' },
-        { status: 400 }
-      );
-    }
-
-    // Upload all images to Cloudflare R2
-    const uploadPromises = files.map(async (file) => {
-      const url = await uploadToR2(file, 'models');
-      return url;
-    });
-
-    const imageUrls = await Promise.all(uploadPromises);
-
-    // Create model in database
+    // Create model in database with empty training images
+    // Images will be uploaded separately via /api/models/upload-image
     const model = await prisma.model.create({
       data: {
         name: modelName,
         type: modelType,
         status: 'training',
         progress: 0,
-        thumbnailUrl: imageUrls[0],
-        trainingImages: imageUrls,
+        trainingImages: [],
         userId: user.id,
       },
     });
 
-    // Simulate training process (in real app, this would trigger actual training)
+    // Start training simulation (will update progress in background)
     simulateTraining(model.id);
 
     return NextResponse.json({
       success: true,
+      modelId: model.id,
       model: {
         id: model.id,
         name: model.name,

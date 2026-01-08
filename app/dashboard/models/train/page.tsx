@@ -13,10 +13,21 @@ export default function TrainModelPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isTraining, setIsTraining] = useState(false);
   const [error, setError] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files || []);
+      const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+
+      // Validate file sizes
+      const oversizedFiles = newFiles.filter(file => file.size > maxSize);
+      if (oversizedFiles.length > 0) {
+        setError(`Some images exceed 3MB limit. Please compress them first.`);
+        return;
+      }
+
+      setError(''); // Clear any previous errors
       setUploadedFiles((prev) => {
         const combined = [...prev, ...newFiles];
         // Limit to maximum 5 images
@@ -48,32 +59,55 @@ export default function TrainModelPage() {
     }
 
     setIsTraining(true);
+    setUploadProgress(0);
 
     try {
-      const formData = new FormData();
-      formData.append('modelName', modelName);
-      formData.append('modelType', modelType);
-
-      uploadedFiles.forEach((file) => {
-        formData.append('files', file);
-      });
-
-      const response = await fetch('/api/models/train', {
+      // Step 1: Create the model first (without images)
+      const createResponse = await fetch('/api/models/train', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          modelName,
+          modelType,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to start training');
+      if (!createResponse.ok) {
+        throw new Error('Failed to create model');
       }
 
-      const data = await response.json();
+      const { modelId } = await createResponse.json();
 
-      // Redirect to models page
+      // Step 2: Upload images one by one
+      const totalImages = uploadedFiles.length;
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        const file = uploadedFiles[i];
+        const imageFormData = new FormData();
+        imageFormData.append('modelId', modelId);
+        imageFormData.append('image', file);
+
+        const uploadResponse = await fetch('/api/models/upload-image', {
+          method: 'POST',
+          body: imageFormData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Failed to upload image ${i + 1}`);
+        }
+
+        // Update progress
+        const progress = Math.round(((i + 1) / totalImages) * 100);
+        setUploadProgress(progress);
+      }
+
+      // All images uploaded successfully, redirect to models page
       router.push('/dashboard/models');
     } catch (err: any) {
       setError(err.message || 'Failed to start training');
       setIsTraining(false);
+      setUploadProgress(0);
     }
   };
 
@@ -155,11 +189,16 @@ export default function TrainModelPage() {
 
           <div className='bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex gap-3 text-sm text-blue-600 dark:text-blue-400'>
             <Info className='w-5 h-5 flex-shrink-0' />
-            <p>
-              For best results, upload close-ups, half-body, and full-body shots
-              with different lighting, backgrounds, and angles. No sunglasses or
-              hats.
-            </p>
+            <div>
+              <p className='mb-2'>
+                For best results, upload close-ups, half-body, and full-body shots
+                with different lighting, backgrounds, and angles. No sunglasses or
+                hats.
+              </p>
+              <p className='text-xs'>
+                Maximum file size: 3MB per image
+              </p>
+            </div>
           </div>
 
           <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4'>
@@ -223,7 +262,7 @@ export default function TrainModelPage() {
             {isTraining ? (
               <>
                 <Loader2 className='w-5 h-5 animate-spin' />
-                Starting...
+                {uploadProgress > 0 ? `Uploading ${uploadProgress}%...` : 'Starting...'}
               </>
             ) : (
               <>
