@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { PlusCircle, Sparkles, User, ArrowRight } from 'lucide-react';
+import { CreditsDisplay } from '@/components/dashboard/CreditsDisplay';
 
 export default function DashboardPage() {
   return (
@@ -7,9 +10,7 @@ export default function DashboardPage() {
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
         <div>
           <h1 className='text-3xl font-heading font-bold'>Welcome back!</h1>
-          <p className='text-muted-foreground'>
-            You have 150 credits remaining.
-          </p>
+          <CreditsDisplay variant='full' />
         </div>
         <Link href='/dashboard/create'>
           <button className='bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors button-highlighted-shadow'>

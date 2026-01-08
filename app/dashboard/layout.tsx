@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CreditsDisplay } from "@/components/dashboard/CreditsDisplay";
 
 export default function DashboardLayout({
   children,
@@ -13,9 +14,7 @@ export default function DashboardLayout({
       </div>
       <main className="md:pl-72 h-full bg-background min-h-screen">
         <header className="flex justify-end items-center p-4 border-b border-border gap-4 bg-background/80 backdrop-blur sticky top-0 z-50">
-            <div className="text-sm text-muted-foreground hidden sm:block">
-                Credits: <span className="font-bold text-foreground">150</span>
-            </div>
+            <CreditsDisplay variant="compact" className="hidden sm:block" />
             <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/50" />
             <ThemeToggle />
         </header>
