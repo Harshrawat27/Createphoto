@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Upload, Info, X, Check, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft, Upload, Info, X, Check, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function TrainModelPage() {
   const router = useRouter();
-  const [modelName, setModelName] = useState("");
-  const [modelType, setModelType] = useState("man");
+  const [modelName, setModelName] = useState('');
+  const [modelType, setModelType] = useState('man');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isTraining, setIsTraining] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-        const newFiles = Array.from(e.target.files || []);
-        setUploadedFiles((prev) => {
-          const combined = [...prev, ...newFiles];
-          // Limit to maximum 5 images
-          return combined.slice(0, 5);
-        });
+      const newFiles = Array.from(e.target.files || []);
+      setUploadedFiles((prev) => {
+        const combined = [...prev, ...newFiles];
+        // Limit to maximum 5 images
+        return combined.slice(0, 5);
+      });
     }
   };
 
@@ -30,20 +30,20 @@ export default function TrainModelPage() {
   };
 
   const handleStartTraining = async () => {
-    setError("");
+    setError('');
 
     if (!modelName.trim()) {
-      setError("Please enter a model name");
+      setError('Please enter a model name');
       return;
     }
 
     if (uploadedFiles.length < 3) {
-      setError("Please upload at least 3 images");
+      setError('Please upload at least 3 images');
       return;
     }
 
     if (uploadedFiles.length > 5) {
-      setError("Maximum 5 images allowed");
+      setError('Maximum 5 images allowed');
       return;
     }
 
@@ -51,155 +51,187 @@ export default function TrainModelPage() {
 
     try {
       const formData = new FormData();
-      formData.append("modelName", modelName);
-      formData.append("modelType", modelType);
+      formData.append('modelName', modelName);
+      formData.append('modelType', modelType);
 
       uploadedFiles.forEach((file) => {
-        formData.append("files", file);
+        formData.append('files', file);
       });
 
-      const response = await fetch("/api/models/train", {
-        method: "POST",
+      const response = await fetch('/api/models/train', {
+        method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to start training");
+        throw new Error('Failed to start training');
       }
 
       const data = await response.json();
 
       // Redirect to models page
-      router.push("/dashboard/models");
+      router.push('/dashboard/models');
     } catch (err: any) {
-      setError(err.message || "Failed to start training");
+      setError(err.message || 'Failed to start training');
       setIsTraining(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 space-y-8">
+    <div className='max-w-3xl mx-auto p-8 space-y-8'>
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/models" className="p-2 rounded-full hover:bg-secondary transition-colors">
-            <ArrowLeft className="w-5 h-5" />
+      <div className='flex items-center gap-4'>
+        <Link
+          href='/dashboard/models'
+          className='p-2 rounded-full hover:bg-secondary transition-colors'
+        >
+          <ArrowLeft className='w-5 h-5' />
         </Link>
         <div>
-            <h1 className="text-2xl font-heading font-bold">Train New Model</h1>
-            <p className="text-muted-foreground">Create a custom AI model of a person.</p>
+          <h1 className='text-2xl font-heading font-bold'>Train New Model</h1>
+          <p className='text-muted-foreground'>
+            Create a custom AI model of a person.
+          </p>
         </div>
       </div>
 
-      <div className="space-y-8">
+      <div className='space-y-8'>
         {/* Step 1: Model Details */}
-        <div className="space-y-4 p-6 border border-border rounded-xl bg-card">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
-                Model Details
-            </h2>
-            
-            <div className="grid gap-4">
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">Model Name</label>
-                    <input 
-                        type="text" 
-                        placeholder="e.g., My Professional Headshots" 
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        value={modelName}
-                        onChange={(e) => setModelName(e.target.value)}
-                    />
-                </div>
+        <div className='space-y-4 p-6 border border-border rounded-xl bg-card'>
+          <h2 className='text-lg font-bold flex items-center gap-2'>
+            <span className='w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold'>
+              1
+            </span>
+            Model Details
+          </h2>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">Subject Type</label>
-                    <div className="grid grid-cols-3 gap-4">
-                        {['man', 'woman', 'person'].map((type) => (
-                            <div 
-                                key={type}
-                                onClick={() => setModelType(type)}
-                                className={cn(
-                                    "cursor-pointer border rounded-lg p-4 text-center capitalize transition-all hover:bg-secondary/50",
-                                    modelType === type ? "border-primary bg-primary/5 text-primary ring-1 ring-primary" : "border-border"
-                                )}
-                            >
-                                {type}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+          <div className='grid gap-4'>
+            <div className='space-y-2'>
+              <label className='text-sm font-medium'>Model Name</label>
+              <input
+                type='text'
+                placeholder='e.g., My Professional Headshots'
+                className='flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                value={modelName}
+                onChange={(e) => setModelName(e.target.value)}
+              />
             </div>
+
+            <div className='space-y-2'>
+              <label className='text-sm font-medium'>Subject Type</label>
+              <div className='grid grid-cols-3 gap-4'>
+                {['man', 'woman', 'person'].map((type) => (
+                  <div
+                    key={type}
+                    onClick={() => setModelType(type)}
+                    className={cn(
+                      'cursor-pointer border rounded-lg p-4 text-center capitalize transition-all hover:bg-secondary/50',
+                      modelType === type
+                        ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
+                        : 'border-border'
+                    )}
+                  >
+                    {type}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Step 2: Upload Photos */}
-        <div className="space-y-4 p-6 border border-border rounded-xl bg-card">
-            <div className="flex justify-between items-start">
-                <h2 className="text-lg font-bold flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">2</span>
-                    Upload Photos (3-5)
-                </h2>
-                <span className="text-xs bg-secondary px-2 py-1 rounded text-muted-foreground">
-                    {uploadedFiles.length} / 5 selected
-                </span>
-            </div>
+        <div className='space-y-4 p-6 border border-border rounded-xl bg-card'>
+          <div className='flex justify-between items-start'>
+            <h2 className='text-lg font-bold flex items-center gap-2'>
+              <span className='w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold'>
+                2
+              </span>
+              Upload Photos (3-5)
+            </h2>
+            <span className='text-xs bg-secondary px-2 py-1 rounded text-muted-foreground'>
+              {uploadedFiles.length} / 5 selected
+            </span>
+          </div>
 
-            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex gap-3 text-sm text-blue-600 dark:text-blue-400">
-                <Info className="w-5 h-5 flex-shrink-0" />
-                <p>
-                    For best results, upload close-ups, half-body, and full-body shots with different lighting, backgrounds, and angles. No sunglasses or hats.
-                </p>
-            </div>
+          <div className='bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex gap-3 text-sm text-blue-600 dark:text-blue-400'>
+            <Info className='w-5 h-5 flex-shrink-0' />
+            <p>
+              For best results, upload close-ups, half-body, and full-body shots
+              with different lighting, backgrounds, and angles. No sunglasses or
+              hats.
+            </p>
+          </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                <label className="aspect-square border-2 border-dashed border-border rounded-lg hover:border-primary hover:bg-primary/5 cursor-pointer flex flex-col items-center justify-center transition-colors">
-                    <Upload className="w-6 h-6 text-muted-foreground mb-2" />
-                    <span className="text-xs text-muted-foreground font-medium">Add Photos</span>
-                    <input type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
-                </label>
+          <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4'>
+            <label className='aspect-square border-2 border-dashed border-border rounded-lg hover:border-primary hover:bg-primary/5 cursor-pointer flex flex-col items-center justify-center transition-colors'>
+              <Upload className='w-6 h-6 text-muted-foreground mb-2' />
+              <span className='text-xs text-muted-foreground font-medium'>
+                Add Photos
+              </span>
+              <input
+                type='file'
+                multiple
+                accept='image/*'
+                className='hidden'
+                onChange={handleFileChange}
+              />
+            </label>
 
-                {uploadedFiles.map((file, i) => (
-                    <div key={i} className="relative aspect-square rounded-lg overflow-hidden group bg-secondary">
-                        <img src={URL.createObjectURL(file)} alt="Upload preview" className="w-full h-full object-cover" />
-                        <button 
-                            onClick={() => removeFile(i)}
-                            className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                            <X className="w-3 h-3" />
-                        </button>
-                    </div>
-                ))}
-            </div>
+            {uploadedFiles.map((file, i) => (
+              <div
+                key={i}
+                className='relative aspect-square rounded-lg overflow-hidden group bg-secondary'
+              >
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt='Upload preview'
+                  className='w-full h-full object-cover'
+                />
+                <button
+                  onClick={() => removeFile(i)}
+                  className='absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
+                >
+                  <X className='w-3 h-3' />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
+          <div className='p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400'>
             {error}
           </div>
         )}
 
         {/* Submit */}
-        <div className="flex items-center justify-between p-6 border border-primary/20 bg-primary/5 rounded-xl">
-            <div>
-                <p className="font-bold">Cost: 100 Credits</p>
-                <p className="text-sm text-muted-foreground">Training takes ~2-3 minutes</p>
-            </div>
-            <button
-              onClick={handleStartTraining}
-              disabled={isTraining || uploadedFiles.length < 3 || uploadedFiles.length > 5}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-medium shadow-lg shadow-primary/20 button-highlighted-shadow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-                {isTraining ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Starting...
-                  </>
-                ) : (
-                  <>
-                    <Check className="w-5 h-5" />
-                    Start Training
-                  </>
-                )}
-            </button>
+        <div className='flex items-center justify-between p-6 border border-primary/20 bg-primary/5 rounded-xl'>
+          <div>
+            {/* <p className="font-bold">Cost: 100 Credits</p> */}
+            <p className='text-sm text-muted-foreground'>
+              Training takes ~2-3 minutes
+            </p>
+          </div>
+          <button
+            onClick={handleStartTraining}
+            disabled={
+              isTraining || uploadedFiles.length < 3 || uploadedFiles.length > 5
+            }
+            className='bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-medium shadow-lg shadow-primary/20 button-highlighted-shadow flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
+          >
+            {isTraining ? (
+              <>
+                <Loader2 className='w-5 h-5 animate-spin' />
+                Starting...
+              </>
+            ) : (
+              <>
+                <Check className='w-5 h-5' />
+                Start Training
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
