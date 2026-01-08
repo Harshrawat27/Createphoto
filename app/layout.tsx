@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Instrument_Serif, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { Analytics } from '@vercel/analytics/next';
 
 const instrumentSerif = Instrument_Serif({
   variable: '--font-instrument-serif',
@@ -51,6 +52,7 @@ export default function RootLayout({
           enableSystem={false}
         >
           {children}
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
