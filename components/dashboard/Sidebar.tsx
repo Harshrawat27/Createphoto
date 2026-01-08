@@ -1,47 +1,47 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  PlusCircle, 
-  Image as ImageIcon, 
-  Settings, 
-  LogOut, 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import {
+  LayoutDashboard,
+  PlusCircle,
+  Image as ImageIcon,
+  Settings,
+  LogOut,
   Sparkles,
-  User
-} from "lucide-react";
+  User,
+} from 'lucide-react';
 
 const routes = [
   {
-    label: "Overview",
+    label: 'Overview',
     icon: LayoutDashboard,
-    href: "/dashboard",
-    color: "text-sky-500",
+    href: '/dashboard',
+    color: 'text-sky-500',
   },
   {
-    label: "Create Images",
+    label: 'Create Images',
     icon: PlusCircle,
-    href: "/dashboard/create",
-    color: "text-primary",
+    href: '/dashboard/create',
+    color: 'text-primary',
   },
   {
-    label: "My Models",
+    label: 'My Models',
     icon: User,
-    href: "/dashboard/models",
-    color: "text-pink-700",
+    href: '/dashboard/models',
+    color: 'text-pink-700',
   },
   {
-    label: "Gallery",
+    label: 'Gallery',
     icon: ImageIcon,
-    href: "/dashboard/gallery",
-    color: "text-emerald-500",
+    href: '/dashboard/gallery',
+    color: 'text-emerald-500',
   },
   {
-    label: "Settings",
+    label: 'Settings',
     icon: Settings,
-    href: "/dashboard/settings",
+    href: '/dashboard/settings',
   },
 ];
 
@@ -49,43 +49,43 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-secondary/30 text-secondary-foreground border-r border-border">
-      <div className="px-3 py-2 flex-1">
-        <Link href="/dashboard" className="flex items-center pl-3 mb-14">
-          <div className="relative w-8 h-8 mr-4">
-             <div className="bg-primary/10 p-1.5 rounded-lg">
-                <Sparkles className="w-5 h-5 text-primary" />
-             </div>
+    <div className='space-y-4 py-4 flex flex-col h-full bg-secondary/30 text-secondary-foreground border-r border-border'>
+      <div className='px-3 py-2 flex-1'>
+        <Link href='/dashboard' className='flex items-center pl-3 mb-14'>
+          <div className='relative w-8 h-8 mr-4'>
+            <div className='bg-primary/10 p-1.5 rounded-lg'>
+              <Sparkles className='w-5 h-5 text-primary' />
+            </div>
           </div>
-          <h1 className="text-xl font-heading font-bold">
-            PhotoCreate
-          </h1>
+          <h1 className='text-xl font-heading font-bold'>PicLoreAI</h1>
         </Link>
-        <div className="space-y-1">
+        <div className='space-y-1'>
           {routes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition",
-                pathname === route.href ? "text-primary bg-primary/10" : "text-muted-foreground"
+                'text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition',
+                pathname === route.href
+                  ? 'text-primary bg-primary/10'
+                  : 'text-muted-foreground'
               )}
             >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
+              <div className='flex items-center flex-1'>
+                <route.icon className={cn('h-5 w-5 mr-3', route.color)} />
                 {route.label}
               </div>
             </Link>
           ))}
         </div>
       </div>
-      <div className="px-3 py-2">
-         <button className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-red-500 hover:bg-red-500/10 rounded-lg transition text-muted-foreground">
-             <div className="flex items-center flex-1">
-                <LogOut className="h-5 w-5 mr-3" />
-                Sign Out
-             </div>
-         </button>
+      <div className='px-3 py-2'>
+        <button className='text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-red-500 hover:bg-red-500/10 rounded-lg transition text-muted-foreground'>
+          <div className='flex items-center flex-1'>
+            <LogOut className='h-5 w-5 mr-3' />
+            Sign Out
+          </div>
+        </button>
       </div>
     </div>
   );

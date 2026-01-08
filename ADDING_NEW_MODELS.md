@@ -1,10 +1,11 @@
 # Adding New AI Models
 
-This guide explains how to add new AI models from different providers to the PhotoCreate platform.
+This guide explains how to add new AI models from different providers to the PicLoreAI platform.
 
 ## Overview
 
 The system uses a **static configuration** approach:
+
 - **Config File**: `lib/ai-models-config.ts` is the single source of truth
 - **API Routes**: Each model has its own route at `app/api/generate/{provider}/{model-name}/route.ts`
 - **Database**: Only stores `aiModelId` (string) and `creditsCost` for analytics
@@ -20,21 +21,22 @@ Edit `lib/ai-models-config.ts` and add a new model to the `AI_MODELS` object:
 export const AI_MODELS: Record<string, AIModelConfig> = {
   // Existing models...
 
-  'dall-e-3': {                          // Unique ID (used in database)
-    id: 'dall-e-3',                      // Same as key
-    provider: 'openai',                  // Company name (lowercase)
-    displayName: 'DALL-E 3',             // User-friendly name
-    description: 'OpenAI\'s most advanced image generation model',
-    creditCost: 15,                      // Credits per generation
-    isActive: true,                      // Show in UI?
-    apiPath: 'openai/dall-e-3',          // API route path
+  'dall-e-3': {
+    // Unique ID (used in database)
+    id: 'dall-e-3', // Same as key
+    provider: 'openai', // Company name (lowercase)
+    displayName: 'DALL-E 3', // User-friendly name
+    description: "OpenAI's most advanced image generation model",
+    creditCost: 15, // Credits per generation
+    isActive: true, // Show in UI?
+    apiPath: 'openai/dall-e-3', // API route path
     capabilities: {
-      aspectRatios: ['1:1', '16:9'],     // Supported aspect ratios
-      resolutions: ['1K'],                // Supported resolutions
+      aspectRatios: ['1:1', '16:9'], // Supported aspect ratios
+      resolutions: ['1K'], // Supported resolutions
       features: {
-        supportsReferenceImage: false,   // Can use reference images?
-        supportsModelTraining: false,    // Can use trained models?
-        maxImageCount: 1,                // Max images per generation
+        supportsReferenceImage: false, // Can use reference images?
+        supportsModelTraining: false, // Can use trained models?
+        maxImageCount: 1, // Max images per generation
       },
     },
   },
@@ -189,12 +191,14 @@ ANTHROPIC_API_KEY=sk-ant-...
 ### Google Gemini Models (Already Implemented)
 
 See these files for reference:
+
 - `app/api/generate/google/gemini-3-pro-image/route.ts`
 - `app/api/generate/google/gemini-2.5-flash-image/route.ts`
 
 ### Adding a Replicate Model
 
 1. **Config** (`lib/ai-models-config.ts`):
+
 ```typescript
 'flux-pro': {
   id: 'flux-pro',
@@ -217,6 +221,7 @@ See these files for reference:
 ```
 
 2. **Route** (`app/api/generate/replicate/flux-pro/route.ts`):
+
 ```typescript
 import Replicate from 'replicate';
 import { getModelById } from '@/lib/ai-models-config';
@@ -227,15 +232,12 @@ const replicate = new Replicate({
 
 // Inside POST handler:
 const aiModel = getModelById(aiModelId);
-const output = await replicate.run(
-  "black-forest-labs/flux-pro",
-  {
-    input: {
-      prompt: prompt,
-      aspect_ratio: aspectRatio,
-    }
-  }
-);
+const output = await replicate.run('black-forest-labs/flux-pro', {
+  input: {
+    prompt: prompt,
+    aspect_ratio: aspectRatio,
+  },
+});
 ```
 
 3. **Install**: `npm install replicate`
@@ -243,12 +245,14 @@ const output = await replicate.run(
 ## Important Notes
 
 ### Static Configuration
+
 - All model configs are in `lib/ai-models-config.ts`
 - Changes require code deployment
 - No database seeding needed
 - Easy to version control and review
 
 ### Credit System
+
 - Each model has a `creditCost` - deducted per generation
 - Credits are checked BEFORE generation
 - Credits are deducted AFTER successful generation
@@ -256,24 +260,28 @@ const output = await replicate.run(
 - `creditsCost` is saved in Generation table for historical tracking
 
 ### Model IDs
+
 - Use kebab-case: `gemini-3-pro`, `dall-e-3`, `flux-pro`
 - Must be unique across all providers
 - Stored in database for analytics
 - Cannot be changed once in use (would break historical data)
 
 ### API Path Convention
+
 - Pattern: `{provider}/{model-name}`
 - Always lowercase with hyphens
 - Must match folder structure exactly
 - Example: `google/gemini-3-pro-image`
 
 ### Model Capabilities
+
 - Define supported `aspectRatios` and `resolutions` in capabilities
 - `supportsReferenceImage`: Can the model use reference images?
 - `supportsModelTraining`: Can it use your trained models?
 - `maxImageCount`: Maximum images per generation
 
 ### Error Handling
+
 - Always check authentication first
 - Validate all inputs
 - Check credits before API calls
@@ -281,6 +289,7 @@ const output = await replicate.run(
 - Return meaningful error messages
 
 ### File Uploads
+
 - Use `uploadToR2()` helper from `@/lib/r2-upload`
 - Supported: images from base64, URLs, or File objects
 - Always upload to 'generated' folder
@@ -288,12 +297,14 @@ const output = await replicate.run(
 ## Analytics & Historical Data
 
 Even with static config, you can still track:
+
 - Which models are most popular (query `aiModelId` in generations)
 - Revenue per model (sum `creditsCost` by `aiModelId`)
 - Cost trends over time (see how pricing changes affect usage)
 - Model switching patterns
 
 Example query:
+
 ```sql
 SELECT aiModelId, COUNT(*), SUM(creditsCost) as total_credits
 FROM generation
@@ -303,6 +314,7 @@ GROUP BY aiModelId;
 ## Updating Model Pricing
 
 When you update pricing in the config:
+
 1. Edit `creditCost` in `lib/ai-models-config.ts`
 2. Deploy code
 3. New generations will use new pricing
@@ -311,20 +323,24 @@ When you update pricing in the config:
 ## Troubleshooting
 
 **Model not showing in dropdown:**
+
 - Check if `isActive: true` in config
 - Check browser console for errors
 - Restart dev server
 
 **Generation fails:**
+
 - Check API key in environment variables
 - Check console logs for specific errors
 - Verify model capabilities match what you're requesting
 
 **Credits not deducting:**
+
 - Make sure you're calling `prisma.user.update()` after successful generation
 - Check that `creditsCost` is saved in Generation record
 
 **Wrong API path:**
+
 - Verify `apiPath` in config matches folder structure exactly
 - Check that route file is at `app/api/generate/{apiPath}/route.ts`
 
@@ -340,6 +356,7 @@ When you update pricing in the config:
 ## Future Considerations
 
 If you need dynamic pricing or per-user access control, you can:
+
 1. Keep config file for model definitions
 2. Add override tables in database
 3. Check database first, fall back to config

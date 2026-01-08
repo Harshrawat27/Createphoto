@@ -17,7 +17,7 @@ export default function LoginPage() {
               <Sparkles className='w-5 h-5 text-primary' />
             </div>
             <span className='font-heading text-xl font-bold tracking-tight'>
-              PhotoCreate
+              PicLoreAI
             </span>
           </Link>
           <ThemeToggle />
@@ -88,7 +88,7 @@ export default function LoginPage() {
             {/* Benefits List */}
             <div className='mt-8 pt-6 border-t border-border'>
               <p className='text-xs text-muted-foreground mb-3 font-medium'>
-                What you get with PhotoCreate:
+                What you get with PicLoreAI:
               </p>
               <ul className='space-y-2 text-sm text-muted-foreground'>
                 <li className='flex items-start gap-2'>
@@ -113,10 +113,7 @@ export default function LoginPage() {
             {/* Privacy Note */}
             <p className='text-xs text-muted-foreground text-center mt-6'>
               By signing in, you agree to our{' '}
-              <Link
-                href='/privacy'
-                className='text-primary hover:underline'
-              >
+              <Link href='/privacy' className='text-primary hover:underline'>
                 Privacy Policy
               </Link>
             </p>
@@ -124,7 +121,7 @@ export default function LoginPage() {
 
           {/* New User */}
           <p className='text-center text-sm text-muted-foreground mt-6'>
-            New to PhotoCreate?{' '}
+            New to PicLoreAI?{' '}
             <Link href='/' className='text-primary hover:underline'>
               Learn more
             </Link>
@@ -135,7 +132,7 @@ export default function LoginPage() {
       {/* Footer */}
       <footer className='border-t px-4 md:px-8 py-6 text-center mt-auto'>
         <p className='text-xs text-muted-foreground mb-2'>
-          © {new Date().getFullYear()} PhotoCreate. All rights reserved.
+          © {new Date().getFullYear()} PicLoreAI. All rights reserved.
         </p>
         <div className='flex justify-center gap-4 text-xs'>
           <Link
