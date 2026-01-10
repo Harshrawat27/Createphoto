@@ -157,11 +157,11 @@ export default function GalleryPage() {
               All your generated images in one place
             </p>
           </div>
-          <div className='flex gap-2'>
+          {/* <div className='flex gap-2'>
             <button className='px-4 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-secondary/50 transition-colors'>
               Clear All
             </button>
-          </div>
+          </div> */}
         </div>
 
         {loading ? (

@@ -72,14 +72,14 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
             Images generated in this session
           </p>
         </div>
-        <div className='flex gap-2'>
+        {/* <div className='flex gap-2'>
           <button
             onClick={() => setGeneratedImages([])}
             className='text-sm text-muted-foreground hover:text-foreground'
           >
             Clear All
           </button>
-        </div>
+        </div> */}
       </div>
 
       {generatedImages.length === 0 ? (
