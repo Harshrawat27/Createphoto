@@ -58,7 +58,14 @@ export default function GalleryPage() {
 
   const handleDownload = async (imageUrl: string, imageId: string) => {
     try {
-      const response = await fetch(imageUrl);
+      // Use our API proxy to avoid CORS issues
+      const proxyUrl = `/api/download?url=${encodeURIComponent(imageUrl)}`;
+      const response = await fetch(proxyUrl);
+
+      if (!response.ok) {
+        throw new Error('Failed to download image');
+      }
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface GeneratedImage {
   id: string;
@@ -31,6 +32,32 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
       setGeneratedImages((prev) => [...newImages, ...prev]);
     }
   }, [newImages]);
+
+  const handleDownload = async (imageUrl: string, imageId: string) => {
+    try {
+      // Use our API proxy to avoid CORS issues
+      const proxyUrl = `/api/download?url=${encodeURIComponent(imageUrl)}`;
+      const response = await fetch(proxyUrl);
+
+      if (!response.ok) {
+        throw new Error('Failed to download image');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `generated-${imageId}.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Image downloaded successfully');
+    } catch (error) {
+      console.error('Failed to download image:', error);
+      toast.error('Failed to download image');
+    }
+  };
 
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index);
@@ -126,6 +153,10 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
                   {/* <p className="text-white text-xs line-clamp-2 mb-3 opacity-90">{img.prompt}</p> */}
                   <div className='flex gap-2'>
                     <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownload(img.url, img.id);
+                      }}
                       className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
                       title='Download'
                     >
