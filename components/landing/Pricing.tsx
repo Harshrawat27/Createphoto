@@ -1,67 +1,141 @@
+"use client";
+
 import { Check, Sparkles, Zap, Crown } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const tiers = [
   {
-    name: "Starter",
-    price: "$19",
+    name: "Free",
+    price: "$0",
     description: "Perfect for individuals wanting to try AI photography.",
     features: [
-      "1 Custom AI Model",
-      "50 AI Photos / month",
+      "100 Credits",
       "Standard Resolution (2K)",
       "Basic Styles Pack",
-      "Commercial Usage License"
+      "Watermarked Images",
+      "Community Support"
     ],
-    cta: "Start Creating",
+    cta: "Get Started Free",
     icon: Sparkles,
     highlighted: false,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500/20"
+    borderColor: "border-blue-500/20",
+    productId: null,
+    plan: "FREE"
   },
   {
-    name: "Professional",
-    price: "$49",
-    description: "For influencers and creators needing consistent content.",
+    name: "Pro",
+    price: "$8",
+    description: "For creators needing more power and flexibility.",
     features: [
-      "3 Custom AI Models",
-      "500 AI Photos / month",
+      "500 Credits / month",
       "High Resolution (4K)",
       "Priority Processing",
-      "Virtual Try-On Access",
-      "Advanced Style Controls"
+      "No Watermarks",
+      "Advanced Style Controls",
+      "Priority Support"
     ],
-    cta: "Go Professional",
+    cta: "Upgrade to Pro",
     icon: Zap,
     highlighted: true,
     color: "text-primary",
     bgColor: "bg-primary/10",
-    borderColor: "border-primary"
+    borderColor: "border-primary",
+    productId: process.env.NEXT_PUBLIC_DODO_PRO_PRODUCT_ID,
+    plan: "PRO"
   },
   {
-    name: "Agency",
-    price: "$199",
-    description: "Power your agency with unlimited creative possibilities.",
+    name: "Ultra",
+    price: "$16",
+    description: "Maximum power for professional creators and agencies.",
     features: [
-      "10 Custom AI Models",
-      "Unlimited AI Photos",
+      "1500 Credits / month",
       "Ultra High Res (8K)",
-      "Instant Processing Queue",
+      "Instant Processing",
       "API Access",
+      "Custom Models",
       "Dedicated Support",
-      "White-label Options"
+      "Commercial License"
     ],
-    cta: "Contact Sales",
+    cta: "Go Ultra",
     icon: Crown,
     highlighted: false,
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
-    borderColor: "border-purple-500/20"
+    borderColor: "border-purple-500/20",
+    productId: process.env.NEXT_PUBLIC_DODO_ULTRA_PRODUCT_ID,
+    plan: "ULTRA"
   }
 ];
 
 export function Pricing() {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    fetch("/api/auth/get-session")
+      .then((res) => res.json())
+      .then((data) => {
+        setIsAuthenticated(!!data.session);
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+      });
+  }, []);
+
+  const handlePlanClick = async (tier: typeof tiers[0]) => {
+    // Free plan - redirect to dashboard or login
+    if (tier.plan === "FREE") {
+      if (isAuthenticated) {
+        router.push("/dashboard");
+      } else {
+        router.push("/login");
+      }
+      return;
+    }
+
+    // Paid plans - check auth first
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    // If authenticated and paid plan, initiate checkout
+    if (!tier.productId) {
+      toast.error("Product ID not configured");
+      return;
+    }
+
+    setLoading(tier.plan);
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId: tier.productId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      toast.error("Failed to start checkout. Please try again.");
+      setLoading(null);
+    }
+  };
+
   return (
     <section id="pricing" className="py-24 relative overflow-hidden">
       {/* Background gradients */}
@@ -77,12 +151,12 @@ export function Pricing() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4 items-stretch">
           {tiers.map((tier) => (
-            <div 
+            <div
               key={tier.name}
               className={`
                 relative rounded-2xl p-8 border transition-all duration-300 flex flex-col
-                ${tier.highlighted 
-                  ? "bg-card shadow-2xl ring-2 ring-primary border-primary z-10 md:scale-110 my-8 md:my-0" 
+                ${tier.highlighted
+                  ? "bg-card shadow-2xl ring-2 ring-primary border-primary z-10 md:scale-110 my-8 md:my-0"
                   : "bg-card/50 backdrop-blur border-border hover:border-primary/50 md:my-4"
                 }
               `}
@@ -116,17 +190,19 @@ export function Pricing() {
                   ))}
                 </ul>
 
-                <Link href="/dashboard" className="block mt-auto">
-                  <button className={`
-                    w-full py-3 rounded-xl font-bold transition-all
-                    ${tier.highlighted 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 button-highlighted-shadow" 
+                <button
+                  onClick={() => handlePlanClick(tier)}
+                  disabled={loading === tier.plan}
+                  className={`
+                    w-full py-3 rounded-xl font-bold transition-all mt-auto disabled:opacity-50 disabled:cursor-not-allowed
+                    ${tier.highlighted
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 button-highlighted-shadow"
                       : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }
-                  `}>
-                    {tier.cta}
-                  </button>
-                </Link>
+                  `}
+                >
+                  {loading === tier.plan ? "Loading..." : tier.cta}
+                </button>
               </div>
             </div>
           ))}
