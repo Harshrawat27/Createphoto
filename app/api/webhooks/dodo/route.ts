@@ -47,19 +47,14 @@ export async function POST(req: NextRequest) {
       return 'FREE';
     };
 
-    // Handle payment succeeded event
-    if (eventType === 'payment.succeeded') {
+    // Handle subscription.renewed event (this fires on initial payment and renewals)
+    if (eventType === 'subscription.renewed') {
       const metadata = eventData.metadata;
-      const productCart = eventData.product_cart || [];
+      const productId = eventData.product_id;
 
-      if (metadata && metadata.userId) {
+      if (metadata && metadata.userId && productId) {
         // Determine the plan based on the product purchased
-        let plan: 'FREE' | 'PRO' | 'ULTRA' = 'FREE';
-
-        if (productCart.length > 0) {
-          const productId = productCart[0].product_id;
-          plan = getPlanFromProductId(productId);
-        }
+        const plan = getPlanFromProductId(productId as string);
 
         // Update user plan
         await prisma.user.update({
@@ -67,31 +62,26 @@ export async function POST(req: NextRequest) {
           data: { plan },
         });
 
-        console.log(`User ${metadata.userId} upgraded to ${plan}`);
+        console.log(`User ${metadata.userId} upgraded to ${plan} (Product: ${productId})`);
       } else {
-        console.warn('No userId found in payment metadata');
+        console.warn('Missing userId or productId in subscription.renewed event');
       }
     }
 
-    // Handle subscription events
+    // Handle subscription.active event
     if (eventType === 'subscription.active') {
       const metadata = eventData.metadata;
-      const productCart = eventData.product_cart || [];
+      const productId = eventData.product_id;
 
-      if (metadata && metadata.userId) {
-        let plan: 'FREE' | 'PRO' | 'ULTRA' = 'FREE';
-
-        if (productCart.length > 0) {
-          const productId = productCart[0].product_id;
-          plan = getPlanFromProductId(productId);
-        }
+      if (metadata && metadata.userId && productId) {
+        const plan = getPlanFromProductId(productId as string);
 
         await prisma.user.update({
           where: { id: metadata.userId as string },
           data: { plan },
         });
 
-        console.log(`User ${metadata.userId} subscription activated with ${plan}`);
+        console.log(`User ${metadata.userId} subscription activated with ${plan} (Product: ${productId})`);
       }
     }
 

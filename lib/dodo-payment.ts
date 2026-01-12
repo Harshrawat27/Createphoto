@@ -22,6 +22,7 @@ export const createCheckoutSession = async (
     },
     metadata: {
       userId: userId,
+      productId: productId,
     },
     ...(process.env.NEXT_PUBLIC_APP_URL && {
       return_url: `${process.env.NEXT_PUBLIC_APP_URL}?payment=success`,
