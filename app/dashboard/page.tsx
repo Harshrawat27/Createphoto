@@ -3,8 +3,54 @@
 import Link from 'next/link';
 import { PlusCircle, Sparkles, User, ArrowRight } from 'lucide-react';
 import { CreditsDisplay } from '@/components/dashboard/CreditsDisplay';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+
+interface Model {
+  id: string;
+  name: string;
+  status: string;
+}
+
+interface Generation {
+  id: string;
+  imageUrl: string;
+  prompt: string;
+  createdAt: string;
+}
+
+interface DashboardData {
+  activeModel: Model | null;
+  totalGenerations: number;
+  recentGenerations: Generation[];
+}
 
 export default function DashboardPage() {
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
+    activeModel: null,
+    totalGenerations: 0,
+    recentGenerations: [],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch('/api/dashboard');
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className='p-8 max-w-7xl mx-auto space-y-8'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
@@ -29,9 +75,15 @@ export default function DashboardPage() {
             </div>
             <div>
               <h3 className='font-bold'>Active Model</h3>
-              <p className='text-sm text-muted-foreground'>
-                My Personal Model v1
-              </p>
+              {isLoading ? (
+                <div className='h-5 w-32 bg-secondary/20 animate-pulse rounded' />
+              ) : (
+                <p className='text-sm text-muted-foreground'>
+                  {dashboardData.activeModel
+                    ? dashboardData.activeModel.name
+                    : 'No model yet'}
+                </p>
+              )}
             </div>
           </div>
           <Link
@@ -49,7 +101,13 @@ export default function DashboardPage() {
             </div>
             <div>
               <h3 className='font-bold'>Total Generations</h3>
-              <p className='text-sm text-muted-foreground'>1,248 Images</p>
+              {isLoading ? (
+                <div className='h-5 w-24 bg-secondary/20 animate-pulse rounded' />
+              ) : (
+                <p className='text-sm text-muted-foreground'>
+                  {dashboardData.totalGenerations} Images
+                </p>
+              )}
             </div>
           </div>
           <Link
@@ -64,12 +122,33 @@ export default function DashboardPage() {
       <div>
         <h2 className='text-xl font-bold mb-4'>Recent Creations</h2>
         <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4'>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className='aspect-2/3 rounded-lg bg-secondary/20 animate-pulse'
-            />
-          ))}
+          {isLoading ? (
+            [1, 2, 3, 4, 5].map((i) => (
+              <div
+                key={i}
+                className='aspect-2/3 rounded-lg bg-secondary/20 animate-pulse'
+              />
+            ))
+          ) : dashboardData.recentGenerations.length > 0 ? (
+            dashboardData.recentGenerations.map((generation) => (
+              <Link
+                key={generation.id}
+                href={`/dashboard/gallery`}
+                className='group relative aspect-2/3 rounded-lg overflow-hidden hover:ring-2 hover:ring-primary transition-all'
+              >
+                <Image
+                  src={generation.imageUrl}
+                  alt={generation.prompt}
+                  fill
+                  className='object-cover group-hover:scale-105 transition-transform'
+                />
+              </Link>
+            ))
+          ) : (
+            <div className='col-span-full text-center py-12 text-muted-foreground'>
+              No generations yet. Start creating!
+            </div>
+          )}
         </div>
       </div>
     </div>
