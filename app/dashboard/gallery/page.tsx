@@ -186,17 +186,17 @@ export default function GalleryPage() {
             </p>
           </div>
         ) : (
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
+          <div className='columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4'>
             {generatedImages.map((img, index) => (
               <div
                 key={img.id}
-                className='group relative aspect-2/3 rounded-xl overflow-hidden bg-secondary/20 border border-border'
+                className='group relative break-inside-avoid mb-4 rounded-xl overflow-hidden bg-secondary/20 border border-border'
               >
                 {img.url ? (
                   <img
                     src={img.url}
                     alt={img.prompt || 'Generated image'}
-                    className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer'
+                    className='w-full h-auto block transition-transform duration-500 group-hover:scale-105 cursor-pointer'
                     onClick={() => openLightbox(index)}
                     onError={(e) => {
                       console.error('Image failed to load:', img.url);
@@ -205,7 +205,7 @@ export default function GalleryPage() {
                     }}
                   />
                 ) : (
-                  <div className='w-full h-full flex items-center justify-center bg-secondary'>
+                  <div className='w-full aspect-2/3 flex items-center justify-center bg-secondary'>
                     <p className='text-muted-foreground'>No image</p>
                   </div>
                 )}
