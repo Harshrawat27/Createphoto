@@ -47,7 +47,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [referenceOptions, setReferenceOptions] = useState<string[]>([]);
   const [models, setModels] = useState<Model[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<string>('none');
   const [aiModels, setAiModels] = useState<AIModel[]>([]);
   const [selectedAiModel, setSelectedAiModel] = useState<string>('');
   const [userCredits, setUserCredits] = useState(0);
@@ -70,9 +70,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         // Only show ready models
         const readyModels = data.filter((m: Model) => m.status === 'Ready');
         setModels(readyModels);
-        if (readyModels.length > 0) {
-          setSelectedModel(readyModels[0].id);
-        }
+        // Don't auto-select a model, let user choose
       }
     } catch (error) {
       console.error('Failed to fetch models:', error);
@@ -146,7 +144,8 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
     try {
       const formData = new FormData();
       formData.append('prompt', prompt);
-      formData.append('modelId', selectedModel || '');
+      // If 'none' is selected, send empty string for no model
+      formData.append('modelId', selectedModel === 'none' ? '' : selectedModel || '');
       formData.append('aiModelId', selectedAiModel);
       formData.append('aspectRatio', aspectRatio);
       formData.append('resolution', resolution);
@@ -204,7 +203,9 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
           <SelectTrigger className='bg-background' id='select-ai-model'>
             <SelectValue
               placeholder={
-                aiModels.length === 0 ? 'No AI models available' : 'Select AI model'
+                aiModels.length === 0
+                  ? 'No AI models available'
+                  : 'Select AI model'
               }
             />
           </SelectTrigger>
@@ -230,16 +231,21 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
 
       {/* Trained Model Selection */}
       <Field>
-        <FieldLabel htmlFor='select-model'>Your Trained Model (Optional)</FieldLabel>
+        <FieldLabel htmlFor='select-model'>
+          Your Trained Model (Optional)
+        </FieldLabel>
         <Select value={selectedModel} onValueChange={setSelectedModel}>
           <SelectTrigger className='bg-background' id='select-model'>
             <SelectValue
               placeholder={
-                models.length === 0 ? 'No trained models available' : 'Select a trained model'
+                models.length === 0
+                  ? 'No trained models available'
+                  : 'Select a trained model or use no model'
               }
             />
           </SelectTrigger>
           <SelectContent className='bg-background'>
+            <SelectItem value='none'>No Model (Prompt Only)</SelectItem>
             {models.map((model) => (
               <SelectItem key={model.id} value={model.id}>
                 {model.name}
@@ -460,7 +466,8 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
             {selectedAiModel &&
               aiModels.find((m) => m.id === selectedAiModel) && (
                 <span className='text-sm'>
-                  ({aiModels.find((m) => m.id === selectedAiModel)!.creditCost *
+                  (
+                  {aiModels.find((m) => m.id === selectedAiModel)!.creditCost *
                     imageCount}{' '}
                   credits)
                 </span>
