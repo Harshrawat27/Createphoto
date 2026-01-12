@@ -310,11 +310,8 @@ export default function GalleryPage() {
                 className='max-w-full max-h-[90vh] object-contain rounded-lg'
               />
 
-              {/* Image Info & Actions */}
+              {/* Image Actions */}
               <div className='absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg p-4'>
-                <p className='text-white text-sm mb-3 line-clamp-2'>
-                  {generatedImages[currentImageIndex].prompt}
-                </p>
                 <div className='flex gap-2'>
                   <button
                     onClick={() =>
