@@ -18,6 +18,7 @@ model User {
   emailVerified  Boolean
   image          String?
   credits        Int           @default(100)
+  plan           UserPlan      @default(FREE)
   createdAt      DateTime
   updatedAt      DateTime
   sessions       Session[]
@@ -108,4 +109,10 @@ model Generation {
   createdAt   DateTime @default(now())
 
   @@map("generation")
+}
+
+enum UserPlan {
+  FREE
+  PRO
+  ULTRA
 }
