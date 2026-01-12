@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { Sparkles, LogOut, User } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { useSession, authClient } from '@/lib/auth-client';
 
 export function Navbar() {
@@ -14,8 +15,13 @@ export function Navbar() {
         <div className='flex justify-between items-center h-16'>
           <div className='flex items-center gap-2'>
             <Link href='/' className='flex items-center gap-2 group'>
-              <div className='bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors'>
-                <Sparkles className='w-5 h-5 text-primary' />
+              <div className='relative w-12 h-12 group-hover:opacity-90 transition-opacity'>
+                <Image
+                  src='/logo.png'
+                  alt='PicLoreAI Logo'
+                  fill
+                  className='object-contain'
+                />
               </div>
               <span className='font-heading text-xl font-bold tracking-tight'>
                 PicLoreAI

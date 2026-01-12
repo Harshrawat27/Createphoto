@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Sparkles, Twitter, Github, Linkedin } from 'lucide-react';
+import Image from 'next/image';
+import { Twitter, Github, Linkedin } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -8,7 +9,14 @@ export function Footer() {
         <div className='grid grid-cols-1 md:grid-cols-4 gap-12 mb-12'>
           <div className='col-span-1 md:col-span-1 space-y-4'>
             <Link href='/' className='flex items-center gap-2'>
-              <Sparkles className='w-6 h-6 text-primary' />
+              <div className='relative w-12 h-12'>
+                <Image
+                  src='/logo.png'
+                  alt='PicLoreAI Logo'
+                  fill
+                  className='object-contain'
+                />
+              </div>
               <span className='font-heading text-xl font-bold'>PicLoreAI</span>
             </Link>
             <p className='text-muted-foreground text-sm leading-relaxed'>

@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   title: 'PicLoreAI - AI Photo Model Generator',
   description:
     'Upload your selfies, create personalized AI models, and generate stunning photos with AI',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'PicLoreAI - AI Photo Model Generator',
     description:

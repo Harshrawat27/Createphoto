@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
@@ -9,7 +10,6 @@ import {
   Image as ImageIcon,
   Settings,
   LogOut,
-  Sparkles,
   User,
 } from 'lucide-react';
 
@@ -52,10 +52,13 @@ export function Sidebar() {
     <div className='space-y-4 py-4 flex flex-col h-full bg-secondary/30 text-secondary-foreground border-r border-border'>
       <div className='px-3 py-2 flex-1'>
         <Link href='/dashboard' className='flex items-center pl-3 mb-14'>
-          <div className='relative w-8 h-8 mr-4'>
-            <div className='bg-primary/10 p-1.5 rounded-lg'>
-              <Sparkles className='w-5 h-5 text-primary' />
-            </div>
+          <div className='relative w-12 h-12 mr-4'>
+            <Image
+              src='/logo.png'
+              alt='PicLoreAI Logo'
+              fill
+              className='object-contain'
+            />
           </div>
           <h1 className='text-xl font-heading font-bold'>PicLoreAI</h1>
         </Link>
