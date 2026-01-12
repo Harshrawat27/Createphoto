@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { authClient } from '@/lib/auth-client';
 import {
   LayoutDashboard,
   PlusCircle,
@@ -83,7 +84,18 @@ export function Sidebar() {
         </div>
       </div>
       <div className='px-3 py-2'>
-        <button className='text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-red-500 hover:bg-red-500/10 rounded-lg transition text-muted-foreground'>
+        <button
+          onClick={async () => {
+            await authClient.signOut({
+              fetchOptions: {
+                onSuccess: () => {
+                  window.location.href = '/';
+                },
+              },
+            });
+          }}
+          className='text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-red-500 hover:bg-red-500/10 rounded-lg transition text-muted-foreground'
+        >
           <div className='flex items-center flex-1'>
             <LogOut className='h-5 w-5 mr-3' />
             Sign Out
