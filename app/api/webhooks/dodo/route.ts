@@ -56,13 +56,24 @@ export async function POST(req: NextRequest) {
         // Determine the plan based on the product purchased
         const plan = getPlanFromProductId(productId as string);
 
-        // Update user plan
+        // Determine credits based on plan
+        let credits = 100; // Default FREE credits
+        if (plan === 'PRO') {
+          credits = 200;
+        } else if (plan === 'ULTRA') {
+          credits = 400;
+        }
+
+        // Update user plan and credits
         await prisma.user.update({
           where: { id: metadata.userId as string },
-          data: { plan },
+          data: {
+            plan,
+            credits
+          },
         });
 
-        console.log(`User ${metadata.userId} upgraded to ${plan} (Product: ${productId})`);
+        console.log(`User ${metadata.userId} upgraded to ${plan} with ${credits} credits (Product: ${productId})`);
       } else {
         console.warn('Missing userId or productId in subscription.renewed event');
       }
