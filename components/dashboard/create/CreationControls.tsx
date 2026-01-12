@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Upload, ImageIcon, Wand2, RefreshCw, X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Field, FieldLabel } from '@/components/ui/field';
 import {
   Select,
@@ -96,6 +97,16 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (3MB = 3 * 1024 * 1024 bytes)
+      const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+
+      if (file.size > maxSize) {
+        toast.error('Image size exceeds 3MB limit');
+        // Reset the input
+        e.target.value = '';
+        return;
+      }
+
       const url = URL.createObjectURL(file);
       setSelectedImage(url);
       setSelectedImageFile(file);
@@ -145,7 +156,10 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       const formData = new FormData();
       formData.append('prompt', prompt);
       // If 'none' is selected, send empty string for no model
-      formData.append('modelId', selectedModel === 'none' ? '' : selectedModel || '');
+      formData.append(
+        'modelId',
+        selectedModel === 'none' ? '' : selectedModel || ''
+      );
       formData.append('aiModelId', selectedAiModel);
       formData.append('aspectRatio', aspectRatio);
       formData.append('resolution', resolution);

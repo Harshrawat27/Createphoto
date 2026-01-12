@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CreationControls } from '@/components/dashboard/create/CreationControls';
 import { ResultsGallery } from '@/components/dashboard/create/ResultsGallery';
+import { Toaster } from '@/components/ui/sonner';
 
 export default function CreatePage() {
   const [newImages, setNewImages] = useState<any[]>([]);
@@ -12,16 +13,19 @@ export default function CreatePage() {
   };
 
   return (
-    <div className='flex h-[calc(100vh-65px)] overflow-hidden'>
-      {/* Left Panel: Controls */}
-      <div className='w-full md:w-100 lg:w-100 border-r border-border bg-card h-full shrink-0'>
-        <CreationControls onGenerate={handleGenerate} />
-      </div>
+    <>
+      <div className='flex h-[calc(100vh-65px)] overflow-hidden'>
+        {/* Left Panel: Controls */}
+        <div className='w-full md:w-100 lg:w-100 border-r border-border bg-card h-full shrink-0'>
+          <CreationControls onGenerate={handleGenerate} />
+        </div>
 
-      {/* Right Panel: Results */}
-      <div className='flex-1 bg-secondary/10 h-full'>
-        <ResultsGallery newImages={newImages} />
+        {/* Right Panel: Results */}
+        <div className='flex-1 bg-secondary/10 h-full'>
+          <ResultsGallery newImages={newImages} />
+        </div>
       </div>
-    </div>
+      <Toaster />
+    </>
   );
 }
