@@ -29,6 +29,7 @@ export async function GET() {
         image: true,
         credits: true,
         plan: true,
+        subscriptionId: true,
         createdAt: true,
       },
     });

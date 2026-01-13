@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     if (eventType === 'subscription.renewed') {
       const metadata = eventData.metadata;
       const productId = eventData.product_id;
+      const subscriptionId = eventData.subscription_id;
 
       if (metadata && metadata.userId && productId) {
         // Determine the plan based on the product purchased
@@ -64,16 +65,17 @@ export async function POST(req: NextRequest) {
           credits = 400;
         }
 
-        // Update user plan and credits
+        // Update user plan, credits, and subscription ID
         await prisma.user.update({
           where: { id: metadata.userId as string },
           data: {
             plan,
-            credits
+            credits,
+            subscriptionId: subscriptionId as string
           },
         });
 
-        console.log(`User ${metadata.userId} upgraded to ${plan} with ${credits} credits (Product: ${productId})`);
+        console.log(`User ${metadata.userId} upgraded to ${plan} with ${credits} credits (Product: ${productId}, Subscription: ${subscriptionId})`);
       } else {
         console.warn('Missing userId or productId in subscription.renewed event');
       }
@@ -105,10 +107,13 @@ export async function POST(req: NextRequest) {
       if (metadata && metadata.userId) {
         await prisma.user.update({
           where: { id: metadata.userId as string },
-          data: { plan: 'FREE' },
+          data: {
+            plan: 'FREE',
+            subscriptionId: null
+          },
         });
 
-        console.log(`User ${metadata.userId} downgraded to FREE`);
+        console.log(`User ${metadata.userId} downgraded to FREE and subscription ID cleared`);
       }
     }
 

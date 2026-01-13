@@ -19,6 +19,7 @@ model User {
   image          String?
   credits        Int           @default(100)
   plan           UserPlan      @default(FREE)
+  subscriptionId String?
   createdAt      DateTime
   updatedAt      DateTime
   sessions       Session[]

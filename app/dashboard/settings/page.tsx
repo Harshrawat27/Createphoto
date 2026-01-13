@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Mail, CreditCard, Crown, Calendar, Loader2 } from 'lucide-react';
+import { User, Mail, CreditCard, Crown, Calendar, Loader2, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 
 interface UserSettings {
   id: string;
@@ -11,12 +13,14 @@ interface UserSettings {
   image: string | null;
   credits: number;
   plan: 'FREE' | 'PRO' | 'ULTRA';
+  subscriptionId: string | null;
   createdAt: string;
 }
 
 export default function SettingsPage() {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
     fetchUserSettings();
@@ -33,6 +37,34 @@ export default function SettingsPage() {
       console.error('Failed to fetch user settings:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!confirm('Are you sure you want to cancel your subscription? Your subscription will remain active until the end of your current billing period.')) {
+      return;
+    }
+
+    setIsCancelling(true);
+    try {
+      const response = await fetch('/api/cancel-subscription', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast.success(data.message || 'Subscription cancelled successfully');
+        // Refresh user settings to reflect the change
+        await fetchUserSettings();
+      } else {
+        const errorText = await response.text();
+        toast.error(`Failed to cancel subscription: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error cancelling subscription:', error);
+      toast.error('Failed to cancel subscription. Please try again.');
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -176,6 +208,25 @@ export default function SettingsPage() {
               Upgrade to PRO or ULTRA for more features
             </p>
           )}
+          {userSettings.plan !== 'FREE' && userSettings.subscriptionId && (
+            <button
+              onClick={handleCancelSubscription}
+              disabled={isCancelling}
+              className='mt-4 flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+            >
+              {isCancelling ? (
+                <>
+                  <Loader2 className='w-4 h-4 animate-spin' />
+                  Cancelling...
+                </>
+              ) : (
+                <>
+                  <AlertCircle className='w-4 h-4' />
+                  Cancel Subscription
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 
@@ -285,6 +336,7 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+      <Toaster />
     </div>
   );
 }
