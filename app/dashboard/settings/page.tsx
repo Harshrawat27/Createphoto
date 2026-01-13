@@ -67,6 +67,7 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [upgradingPlan, setUpgradingPlan] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,11 +89,9 @@ export default function SettingsPage() {
   };
 
   const handleCancelSubscription = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription? Your subscription will remain active until the end of your current billing period.')) {
-      return;
-    }
-
     setIsCancelling(true);
+    setCancelDialogOpen(false);
+
     try {
       const response = await fetch('/api/cancel-subscription', {
         method: 'POST',
@@ -100,7 +99,7 @@ export default function SettingsPage() {
 
       if (response.ok) {
         const data = await response.json();
-        toast.success(data.message || 'Subscription cancelled successfully');
+        toast.success('Your plan has been downgraded to FREE. You can still use your remaining credits!');
         // Refresh user settings to reflect the change
         await fetchUserSettings();
       } else {
@@ -355,23 +354,57 @@ export default function SettingsPage() {
             </Dialog>
           )}
           {userSettings.plan !== 'FREE' && userSettings.subscriptionId && (
-            <button
-              onClick={handleCancelSubscription}
-              disabled={isCancelling}
-              className='mt-4 flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-            >
-              {isCancelling ? (
-                <>
-                  <Loader2 className='w-4 h-4 animate-spin' />
-                  Cancelling...
-                </>
-              ) : (
-                <>
-                  <AlertCircle className='w-4 h-4' />
-                  Cancel Subscription
-                </>
-              )}
-            </button>
+            <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+              <DialogTrigger asChild>
+                <button
+                  disabled={isCancelling}
+                  className='mt-4 flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  {isCancelling ? (
+                    <>
+                      <Loader2 className='w-4 h-4 animate-spin' />
+                      Cancelling...
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className='w-4 h-4' />
+                      Cancel Subscription
+                    </>
+                  )}
+                </button>
+              </DialogTrigger>
+              <DialogContent className='max-w-md'>
+                <DialogHeader>
+                  <DialogTitle className='text-xl'>Cancel Subscription</DialogTitle>
+                  <DialogDescription className='text-left pt-4'>
+                    We'll downgrade your plan to FREE instantly, but don't worry - you'll be able to use all your remaining credits even after cancellation.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className='flex flex-col gap-3 mt-4'>
+                  <button
+                    onClick={handleCancelSubscription}
+                    disabled={isCancelling}
+                    className='w-full py-3 px-4 rounded-lg font-medium bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    {isCancelling ? (
+                      <span className='flex items-center justify-center gap-2'>
+                        <Loader2 className='w-4 h-4 animate-spin' />
+                        Processing...
+                      </span>
+                    ) : (
+                      'Yes, Cancel My Subscription'
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setCancelDialogOpen(false)}
+                    disabled={isCancelling}
+                    className='w-full py-3 px-4 rounded-lg font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors disabled:opacity-50'
+                  >
+                    Keep My Subscription
+                  </button>
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
         </div>
       </div>

@@ -25,7 +25,7 @@ export const createCheckoutSession = async (
       productId: productId,
     },
     ...(process.env.NEXT_PUBLIC_APP_URL && {
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}?payment=success`,
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/create?payment=success`,
     }),
   });
 
