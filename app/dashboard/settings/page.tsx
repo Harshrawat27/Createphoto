@@ -38,7 +38,7 @@ interface UserSettings {
 const upgradePlans = [
   {
     name: 'Pro',
-    price: '$8',
+    price: '$10',
     period: '/month',
     icon: Zap,
     color: 'text-primary',

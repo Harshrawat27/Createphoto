@@ -28,7 +28,7 @@ const tiers = [
   },
   {
     name: 'Pro',
-    price: '$8',
+    price: '$10',
     description: 'For creators needing more power and flexibility.',
     features: [
       '500 Credits / month',
