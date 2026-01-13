@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Camera, User } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
 export function Hero() {
   return (
@@ -49,34 +50,40 @@ export function Hero() {
             <div className='absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:[mask-image:linear-gradient(0deg,rgba(255,255,255,0.1),rgba(255,255,255,0.5))]' />
 
             <div className='absolute inset-0 flex items-center justify-center'>
-              <div className='grid grid-cols-3 gap-4 md:gap-8 p-8 w-full h-full items-center'>
-                {/* Card 1: Upload */}
-                <div className='bg-background/80 backdrop-blur rounded-xl p-6 border shadow-lg flex flex-col items-center gap-4 transform rotate-[-6deg] translate-y-4 transition-transform group-hover:rotate-0 group-hover:translate-y-0 duration-500'>
-                  <div className='w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400'>
-                    <Camera className='w-8 h-8' />
+              <div className='grid grid-cols-3 gap-4 md:gap-8 p-4 md:p-8 w-full h-full items-center'>
+                {/* Card 1: Upload Selfies */}
+                <div className='bg-background/80 backdrop-blur rounded-xl p-4 md:p-6 border shadow-lg flex flex-col items-center gap-3 md:gap-4 transform rotate-[-6deg] translate-y-4 transition-transform group-hover:rotate-0 group-hover:translate-y-0 duration-500'>
+                  <div className='relative w-full aspect-[3/4] rounded-lg overflow-hidden'>
+                    <Image
+                      src='/selfie-image.png'
+                      alt='Upload Selfies'
+                      fill
+                      className='object-cover'
+                    />
                   </div>
                   <div className='text-center'>
-                    <p className='font-bold'>Upload Selfies</p>
-                    <p className='text-xs text-muted-foreground mt-1'>
-                      3-4 photos
-                    </p>
+                    <p className='font-bold text-sm md:text-base'>Upload Selfies</p>
                   </div>
                 </div>
 
                 {/* Arrow */}
-                <div className='hidden md:flex justify-center text-muted-foreground/30'>
+                <div className='hidden md:flex justify-center text-primary'>
                   <ArrowRight className='w-12 h-12' />
                 </div>
 
-                {/* Card 2: Result */}
-                <div className='col-span-2 md:col-span-1 bg-background/80 backdrop-blur rounded-xl p-6 border shadow-lg flex flex-col items-center gap-4 transform rotate-[6deg] translate-y-4 transition-transform group-hover:rotate-0 group-hover:translate-y-0 duration-500'>
-                  <div className='w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400'>
-                    <User className='w-8 h-8' />
+                {/* Card 2: Generated Result */}
+                <div className='col-span-2 md:col-span-1 bg-background/80 backdrop-blur rounded-xl p-4 md:p-6 border shadow-lg flex flex-col items-center gap-3 md:gap-4 transform rotate-[6deg] translate-y-4 transition-transform group-hover:rotate-0 group-hover:translate-y-0 duration-500'>
+                  <div className='relative w-full aspect-[3/4] rounded-lg overflow-hidden'>
+                    <Image
+                      src='/generated.jpg'
+                      alt='Studio level images in 4K'
+                      fill
+                      className='object-cover'
+                    />
                   </div>
                   <div className='text-center'>
-                    <p className='font-bold'>AI Model Ready</p>
-                    <p className='text-xs text-muted-foreground mt-1'>
-                      Generate unlimited photos
+                    <p className='font-bold text-sm md:text-base'>
+                      Get studio level images in 4K
                     </p>
                   </div>
                 </div>
