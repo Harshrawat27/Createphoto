@@ -1,10 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Mail, CreditCard, Crown, Calendar, Loader2, AlertCircle } from 'lucide-react';
+import { User, Mail, CreditCard, Crown, Calendar, Loader2, AlertCircle, Zap, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface UserSettings {
   id: string;
@@ -17,10 +25,49 @@ interface UserSettings {
   createdAt: string;
 }
 
+const upgradePlans = [
+  {
+    name: 'Pro',
+    price: '$8',
+    period: '/month',
+    icon: Zap,
+    color: 'text-primary',
+    bgColor: 'bg-primary/10',
+    borderColor: 'border-primary',
+    productId: process.env.NEXT_PUBLIC_DODO_PRO_PRODUCT_ID,
+    features: [
+      '200 Credits / month',
+      'High Resolution (4K)',
+      'Priority Processing',
+      'Priority Support',
+    ],
+  },
+  {
+    name: 'Ultra',
+    price: '$16',
+    period: '/month',
+    icon: Crown,
+    color: 'text-purple-500',
+    bgColor: 'bg-purple-500/10',
+    borderColor: 'border-purple-500/20',
+    productId: process.env.NEXT_PUBLIC_DODO_ULTRA_PRODUCT_ID,
+    features: [
+      '400 Credits / month',
+      'Ultra High Resolution (8K)',
+      'Instant Processing',
+      'API Access',
+      'Custom Models',
+      'Dedicated Support (24/7)',
+    ],
+  },
+];
+
 export default function SettingsPage() {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+  const [upgradingPlan, setUpgradingPlan] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUserSettings();
@@ -65,6 +112,41 @@ export default function SettingsPage() {
       toast.error('Failed to cancel subscription. Please try again.');
     } finally {
       setIsCancelling(false);
+    }
+  };
+
+  const handleUpgrade = async (productId: string | undefined, planName: string) => {
+    if (!productId) {
+      toast.error('Product ID not configured');
+      return;
+    }
+
+    setUpgradingPlan(planName);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          toast.error('Failed to get checkout URL');
+        }
+      } else {
+        const errorText = await response.text();
+        toast.error(`Failed to initiate checkout: ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error initiating checkout:', error);
+      toast.error('Failed to start upgrade process. Please try again.');
+    } finally {
+      setUpgradingPlan(null);
     }
   };
 
@@ -204,9 +286,73 @@ export default function SettingsPage() {
             </span>
           </div>
           {userSettings.plan === 'FREE' && (
-            <p className='text-xs text-muted-foreground mt-4'>
-              Upgrade to PRO or ULTRA for more features
-            </p>
+            <Dialog open={upgradeDialogOpen} onOpenChange={setUpgradeDialogOpen}>
+              <DialogTrigger asChild>
+                <button className='text-xs text-primary hover:underline mt-4 flex items-center gap-1'>
+                  <Sparkles className='w-3 h-3' />
+                  Upgrade to PRO or ULTRA for more features
+                </button>
+              </DialogTrigger>
+              <DialogContent className='max-w-4xl'>
+                <DialogHeader>
+                  <DialogTitle className='text-2xl'>Upgrade Your Plan</DialogTitle>
+                  <DialogDescription>
+                    Choose the plan that best fits your needs
+                  </DialogDescription>
+                </DialogHeader>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-4'>
+                  {upgradePlans.map((plan) => {
+                    const Icon = plan.icon;
+                    const isUpgrading = upgradingPlan === plan.name;
+                    return (
+                      <div
+                        key={plan.name}
+                        className={`relative rounded-xl border-2 ${plan.borderColor} p-6 bg-card hover:shadow-lg transition-all`}
+                      >
+                        <div className='flex items-center gap-3 mb-4'>
+                          <div className={`p-3 rounded-lg ${plan.bgColor}`}>
+                            <Icon className={`w-6 h-6 ${plan.color}`} />
+                          </div>
+                          <div>
+                            <h3 className='text-xl font-bold'>{plan.name}</h3>
+                            <div className='flex items-baseline gap-1'>
+                              <span className='text-2xl font-bold'>{plan.price}</span>
+                              <span className='text-sm text-muted-foreground'>{plan.period}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <ul className='space-y-3 mb-6'>
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className='flex items-start gap-2 text-sm'>
+                              <div className='w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0' />
+                              <span>{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <button
+                          onClick={() => handleUpgrade(plan.productId, plan.name)}
+                          disabled={isUpgrading}
+                          className={`w-full py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                            plan.name === 'Pro'
+                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                              : 'bg-purple-500 text-white hover:bg-purple-600'
+                          }`}
+                        >
+                          {isUpgrading ? (
+                            <span className='flex items-center justify-center gap-2'>
+                              <Loader2 className='w-4 h-4 animate-spin' />
+                              Processing...
+                            </span>
+                          ) : (
+                            `Upgrade to ${plan.name}`
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
           {userSettings.plan !== 'FREE' && userSettings.subscriptionId && (
             <button
