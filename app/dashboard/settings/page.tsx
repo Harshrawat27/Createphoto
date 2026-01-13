@@ -63,6 +63,7 @@ const upgradePlans = [
     productId: process.env.NEXT_PUBLIC_DODO_ULTRA_PRODUCT_ID,
     features: [
       '1000 Credits / month',
+      'High Resolution (4K)',
       'Priority Processing',
       'Priority Support',
     ],

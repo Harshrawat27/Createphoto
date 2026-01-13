@@ -10,11 +10,7 @@ const tiers = [
     name: 'Free',
     price: '$0',
     description: 'Perfect for individuals wanting to try AI photography.',
-    features: [
-      '100 Credits',
-      'High Resolution (4K)',
-      'Community Support',
-    ],
+    features: ['100 Credits', 'High Resolution (4K)', 'Community Support'],
     cta: 'Get Started Free',
     icon: Sparkles,
     highlighted: false,
@@ -49,6 +45,7 @@ const tiers = [
     description: 'Maximum power for professional creators and agencies.',
     features: [
       '1000 Credits / month',
+      'High Resolution (4K)',
       'Priority Processing',
       'Priority Support',
     ],
