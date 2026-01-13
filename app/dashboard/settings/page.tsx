@@ -46,7 +46,7 @@ const upgradePlans = [
     borderColor: 'border-primary',
     productId: process.env.NEXT_PUBLIC_DODO_PRO_PRODUCT_ID,
     features: [
-      '200 Credits / month',
+      '300 Credits / month',
       'High Resolution (4K)',
       'Priority Processing',
       'Priority Support',
@@ -62,12 +62,9 @@ const upgradePlans = [
     borderColor: 'border-purple-500/20',
     productId: process.env.NEXT_PUBLIC_DODO_ULTRA_PRODUCT_ID,
     features: [
-      '400 Credits / month',
-      'Ultra High Resolution (8K)',
-      'Instant Processing',
-      'API Access',
-      'Custom Models',
-      'Dedicated Support (24/7)',
+      '1000 Credits / month',
+      'Priority Processing',
+      'Priority Support',
     ],
   },
 ];
@@ -457,7 +454,7 @@ export default function SettingsPage() {
                 <div className='flex items-start gap-3'>
                   <div className='w-2 h-2 rounded-full bg-primary mt-2' />
                   <div>
-                    <p className='font-medium'>200 Credits per month</p>
+                    <p className='font-medium'>300 Credits per month</p>
                     <p className='text-xs text-muted-foreground'>
                       Renewed monthly
                     </p>
@@ -497,7 +494,7 @@ export default function SettingsPage() {
                 <div className='flex items-start gap-3'>
                   <div className='w-2 h-2 rounded-full bg-purple-500 mt-2' />
                   <div>
-                    <p className='font-medium'>400 Credits per month</p>
+                    <p className='font-medium'>1000 Credits per month</p>
                     <p className='text-xs text-muted-foreground'>
                       Renewed monthly
                     </p>
@@ -506,16 +503,7 @@ export default function SettingsPage() {
                 <div className='flex items-start gap-3'>
                   <div className='w-2 h-2 rounded-full bg-purple-500 mt-2' />
                   <div>
-                    <p className='font-medium'>Ultra High Resolution (8K)</p>
-                    <p className='text-xs text-muted-foreground'>
-                      Maximum quality
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-start gap-3'>
-                  <div className='w-2 h-2 rounded-full bg-purple-500 mt-2' />
-                  <div>
-                    <p className='font-medium'>Instant Processing</p>
+                    <p className='font-medium'>Priority Processing</p>
                     <p className='text-xs text-muted-foreground'>
                       Highest priority
                     </p>
@@ -524,25 +512,7 @@ export default function SettingsPage() {
                 <div className='flex items-start gap-3'>
                   <div className='w-2 h-2 rounded-full bg-purple-500 mt-2' />
                   <div>
-                    <p className='font-medium'>API Access</p>
-                    <p className='text-xs text-muted-foreground'>
-                      Developer features
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-start gap-3'>
-                  <div className='w-2 h-2 rounded-full bg-purple-500 mt-2' />
-                  <div>
-                    <p className='font-medium'>Custom Models</p>
-                    <p className='text-xs text-muted-foreground'>
-                      Unlimited training
-                    </p>
-                  </div>
-                </div>
-                <div className='flex items-start gap-3'>
-                  <div className='w-2 h-2 rounded-full bg-purple-500 mt-2' />
-                  <div>
-                    <p className='font-medium'>Dedicated Support</p>
+                    <p className='font-medium'>Priority Support</p>
                     <p className='text-xs text-muted-foreground'>
                       24/7 priority help
                     </p>

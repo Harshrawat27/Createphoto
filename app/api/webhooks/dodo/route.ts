@@ -60,9 +60,9 @@ export async function POST(req: NextRequest) {
         // Determine credits based on plan
         let credits = 100; // Default FREE credits
         if (plan === 'PRO') {
-          credits = 200;
+          credits = 300;
         } else if (plan === 'ULTRA') {
-          credits = 400;
+          credits = 1000;
         }
 
         // Update user plan, credits, and subscription ID
