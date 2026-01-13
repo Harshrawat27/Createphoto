@@ -52,11 +52,17 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   const [aiModels, setAiModels] = useState<AIModel[]>([]);
   const [selectedAiModel, setSelectedAiModel] = useState<string>('');
   const [userCredits, setUserCredits] = useState(0);
-  const [aspectRatio, setAspectRatio] = useState('9:16');
-  const [resolution, setResolution] = useState('1K');
+  const [aspectRatio, setAspectRatio] = useState('');
+  const [resolution, setResolution] = useState('');
   const [imageCount, setImageCount] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+
+  // Get current AI model's capabilities
+  const currentAiModel = aiModels.find((m) => m.id === selectedAiModel);
+  const availableAspectRatios = currentAiModel?.capabilities.aspectRatios || [];
+  const availableResolutions = currentAiModel?.capabilities.resolutions || [];
+  const maxImageCount = currentAiModel?.capabilities.features.maxImageCount || 4;
 
   useEffect(() => {
     fetchModels();
@@ -86,7 +92,15 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         setAiModels(data.models);
         setUserCredits(data.userCredits);
         if (data.models.length > 0) {
-          setSelectedAiModel(data.models[0].id);
+          const firstModel = data.models[0];
+          setSelectedAiModel(firstModel.id);
+          // Set default aspect ratio and resolution from first model
+          if (firstModel.capabilities.aspectRatios.length > 0) {
+            setAspectRatio(firstModel.capabilities.aspectRatios[0]);
+          }
+          if (firstModel.capabilities.resolutions.length > 0) {
+            setResolution(firstModel.capabilities.resolutions[0]);
+          }
         }
       }
     } catch (error) {
@@ -213,7 +227,27 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       {/* AI Model Selection */}
       <Field>
         <FieldLabel htmlFor='select-ai-model'>AI Model</FieldLabel>
-        <Select value={selectedAiModel} onValueChange={setSelectedAiModel}>
+        <Select
+          value={selectedAiModel}
+          onValueChange={(value) => {
+            setSelectedAiModel(value);
+            // Update aspect ratio, resolution, and image count to first/valid option when model changes
+            const newModel = aiModels.find((m) => m.id === value);
+            if (newModel) {
+              if (newModel.capabilities.aspectRatios.length > 0) {
+                setAspectRatio(newModel.capabilities.aspectRatios[0]);
+              }
+              if (newModel.capabilities.resolutions.length > 0) {
+                setResolution(newModel.capabilities.resolutions[0]);
+              }
+              // Reset image count if current count exceeds new model's max
+              const maxCount = newModel.capabilities.features.maxImageCount;
+              if (imageCount > maxCount) {
+                setImageCount(1);
+              }
+            }
+          }}
+        >
           <SelectTrigger className='bg-background' id='select-ai-model'>
             <SelectValue
               placeholder={
@@ -381,77 +415,60 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       <div className='grid grid-cols-2 gap-4'>
         <div className='space-y-2'>
           <label className='text-sm font-medium'>Aspect Ratio</label>
-          <div className='flex gap-2'>
-            <button
-              onClick={() => setAspectRatio('1:1')}
-              className={`flex-1 py-2 text-xs border rounded-md ${
-                aspectRatio === '1:1'
-                  ? 'bg-primary/10 border-primary text-primary'
-                  : 'hover:bg-secondary/50'
-              }`}
-            >
-              1:1
-            </button>
-            <button
-              onClick={() => setAspectRatio('9:16')}
-              className={`flex-1 py-2 text-xs border rounded-md ${
-                aspectRatio === '9:16'
-                  ? 'bg-primary/10 border-primary text-primary'
-                  : 'hover:bg-secondary/50'
-              }`}
-            >
-              9:16
-            </button>
-            <button
-              onClick={() => setAspectRatio('16:9')}
-              className={`flex-1 py-2 text-xs border rounded-md ${
-                aspectRatio === '16:9'
-                  ? 'bg-primary/10 border-primary text-primary'
-                  : 'hover:bg-secondary/50'
-              }`}
-            >
-              16:9
-            </button>
+          <div className='flex gap-2 flex-wrap'>
+            {availableAspectRatios.map((ratio) => (
+              <button
+                key={ratio}
+                onClick={() => setAspectRatio(ratio)}
+                className={`flex-1 py-2 text-xs border rounded-md ${
+                  aspectRatio === ratio
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'hover:bg-secondary/50'
+                }`}
+              >
+                {ratio}
+              </button>
+            ))}
           </div>
         </div>
         <div className='space-y-2'>
           <label className='text-sm font-medium'>Resolution</label>
-          <div className='flex gap-2'>
-            <button
-              onClick={() => setResolution('2K')}
-              className={`flex-1 py-2 text-xs border rounded-md ${
-                resolution === '2K'
-                  ? 'bg-primary/10 border-primary text-primary'
-                  : 'hover:bg-secondary/50'
-              }`}
-            >
-              2K
-            </button>
-            <button
-              onClick={() => setResolution('4K')}
-              className={`flex-1 py-2 text-xs border rounded-md ${
-                resolution === '4K'
-                  ? 'bg-primary/10 border-primary text-primary'
-                  : 'hover:bg-secondary/50'
-              }`}
-            >
-              4K
-            </button>
+          <div className='flex gap-2 flex-wrap'>
+            {availableResolutions.map((res) => (
+              <button
+                key={res}
+                onClick={() => setResolution(res)}
+                className={`flex-1 py-2 text-xs border rounded-md capitalize ${
+                  resolution === res
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'hover:bg-secondary/50'
+                }`}
+              >
+                {res}
+              </button>
+            ))}
           </div>
         </div>
         <Field>
           <FieldLabel htmlFor='image-count'>Image Count</FieldLabel>
           <Select
             value={imageCount.toString()}
-            onValueChange={(value) => setImageCount(Number(value))}
+            onValueChange={(value) => {
+              const count = Number(value);
+              if (count <= maxImageCount) {
+                setImageCount(count);
+              }
+            }}
           >
             <SelectTrigger className='bg-background' id='image-count'>
               <SelectValue />
             </SelectTrigger>
             <SelectContent className='bg-background'>
-              <SelectItem value='1'>1 Image</SelectItem>
-              <SelectItem value='2'>2 Images</SelectItem>
-              <SelectItem value='4'>4 Images</SelectItem>
+              {[1, 2, 4].filter((count) => count <= maxImageCount).map((count) => (
+                <SelectItem key={count} value={count.toString()}>
+                  {count} {count === 1 ? 'Image' : 'Images'}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </Field>

@@ -23,7 +23,7 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
     provider: 'google',
     displayName: 'Gemini 3 Pro Image',
     description: 'High-quality image generation with advanced capabilities',
-    creditCost: 10,
+    creditCost: 12,
     isActive: true,
     apiPath: 'google/gemini-3-pro-image',
     capabilities: {
@@ -46,7 +46,7 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
   //   apiPath: 'google/gemini-2.5-flash-image',
   //   capabilities: {
   //     aspectRatios: ['1:1', '9:16', '16:9'],
-  //     resolutions: ['1K', '2K'],
+  //     resolutions: ['1k', '2k'],
   //     features: {
   //       supportsReferenceImage: true,
   //       supportsModelTraining: true,
@@ -60,12 +60,12 @@ export const AI_MODELS: Record<string, AIModelConfig> = {
     displayName: 'GPT Image 1.5',
     description:
       "OpenAI's latest image generation model with reference image support",
-    creditCost: 12,
+    creditCost: 10,
     isActive: true,
     apiPath: 'openai/gpt-image-1.5',
     capabilities: {
-      aspectRatios: ['1:1', '16:9', '9:16'],
-      resolutions: ['1K', '2K', '4K'],
+      aspectRatios: ['1:1', '9:16', '16:9'],
+      resolutions: ['1k', '2k'],
       features: {
         supportsReferenceImage: true,
         supportsModelTraining: true,
