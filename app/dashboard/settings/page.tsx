@@ -1,7 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, Mail, CreditCard, Crown, Calendar, Loader2, AlertCircle, Zap, Sparkles } from 'lucide-react';
+import {
+  User,
+  Mail,
+  CreditCard,
+  Crown,
+  Calendar,
+  Loader2,
+  AlertCircle,
+  Zap,
+  Sparkles,
+} from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
@@ -44,7 +54,7 @@ const upgradePlans = [
   },
   {
     name: 'Ultra',
-    price: '$16',
+    price: '$24',
     period: '/month',
     icon: Crown,
     color: 'text-purple-500',
@@ -99,7 +109,9 @@ export default function SettingsPage() {
 
       if (response.ok) {
         const data = await response.json();
-        toast.success('Your plan has been downgraded to FREE. You can still use your remaining credits!');
+        toast.success(
+          'Your plan has been downgraded to FREE. You can still use your remaining credits!'
+        );
         // Refresh user settings to reflect the change
         await fetchUserSettings();
       } else {
@@ -114,7 +126,10 @@ export default function SettingsPage() {
     }
   };
 
-  const handleUpgrade = async (productId: string | undefined, planName: string) => {
+  const handleUpgrade = async (
+    productId: string | undefined,
+    planName: string
+  ) => {
     if (!productId) {
       toast.error('Product ID not configured');
       return;
@@ -233,9 +248,10 @@ export default function SettingsPage() {
           <div className='flex items-center gap-2 text-sm text-muted-foreground'>
             <Calendar className='w-4 h-4' />
             <span>
-              Member since {new Date(userSettings.createdAt).toLocaleDateString('en-US', {
+              Member since{' '}
+              {new Date(userSettings.createdAt).toLocaleDateString('en-US', {
                 month: 'long',
-                year: 'numeric'
+                year: 'numeric',
               })}
             </span>
           </div>
@@ -266,7 +282,11 @@ export default function SettingsPage() {
         {/* Plan Card */}
         <div className='bg-card rounded-xl border border-border p-6 shadow-sm'>
           <div className='flex items-center gap-3 mb-4'>
-            <div className={`p-3 rounded-lg ${getPlanColor(userSettings.plan).split(' ')[1]} ${getPlanColor(userSettings.plan).split(' ')[0]}`}>
+            <div
+              className={`p-3 rounded-lg ${
+                getPlanColor(userSettings.plan).split(' ')[1]
+              } ${getPlanColor(userSettings.plan).split(' ')[0]}`}
+            >
               {getPlanIcon(userSettings.plan)}
             </div>
             <div>
@@ -285,7 +305,10 @@ export default function SettingsPage() {
             </span>
           </div>
           {userSettings.plan === 'FREE' && (
-            <Dialog open={upgradeDialogOpen} onOpenChange={setUpgradeDialogOpen}>
+            <Dialog
+              open={upgradeDialogOpen}
+              onOpenChange={setUpgradeDialogOpen}
+            >
               <DialogTrigger asChild>
                 <button className='text-xs text-primary hover:underline mt-4 flex items-center gap-1'>
                   <Sparkles className='w-3 h-3' />
@@ -294,7 +317,9 @@ export default function SettingsPage() {
               </DialogTrigger>
               <DialogContent className='max-w-4xl'>
                 <DialogHeader>
-                  <DialogTitle className='text-2xl'>Upgrade Your Plan</DialogTitle>
+                  <DialogTitle className='text-2xl'>
+                    Upgrade Your Plan
+                  </DialogTitle>
                   <DialogDescription>
                     Choose the plan that best fits your needs
                   </DialogDescription>
@@ -315,21 +340,30 @@ export default function SettingsPage() {
                           <div>
                             <h3 className='text-xl font-bold'>{plan.name}</h3>
                             <div className='flex items-baseline gap-1'>
-                              <span className='text-2xl font-bold'>{plan.price}</span>
-                              <span className='text-sm text-muted-foreground'>{plan.period}</span>
+                              <span className='text-2xl font-bold'>
+                                {plan.price}
+                              </span>
+                              <span className='text-sm text-muted-foreground'>
+                                {plan.period}
+                              </span>
                             </div>
                           </div>
                         </div>
                         <ul className='space-y-3 mb-6'>
                           {plan.features.map((feature, index) => (
-                            <li key={index} className='flex items-start gap-2 text-sm'>
+                            <li
+                              key={index}
+                              className='flex items-start gap-2 text-sm'
+                            >
                               <div className='w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0' />
                               <span>{feature}</span>
                             </li>
                           ))}
                         </ul>
                         <button
-                          onClick={() => handleUpgrade(plan.productId, plan.name)}
+                          onClick={() =>
+                            handleUpgrade(plan.productId, plan.name)
+                          }
                           disabled={isUpgrading}
                           className={`w-full py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                             plan.name === 'Pro'
@@ -375,9 +409,13 @@ export default function SettingsPage() {
               </DialogTrigger>
               <DialogContent className='max-w-md'>
                 <DialogHeader>
-                  <DialogTitle className='text-xl'>Cancel Subscription</DialogTitle>
+                  <DialogTitle className='text-xl'>
+                    Cancel Subscription
+                  </DialogTitle>
                   <DialogDescription className='text-left pt-4'>
-                    We'll downgrade your plan to FREE instantly, but don't worry - you'll be able to use all your remaining credits even after cancellation.
+                    We'll downgrade your plan to FREE instantly, but don't worry
+                    - you'll be able to use all your remaining credits even
+                    after cancellation.
                   </DialogDescription>
                 </DialogHeader>
                 <div className='flex flex-col gap-3 mt-4'>
