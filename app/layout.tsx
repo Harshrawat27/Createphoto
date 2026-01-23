@@ -38,6 +38,9 @@ export const metadata: Metadata = {
       'Upload your selfies, create personalized AI models, and generate stunning photos with AI',
     images: ['/og-image-picloreai.png'],
   },
+  verification: {
+    google: 'xQnRBkS7E_WPnRSys4-YqAsUNkE7U1P78_7SrsB7Fro',
+  },
 };
 
 export default function RootLayout({

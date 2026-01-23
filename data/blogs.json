@@ -1,0 +1,341 @@
+{
+  "blogs": [
+    {
+      "id": 1,
+      "slug": "professional-headshots-without-photographer",
+      "title": "How to Get Professional Headshots Without Hiring a Photographer",
+      "description": "Learn how to get stunning professional headshots without spending $200+ on a photographer. DIY tips, AI alternatives, and what actually works in 2026.",
+      "category": "Professional Headshots",
+      "readTime": "8 min read",
+      "publishedAt": "2026-01-20",
+      "status": "published",
+      "featured": true,
+      "image": "/blog/headshots-without-photographer.jpg",
+      "keywords": [
+        "professional headshots",
+        "DIY headshots",
+        "AI headshots",
+        "cheap headshots"
+      ]
+    },
+    {
+      "id": 2,
+      "slug": "ai-headshots-vs-professional-photographer",
+      "title": "AI Headshots vs Professional Photographer: Which Should You Choose in 2026?",
+      "description": "Honest comparison of AI headshot generators vs professional photographers. Cost, quality, convenience—we break down when each option makes sense.",
+      "category": "Comparison",
+      "readTime": "10 min read",
+      "publishedAt": "2026-01-21",
+      "status": "unpublished",
+      "featured": true,
+      "image": "/blog/ai-vs-photographer.jpg",
+      "keywords": [
+        "AI headshots",
+        "professional photographer",
+        "headshot comparison"
+      ]
+    },
+    {
+      "id": 3,
+      "slug": "linkedin-photos-more-profile-views",
+      "title": "The Science Behind LinkedIn Photos That Get 14x More Profile Views",
+      "description": "Data-backed insights on what makes LinkedIn profile photos successful. Learn the exact elements that increase profile views by 14x and connection requests by 36x.",
+      "category": "LinkedIn",
+      "readTime": "9 min read",
+      "publishedAt": "2026-01-22",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/linkedin-photos.jpg",
+      "keywords": ["LinkedIn photo", "profile views", "LinkedIn optimization"]
+    },
+    {
+      "id": 4,
+      "slug": "corporate-headshot-guide-hr-managers",
+      "title": "Corporate Headshot Guide: What HR Managers Actually Look For",
+      "description": "Insider insights on corporate headshots from HR professionals. Learn what hiring managers and recruiters actually evaluate in your professional photo.",
+      "category": "Corporate",
+      "readTime": "10 min read",
+      "publishedAt": "2026-01-23",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/corporate-headshots.jpg",
+      "keywords": [
+        "corporate headshot",
+        "HR",
+        "professional photo",
+        "job interview"
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "cheap-headshots-near-me-alternative",
+      "title": "Skip the 'Cheap Headshots Near Me' Search: A Better Alternative",
+      "description": "Searching for cheap headshots near you? There's a better option. Learn why AI headshots deliver better results for less money than budget photographers.",
+      "category": "Professional Headshots",
+      "readTime": "8 min read",
+      "publishedAt": "2026-01-24",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/cheap-headshots-alternative.jpg",
+      "keywords": ["cheap headshots", "budget photography", "AI alternative"]
+    },
+    {
+      "id": 6,
+      "slug": "linkedin-photo-mistakes-costing-interviews",
+      "title": "7 LinkedIn Photo Mistakes That Are Costing You Job Interviews",
+      "description": "Your LinkedIn photo might be sabotaging your job search. Learn the 7 common mistakes that turn off recruiters and how to fix them today.",
+      "category": "LinkedIn",
+      "readTime": "8 min read",
+      "publishedAt": "2026-01-25",
+      "status": "unpublished",
+      "featured": true,
+      "image": "/blog/linkedin-mistakes.jpg",
+      "keywords": [
+        "LinkedIn mistakes",
+        "job interview",
+        "recruiter",
+        "profile photo"
+      ]
+    },
+    {
+      "id": 7,
+      "slug": "how-to-look-professional-in-photos",
+      "title": "How to Look Professional in Photos: A Complete Guide for 2026",
+      "description": "Learn how to look professional in photos every time. Expert tips on posing, lighting, attire, and expression that make you look confident and competent.",
+      "category": "How-To",
+      "readTime": "10 min read",
+      "publishedAt": "2026-01-26",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/look-professional.jpg",
+      "keywords": ["professional photos", "posing tips", "photo tips"]
+    },
+    {
+      "id": 8,
+      "slug": "executive-headshot-ideas",
+      "title": "Executive Headshot Ideas: 15 Styles That Command Respect",
+      "description": "Executive headshot inspiration for CEOs, VPs, and senior leaders. 15 proven styles that project authority, trustworthiness, and leadership presence.",
+      "category": "Executive",
+      "readTime": "11 min read",
+      "publishedAt": "2026-01-27",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/executive-headshots.jpg",
+      "keywords": [
+        "executive headshot",
+        "CEO photo",
+        "leadership",
+        "corporate photography"
+      ]
+    },
+    {
+      "id": 9,
+      "slug": "work-from-home-professional-photo",
+      "title": "How to Get a Professional Photo When You Work From Home",
+      "description": "Working remotely and need a professional headshot? Learn how to create high-quality professional photos from your home without expensive equipment or a photographer.",
+      "category": "Remote Work",
+      "readTime": "9 min read",
+      "publishedAt": "2026-01-28",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/wfh-headshot.jpg",
+      "keywords": [
+        "work from home",
+        "remote work",
+        "home photography",
+        "DIY headshot"
+      ]
+    },
+    {
+      "id": 10,
+      "slug": "update-linkedin-photo-how-often",
+      "title": "How Often Should You Update Your LinkedIn Photo? (Data-Backed Answer)",
+      "description": "Find out the optimal frequency for updating your LinkedIn profile photo based on data and recruiter insights. Plus, signs you're overdue for a change.",
+      "category": "LinkedIn",
+      "readTime": "8 min read",
+      "publishedAt": "2026-01-29",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/update-linkedin.jpg",
+      "keywords": ["LinkedIn update", "profile photo", "photo frequency"]
+    },
+    {
+      "id": 11,
+      "slug": "what-to-wear-professional-headshot",
+      "title": "What to Wear for a Professional Headshot: Color Psychology Guide",
+      "description": "Discover what colors and clothing work best for professional headshots. Learn the psychology behind why certain colors project confidence, trust, and competence.",
+      "category": "How-To",
+      "readTime": "10 min read",
+      "publishedAt": "2026-01-30",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/what-to-wear.jpg",
+      "keywords": [
+        "headshot attire",
+        "color psychology",
+        "professional clothing"
+      ]
+    },
+    {
+      "id": 12,
+      "slug": "free-vs-paid-ai-headshot-generators",
+      "title": "Free vs Paid AI Headshot Generators: What $10 Actually Gets You",
+      "description": "Comparing free and paid AI headshot generators. See real differences in quality, features, and results. Is the paid version worth it?",
+      "category": "Comparison",
+      "readTime": "9 min read",
+      "publishedAt": "2026-01-31",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/free-vs-paid.jpg",
+      "keywords": ["free AI headshots", "paid AI headshots", "comparison"]
+    },
+    {
+      "id": 13,
+      "slug": "how-ai-headshot-generators-work",
+      "title": "How AI Headshot Generators Actually Work (Technical Explanation)",
+      "description": "Understand the technology behind AI headshots. From neural networks to diffusion models, learn how AI creates realistic professional photos from your selfies.",
+      "category": "Technology",
+      "readTime": "10 min read",
+      "publishedAt": "2026-02-01",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/how-ai-works.jpg",
+      "keywords": [
+        "AI technology",
+        "neural networks",
+        "diffusion models",
+        "machine learning"
+      ]
+    },
+    {
+      "id": 14,
+      "slug": "best-lighting-headshots-at-home",
+      "title": "Best Lighting for Headshots at Home: DIY Setup Guide",
+      "description": "Create professional headshot lighting at home with no expensive equipment. Step-by-step guide for window light, ring lights, and DIY solutions.",
+      "category": "How-To",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-02",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/lighting-guide.jpg",
+      "keywords": [
+        "lighting setup",
+        "DIY photography",
+        "home studio",
+        "ring light"
+      ]
+    },
+    {
+      "id": 15,
+      "slug": "headshot-background-ideas-colors",
+      "title": "Headshot Background Ideas: Which Colors Get More Engagement",
+      "description": "Discover which headshot backgrounds perform best on LinkedIn and professional platforms. Data-backed insights on colors, styles, and what actually works.",
+      "category": "How-To",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-03",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/background-ideas.jpg",
+      "keywords": [
+        "headshot background",
+        "background colors",
+        "professional background"
+      ]
+    },
+    {
+      "id": 16,
+      "slug": "real-estate-agent-headshot-tips",
+      "title": "Real Estate Agent Headshots: What Top Producers Do Differently",
+      "description": "Learn what makes real estate headshots stand out. Top producers use specific techniques for photos that generate leads and build trust with clients.",
+      "category": "Industry",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-04",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/real-estate-headshots.jpg",
+      "keywords": [
+        "real estate agent",
+        "realtor headshot",
+        "real estate marketing"
+      ]
+    },
+    {
+      "id": 17,
+      "slug": "lawyer-headshot-professional",
+      "title": "Lawyer Headshots: Professional Standards for Legal Professionals",
+      "description": "Professional headshot guidelines for lawyers and attorneys. Learn the conventions, expectations, and standards that legal professionals should follow.",
+      "category": "Industry",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-05",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/lawyer-headshots.jpg",
+      "keywords": ["lawyer headshot", "attorney photo", "legal professional"]
+    },
+    {
+      "id": 18,
+      "slug": "actor-headshot-vs-business-headshot",
+      "title": "Actor Headshots vs Business Headshots: Key Differences Explained",
+      "description": "Understand the crucial differences between acting headshots and business headshots. Learn why you can't use the same photo for both and what each type requires.",
+      "category": "Comparison",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-06",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/actor-vs-business.jpg",
+      "keywords": [
+        "actor headshot",
+        "business headshot",
+        "headshot differences"
+      ]
+    },
+    {
+      "id": 19,
+      "slug": "team-photos-company-website",
+      "title": "How to Get Consistent Team Photos for Your Company Website",
+      "description": "Guide to creating professional, consistent team photos for your company website. Learn how to achieve visual cohesion with growing teams and remote employees.",
+      "category": "Corporate",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-07",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/team-photos.jpg",
+      "keywords": [
+        "team photos",
+        "company website",
+        "corporate photography",
+        "remote team"
+      ]
+    },
+    {
+      "id": 20,
+      "slug": "personal-branding-photos-ideas",
+      "title": "Personal Branding Photos: 10 Ideas Beyond the Basic Headshot",
+      "description": "Elevate your personal brand with photos beyond the standard headshot. 10 creative ideas for consultants, coaches, speakers, and entrepreneurs.",
+      "category": "Personal Branding",
+      "readTime": "9 min read",
+      "publishedAt": "2026-02-08",
+      "status": "unpublished",
+      "featured": false,
+      "image": "/blog/personal-branding.jpg",
+      "keywords": [
+        "personal branding",
+        "brand photos",
+        "entrepreneur",
+        "speaker photos"
+      ]
+    }
+  ],
+  "categories": [
+    "Professional Headshots",
+    "LinkedIn",
+    "Comparison",
+    "How-To",
+    "Corporate",
+    "Executive",
+    "Remote Work",
+    "Technology",
+    "Industry",
+    "Personal Branding"
+  ]
+}

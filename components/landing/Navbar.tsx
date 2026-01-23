@@ -48,6 +48,12 @@ export function Navbar() {
             >
               Pricing
             </Link>
+            <Link
+              href='/blog'
+              className='hover:text-primary transition-colors'
+            >
+              Blog
+            </Link>
           </div>
 
           <div className='flex items-center gap-4'>
