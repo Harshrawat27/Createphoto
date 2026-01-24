@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Twitter, Github, Linkedin } from 'lucide-react';
+import { Twitter, Github, Linkedin, Mail } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -29,50 +29,39 @@ export function Footer() {
             <h4 className='font-bold mb-4'>Product</h4>
             <ul className='space-y-2 text-sm text-muted-foreground'>
               <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
+                <Link href='/#features' className='hover:text-primary transition-colors'>
                   Features
                 </Link>
               </li>
               <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
+                <Link href='/#pricing' className='hover:text-primary transition-colors'>
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
-                  Showcase
-                </Link>
-              </li>
-              <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
-                  API
+                <Link href='/#how-it-works' className='hover:text-primary transition-colors'>
+                  How it Works
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className='font-bold mb-4'>Company</h4>
+            <h4 className='font-bold mb-4'>Resources</h4>
             <ul className='space-y-2 text-sm text-muted-foreground'>
-              <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
-                  About
-                </Link>
-              </li>
               <li>
                 <Link href='/blog' className='hover:text-primary transition-colors'>
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
+                <a
+                  href='mailto:harshrawat.dev@gmail.com'
+                  className='hover:text-primary transition-colors inline-flex items-center gap-1.5'
+                >
+                  <Mail className='w-3.5 h-3.5' />
                   Contact
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -81,12 +70,12 @@ export function Footer() {
             <h4 className='font-bold mb-4'>Legal</h4>
             <ul className='space-y-2 text-sm text-muted-foreground'>
               <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
+                <Link href='/privacy' className='hover:text-primary transition-colors'>
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href='#' className='hover:text-primary transition-colors'>
+                <Link href='/terms' className='hover:text-primary transition-colors'>
                   Terms of Service
                 </Link>
               </li>
@@ -99,15 +88,30 @@ export function Footer() {
             © {new Date().getFullYear()} PicLoreAI. All rights reserved.
           </p>
           <div className='flex items-center gap-4 text-muted-foreground'>
-            <Link href='#' className='hover:text-primary transition-colors'>
+            <a
+              href='https://twitter.com'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='hover:text-primary transition-colors'
+            >
               <Twitter className='w-5 h-5' />
-            </Link>
-            <Link href='#' className='hover:text-primary transition-colors'>
+            </a>
+            <a
+              href='https://github.com'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='hover:text-primary transition-colors'
+            >
               <Github className='w-5 h-5' />
-            </Link>
-            <Link href='#' className='hover:text-primary transition-colors'>
+            </a>
+            <a
+              href='https://linkedin.com'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='hover:text-primary transition-colors'
+            >
               <Linkedin className='w-5 h-5' />
-            </Link>
+            </a>
           </div>
         </div>
       </div>
