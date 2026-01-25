@@ -56,7 +56,7 @@
       "category": "Corporate",
       "readTime": "10 min read",
       "publishedAt": "2026-01-23",
-      "status": "unpublished",
+      "status": "published",
       "featured": false,
       "image": "/blog/corporate-headshots.jpg",
       "keywords": [
@@ -74,7 +74,7 @@
       "category": "Professional Headshots",
       "readTime": "8 min read",
       "publishedAt": "2026-01-24",
-      "status": "unpublished",
+      "status": "published",
       "featured": false,
       "image": "/blog/cheap-headshots-alternative.jpg",
       "keywords": ["cheap headshots", "budget photography", "AI alternative"]
