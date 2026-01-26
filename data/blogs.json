@@ -87,7 +87,7 @@
       "category": "LinkedIn",
       "readTime": "8 min read",
       "publishedAt": "2026-01-25",
-      "status": "unpublished",
+      "status": "published",
       "featured": true,
       "image": "/blog/linkedin-mistakes.jpg",
       "keywords": [
@@ -105,7 +105,7 @@
       "category": "How-To",
       "readTime": "10 min read",
       "publishedAt": "2026-01-26",
-      "status": "unpublished",
+      "status": "published",
       "featured": false,
       "image": "/blog/look-professional.jpg",
       "keywords": ["professional photos", "posing tips", "photo tips"]
