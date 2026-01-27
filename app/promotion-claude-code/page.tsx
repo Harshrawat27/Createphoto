@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useEffect, useState, useRef, useCallback } from "react";
+import Image from 'next/image';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Sparkles,
   Camera,
@@ -11,7 +11,7 @@ import {
   Palette,
   Shield,
   Zap,
-} from "lucide-react";
+} from 'lucide-react';
 
 export default function PromotionVideo() {
   const [scene, setScene] = useState(0);
@@ -22,7 +22,7 @@ export default function PromotionVideo() {
   // Sound effects using Web Audio API
   const playSound = useCallback(
     (
-      type: "whoosh" | "impact" | "rise" | "bass" | "glitch" | "success",
+      type: 'whoosh' | 'impact' | 'rise' | 'bass' | 'glitch' | 'success',
       volume = 0.3
     ) => {
       if (!audioContextRef.current) return;
@@ -37,8 +37,8 @@ export default function PromotionVideo() {
       const now = ctx.currentTime;
 
       switch (type) {
-        case "whoosh":
-          osc.type = "sawtooth";
+        case 'whoosh':
+          osc.type = 'sawtooth';
           osc.frequency.setValueAtTime(200, now);
           osc.frequency.exponentialRampToValueAtTime(2000, now + 0.1);
           osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
@@ -48,8 +48,8 @@ export default function PromotionVideo() {
           osc.stop(now + 0.3);
           break;
 
-        case "impact":
-          osc.type = "sine";
+        case 'impact':
+          osc.type = 'sine';
           osc.frequency.setValueAtTime(150, now);
           osc.frequency.exponentialRampToValueAtTime(30, now + 0.2);
           gain.gain.setValueAtTime(volume, now);
@@ -76,8 +76,8 @@ export default function PromotionVideo() {
           noise.start(now);
           break;
 
-        case "rise":
-          osc.type = "sine";
+        case 'rise':
+          osc.type = 'sine';
           osc.frequency.setValueAtTime(100, now);
           osc.frequency.exponentialRampToValueAtTime(800, now + 0.5);
           gain.gain.setValueAtTime(0.01, now);
@@ -87,8 +87,8 @@ export default function PromotionVideo() {
           osc.stop(now + 0.6);
           break;
 
-        case "bass":
-          osc.type = "sine";
+        case 'bass':
+          osc.type = 'sine';
           osc.frequency.setValueAtTime(60, now);
           gain.gain.setValueAtTime(volume * 0.8, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
@@ -96,8 +96,8 @@ export default function PromotionVideo() {
           osc.stop(now + 0.4);
           break;
 
-        case "glitch":
-          osc.type = "square";
+        case 'glitch':
+          osc.type = 'square';
           for (let i = 0; i < 5; i++) {
             osc.frequency.setValueAtTime(
               Math.random() * 1000 + 200,
@@ -110,8 +110,8 @@ export default function PromotionVideo() {
           osc.stop(now + 0.1);
           break;
 
-        case "success":
-          osc.type = "sine";
+        case 'success':
+          osc.type = 'sine';
           osc.frequency.setValueAtTime(523.25, now); // C5
           osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
           osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
@@ -159,16 +159,16 @@ export default function PromotionVideo() {
     if (!started) return;
 
     const timeline = [
-      { time: 0, scene: 1, sound: "impact" as const },
-      { time: 2000, scene: 2, sound: "whoosh" as const },
-      { time: 3500, scene: 3, sound: "impact" as const },
-      { time: 5500, scene: 4, sound: "whoosh" as const },
-      { time: 7000, scene: 5, sound: "rise" as const },
-      { time: 9500, scene: 6, sound: "impact" as const },
-      { time: 11000, scene: 7, sound: "whoosh" as const },
-      { time: 13000, scene: 8, sound: "whoosh" as const },
-      { time: 15000, scene: 9, sound: "success" as const },
-      { time: 17500, scene: 10, sound: "impact" as const },
+      { time: 0, scene: 1, sound: 'impact' as const },
+      { time: 2000, scene: 2, sound: 'whoosh' as const },
+      { time: 3500, scene: 3, sound: 'impact' as const },
+      { time: 5500, scene: 4, sound: 'whoosh' as const },
+      { time: 7000, scene: 5, sound: 'rise' as const },
+      { time: 9500, scene: 6, sound: 'impact' as const },
+      { time: 11000, scene: 7, sound: 'whoosh' as const },
+      { time: 13000, scene: 8, sound: 'whoosh' as const },
+      { time: 15000, scene: 9, sound: 'success' as const },
+      { time: 17500, scene: 10, sound: 'impact' as const },
     ];
 
     const timeouts = timeline.map(({ time, scene: s, sound }) =>
@@ -180,7 +180,7 @@ export default function PromotionVideo() {
 
     // Glitch sounds periodically
     const glitchInterval = setInterval(() => {
-      if (Math.random() > 0.7) playSound("glitch", 0.15);
+      if (Math.random() > 0.7) playSound('glitch', 0.15);
     }, 300);
 
     return () => {
@@ -197,16 +197,16 @@ export default function PromotionVideo() {
     gainNodeRef.current.connect(audioContextRef.current.destination);
     setStarted(true);
     setScene(1);
-    playSound("impact");
+    playSound('impact');
   };
 
   const features = [
-    { icon: Camera, label: "AI Headshots", color: "#ee575a" },
-    { icon: Shirt, label: "Virtual Try-On", color: "#8b5cf6" },
-    { icon: Users, label: "AI Influencer", color: "#06b6d4" },
-    { icon: Briefcase, label: "Pro Photos", color: "#f59e0b" },
-    { icon: Palette, label: "Any Style", color: "#10b981" },
-    { icon: Shield, label: "100% Private", color: "#ec4899" },
+    { icon: Camera, label: 'AI Headshots', color: '#ee575a' },
+    { icon: Shirt, label: 'Virtual Try-On', color: '#8b5cf6' },
+    { icon: Users, label: 'AI Influencer', color: '#06b6d4' },
+    { icon: Briefcase, label: 'Pro Photos', color: '#f59e0b' },
+    { icon: Palette, label: 'Any Style', color: '#10b981' },
+    { icon: Shield, label: '100% Private', color: '#ec4899' },
   ];
 
   // Particles
@@ -221,18 +221,18 @@ export default function PromotionVideo() {
 
   if (!started) {
     return (
-      <div className="fixed inset-0 bg-[#020617] flex items-center justify-center">
+      <div className='fixed inset-0 bg-[#020617] flex items-center justify-center'>
         <button
           onClick={handleStart}
-          className="group relative px-12 py-6 bg-[#ee575a] rounded-2xl text-2xl font-bold text-white overflow-hidden transition-transform hover:scale-105 active:scale-95"
+          className='group relative px-12 py-6 bg-[#ee575a] rounded-2xl text-2xl font-bold text-white overflow-hidden transition-transform hover:scale-105 active:scale-95'
         >
-          <span className="relative z-10 flex items-center gap-3">
-            <Zap className="w-8 h-8" />
+          <span className='relative z-10 flex items-center gap-3'>
+            <Zap className='w-8 h-8' />
             Start Video
           </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-[#ee575a] via-rose-400 to-[#ee575a] bg-[length:200%_100%] animate-shimmer" />
+          <div className='absolute inset-0 bg-gradient-to-r from-[#ee575a] via-rose-400 to-[#ee575a] bg-[length:200%_100%] animate-shimmer' />
         </button>
-        <p className="absolute bottom-8 text-zinc-600 text-sm">
+        <p className='absolute bottom-8 text-zinc-600 text-sm'>
           Click to start • Enable sound for best experience
         </p>
       </div>
@@ -240,13 +240,13 @@ export default function PromotionVideo() {
   }
 
   return (
-    <div className="fixed inset-0 bg-[#020617] text-white overflow-hidden perspective-[1500px]">
+    <div className='fixed inset-0 bg-[#020617] text-white overflow-hidden perspective-[1500px]'>
       {/* Animated particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
         {particles.map((p) => (
           <div
             key={p.id}
-            className="absolute rounded-full bg-[#ee575a] particle"
+            className='absolute rounded-full bg-[#ee575a] particle'
             style={{
               left: `${p.x}%`,
               top: `${p.y}%`,
@@ -260,16 +260,16 @@ export default function PromotionVideo() {
       </div>
 
       {/* Grid lines */}
-      <div className="absolute inset-0 grid-bg opacity-20" />
+      <div className='absolute inset-0 grid-bg opacity-20' />
 
       {/* Scene 1: Logo Slam */}
       <div
         className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-          scene === 1 ? "scene-active" : "scene-inactive"
+          scene === 1 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="logo-slam flex items-center gap-6">
-          <div className="logo-3d">
+        <div className='logo-slam flex items-center gap-6'>
+          {/* <div className="logo-3d">
             <Image
               src="/logo.png"
               alt="PicLoreAI"
@@ -277,9 +277,9 @@ export default function PromotionVideo() {
               height={120}
               className="rounded-3xl"
             />
-          </div>
-          <h1 className="text-7xl md:text-9xl font-heading tracking-tight text-reveal">
-            PicLoreAI
+          </div> */}
+          <h1 className='text-7xl md:text-9xl font-heading tracking-tight text-reveal'>
+            PicLoreAI.
           </h1>
         </div>
       </div>
@@ -287,13 +287,13 @@ export default function PromotionVideo() {
       {/* Scene 2: Tagline zoom */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 2 ? "scene-active" : "scene-inactive"
+          scene === 2 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <p className="text-4xl md:text-6xl font-heading text-center zoom-text">
+        <p className='text-4xl md:text-6xl font-heading text-center zoom-text'>
           Your Personal
           <br />
-          <span className="text-[#ee575a] text-6xl md:text-8xl">
+          <span className='text-[#ee575a] text-6xl md:text-8xl'>
             AI Photographer
           </span>
         </p>
@@ -302,17 +302,17 @@ export default function PromotionVideo() {
       {/* Scene 3: Problem - Strike through */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 3 ? "scene-active" : "scene-inactive"
+          scene === 3 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="text-center space-y-6 problem-text">
-          <p className="text-4xl md:text-6xl font-heading text-zinc-500 strike-line">
+        <div className='text-center space-y-6 problem-text'>
+          <p className='text-4xl md:text-6xl font-heading text-zinc-500 strike-line'>
             Expensive Photoshoots
           </p>
-          <p className="text-4xl md:text-6xl font-heading text-zinc-500 strike-line delay-1">
+          <p className='text-4xl md:text-6xl font-heading text-zinc-500 strike-line delay-1'>
             Hours of Editing
           </p>
-          <p className="text-4xl md:text-6xl font-heading text-zinc-500 strike-line delay-2">
+          <p className='text-4xl md:text-6xl font-heading text-zinc-500 strike-line delay-2'>
             Awkward Poses
           </p>
         </div>
@@ -321,10 +321,10 @@ export default function PromotionVideo() {
       {/* Scene 4: "NO MORE" */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 4 ? "scene-active" : "scene-inactive"
+          scene === 4 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <h2 className="text-8xl md:text-[12rem] font-heading text-[#ee575a] glitch-text no-more-text">
+        <h2 className='text-8xl md:text-[12rem] font-heading text-[#ee575a] glitch-text no-more-text'>
           NO MORE
         </h2>
       </div>
@@ -332,21 +332,21 @@ export default function PromotionVideo() {
       {/* Scene 5: The solution - 3 selfies */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 5 ? "scene-active" : "scene-inactive"
+          scene === 5 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="text-center solution-scene">
-          <h2 className="text-5xl md:text-7xl font-heading mb-8 slide-up">
-            Just <span className="text-[#ee575a]">3</span> Selfies
+        <div className='text-center solution-scene'>
+          <h2 className='text-5xl md:text-7xl font-heading mb-8 slide-up'>
+            Just <span className='text-[#ee575a]'>3</span> Selfies
           </h2>
-          <div className="flex justify-center gap-4 md:gap-8">
+          <div className='flex justify-center gap-4 md:gap-8'>
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="selfie-card w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center"
+                className='selfie-card w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 flex items-center justify-center'
                 style={{ animationDelay: `${i * 0.15}s` }}
               >
-                <Camera className="w-10 h-10 text-zinc-500" />
+                <Camera className='w-10 h-10 text-zinc-500' />
               </div>
             ))}
           </div>
@@ -356,17 +356,17 @@ export default function PromotionVideo() {
       {/* Scene 6: Arrow transformation */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 6 ? "scene-active" : "scene-inactive"
+          scene === 6 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="flex items-center gap-8 transform-scene">
-          <div className="text-2xl md:text-4xl text-zinc-500">Selfies</div>
-          <div className="arrow-container">
-            <div className="arrow-line" />
-            <Sparkles className="w-12 h-12 md:w-16 md:h-16 text-[#ee575a] sparkle-spin" />
-            <div className="arrow-line" />
+        <div className='flex items-center gap-8 transform-scene'>
+          <div className='text-2xl md:text-4xl text-zinc-500'>Selfies</div>
+          <div className='arrow-container'>
+            <div className='arrow-line' />
+            <Sparkles className='w-12 h-12 md:w-16 md:h-16 text-[#ee575a] sparkle-spin' />
+            <div className='arrow-line' />
           </div>
-          <div className="text-2xl md:text-4xl text-[#ee575a] font-bold">
+          <div className='text-2xl md:text-4xl text-[#ee575a] font-bold'>
             UNLIMITED
           </div>
         </div>
@@ -375,10 +375,10 @@ export default function PromotionVideo() {
       {/* Scene 7: Features explosion */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 7 ? "scene-active" : "scene-inactive"
+          scene === 7 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="features-explosion">
+        <div className='features-explosion'>
           {features.map((feature, i) => {
             const angle = (i / features.length) * Math.PI * 2 - Math.PI / 2;
             const radius = 180;
@@ -387,26 +387,28 @@ export default function PromotionVideo() {
             return (
               <div
                 key={feature.label}
-                className="feature-card-3d absolute"
-                style={{
-                  "--tx": `${x}px`,
-                  "--ty": `${y}px`,
-                  "--delay": `${i * 0.1}s`,
-                  "--color": feature.color,
-                } as React.CSSProperties}
+                className='feature-card-3d absolute'
+                style={
+                  {
+                    '--tx': `${x}px`,
+                    '--ty': `${y}px`,
+                    '--delay': `${i * 0.1}s`,
+                    '--color': feature.color,
+                  } as React.CSSProperties
+                }
               >
                 <div
-                  className="w-20 h-20 md:w-28 md:h-28 rounded-2xl flex flex-col items-center justify-center gap-2 border-2"
+                  className='w-20 h-20 md:w-28 md:h-28 rounded-2xl flex flex-col items-center justify-center gap-2 border-2'
                   style={{
                     background: `${feature.color}20`,
                     borderColor: feature.color,
                   }}
                 >
                   <feature.icon
-                    className="w-8 h-8 md:w-10 md:h-10"
+                    className='w-8 h-8 md:w-10 md:h-10'
                     style={{ color: feature.color }}
                   />
-                  <span className="text-xs md:text-sm font-medium text-center px-1">
+                  <span className='text-xs md:text-sm font-medium text-center px-1'>
                     {feature.label}
                   </span>
                 </div>
@@ -419,16 +421,16 @@ export default function PromotionVideo() {
       {/* Scene 8: Speed lines + "5 MINUTES" */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 8 ? "scene-active" : "scene-inactive"
+          scene === 8 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="speed-scene">
-          <div className="speed-lines" />
-          <div className="text-center z-10 relative">
-            <p className="text-3xl md:text-5xl text-zinc-400 mb-4">
+        <div className='speed-scene'>
+          <div className='speed-lines' />
+          <div className='text-center z-10 relative'>
+            <p className='text-3xl md:text-5xl text-zinc-400 mb-4'>
               Ready in just
             </p>
-            <h2 className="text-7xl md:text-[10rem] font-heading text-[#ee575a] countdown-text">
+            <h2 className='text-7xl md:text-[10rem] font-heading text-[#ee575a] countdown-text'>
               5 MIN
             </h2>
           </div>
@@ -438,28 +440,28 @@ export default function PromotionVideo() {
       {/* Scene 9: Pricing flash */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 9 ? "scene-active" : "scene-inactive"
+          scene === 9 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="pricing-scene">
-          <h2 className="text-4xl md:text-6xl font-heading mb-12 price-header">
-            Start <span className="text-[#ee575a]">FREE</span>
+        <div className='pricing-scene'>
+          <h2 className='text-4xl md:text-6xl font-heading mb-12 price-header'>
+            Start <span className='text-[#ee575a]'>FREE</span>
           </h2>
-          <div className="flex gap-6 md:gap-8 price-cards">
-            <div className="price-card bg-zinc-900/80 border border-zinc-700 rounded-2xl p-6 md:p-8">
-              <p className="text-zinc-400 mb-2">Free</p>
-              <p className="text-4xl md:text-5xl font-bold">$0</p>
-              <p className="text-zinc-500 mt-2">100 credits</p>
+          <div className='flex gap-6 md:gap-8 price-cards'>
+            <div className='price-card bg-zinc-900/80 border border-zinc-700 rounded-2xl p-6 md:p-8'>
+              <p className='text-zinc-400 mb-2'>Free</p>
+              <p className='text-4xl md:text-5xl font-bold'>$0</p>
+              <p className='text-zinc-500 mt-2'>100 credits</p>
             </div>
-            <div className="price-card featured bg-gradient-to-br from-[#ee575a]/20 to-rose-900/20 border-2 border-[#ee575a] rounded-2xl p-6 md:p-8 scale-110">
-              <p className="text-[#ee575a] mb-2">Pro</p>
-              <p className="text-4xl md:text-5xl font-bold">$10</p>
-              <p className="text-zinc-400 mt-2">300/mo</p>
+            <div className='price-card featured bg-gradient-to-br from-[#ee575a]/20 to-rose-900/20 border-2 border-[#ee575a] rounded-2xl p-6 md:p-8 scale-110'>
+              <p className='text-[#ee575a] mb-2'>Pro</p>
+              <p className='text-4xl md:text-5xl font-bold'>$10</p>
+              <p className='text-zinc-400 mt-2'>300/mo</p>
             </div>
-            <div className="price-card bg-zinc-900/80 border border-zinc-700 rounded-2xl p-6 md:p-8">
-              <p className="text-zinc-400 mb-2">Ultra</p>
-              <p className="text-4xl md:text-5xl font-bold">$24</p>
-              <p className="text-zinc-500 mt-2">1000/mo</p>
+            <div className='price-card bg-zinc-900/80 border border-zinc-700 rounded-2xl p-6 md:p-8'>
+              <p className='text-zinc-400 mb-2'>Ultra</p>
+              <p className='text-4xl md:text-5xl font-bold'>$24</p>
+              <p className='text-zinc-500 mt-2'>1000/mo</p>
             </div>
           </div>
         </div>
@@ -468,27 +470,27 @@ export default function PromotionVideo() {
       {/* Scene 10: Final CTA */}
       <div
         className={`absolute inset-0 flex items-center justify-center ${
-          scene === 10 ? "scene-active" : "scene-inactive"
+          scene === 10 ? 'scene-active' : 'scene-inactive'
         }`}
       >
-        <div className="final-cta text-center">
-          <h2 className="text-5xl md:text-8xl font-heading mb-8 final-title">
+        <div className='final-cta text-center'>
+          <h2 className='text-5xl md:text-8xl font-heading mb-8 final-title'>
             Create Your
             <br />
-            <span className="text-[#ee575a]">Digital Twin</span>
+            <span className='text-[#ee575a]'>Digital Twin</span>
           </h2>
-          <div className="cta-button inline-flex items-center gap-3 bg-[#ee575a] text-white px-12 py-6 rounded-2xl text-2xl md:text-3xl font-bold">
-            <Sparkles className="w-8 h-8" />
+          <div className='cta-button inline-flex items-center gap-3 bg-[#ee575a] text-white px-12 py-6 rounded-2xl text-2xl md:text-3xl font-bold'>
+            <Sparkles className='w-8 h-8' />
             picloreai.com
           </div>
-          <div className="mt-8 text-xl text-zinc-500 tagline-final">
+          <div className='mt-8 text-xl text-zinc-500 tagline-final'>
             Your Personal AI Photographer
           </div>
         </div>
       </div>
 
       {/* Vignette overlay */}
-      <div className="absolute inset-0 pointer-events-none vignette" />
+      <div className='absolute inset-0 pointer-events-none vignette' />
 
       <style jsx>{`
         @keyframes shimmer {
@@ -634,7 +636,7 @@ export default function PromotionVideo() {
         }
 
         .strike-line::after {
-          content: "";
+          content: '';
           position: absolute;
           left: 0;
           top: 50%;
@@ -793,10 +795,7 @@ export default function PromotionVideo() {
             opacity: 0;
           }
           100% {
-            transform: translate(
-                calc(-50% + var(--tx)),
-                calc(-50% + var(--ty))
-              )
+            transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty)))
               scale(1) rotateZ(0deg);
             opacity: 1;
           }

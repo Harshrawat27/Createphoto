@@ -13,16 +13,16 @@ export default function LoginPage() {
       <header className='border-b px-4 py-3 md:px-6 md:py-4'>
         <div className='max-w-7xl mx-auto flex justify-between items-center'>
           <Link href='/' className='flex items-center gap-2 group'>
-            <div className='relative w-12 h-12 group-hover:opacity-90 transition-opacity'>
+            {/* <div className='relative w-12 h-12 group-hover:opacity-90 transition-opacity'>
               <Image
                 src='/logo.png'
                 alt='PicLoreAI Logo'
                 fill
                 className='object-contain'
               />
-            </div>
+            </div> */}
             <span className='font-heading text-xl font-bold tracking-tight'>
-              PicLoreAI
+              PicLoreAI.
             </span>
           </Link>
           <ThemeToggle />

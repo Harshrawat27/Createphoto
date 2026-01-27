@@ -15,16 +15,16 @@ export function Navbar() {
         <div className='flex justify-between items-center h-16'>
           <div className='flex items-center gap-2'>
             <Link href='/' className='flex items-center gap-2 group'>
-              <div className='relative w-12 h-12 group-hover:opacity-90 transition-opacity'>
+              {/* <div className='relative w-12 h-12 group-hover:opacity-90 transition-opacity'>
                 <Image
                   src='/logo.png'
                   alt='PicLoreAI Logo'
                   fill
                   className='object-contain'
                 />
-              </div>
+              </div> */}
               <span className='font-heading text-xl font-bold tracking-tight'>
-                PicLoreAI
+                PicLoreAI.
               </span>
             </Link>
           </div>
@@ -48,10 +48,7 @@ export function Navbar() {
             >
               Pricing
             </Link>
-            <Link
-              href='/blog'
-              className='hover:text-primary transition-colors'
-            >
+            <Link href='/blog' className='hover:text-primary transition-colors'>
               Blog
             </Link>
           </div>

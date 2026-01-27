@@ -53,15 +53,15 @@ export function Sidebar() {
     <div className='space-y-4 py-4 flex flex-col h-full bg-secondary/30 text-secondary-foreground border-r border-border'>
       <div className='px-3 py-2 flex-1'>
         <Link href='/dashboard' className='flex items-center pl-3 mb-14'>
-          <div className='relative w-12 h-12 mr-4'>
+          {/* <div className='relative w-12 h-12 mr-4'>
             <Image
               src='/logo.png'
               alt='PicLoreAI Logo'
               fill
               className='object-contain'
             />
-          </div>
-          <h1 className='text-xl font-heading font-bold'>PicLoreAI</h1>
+          </div> */}
+          <h1 className='text-xl font-heading font-bold'>PicLoreAI.</h1>
         </Link>
         <div className='space-y-1'>
           {routes.map((route) => (
