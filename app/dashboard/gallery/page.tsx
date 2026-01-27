@@ -9,6 +9,10 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  CheckSquare,
+  Square,
+  XCircle,
+  Archive,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
@@ -20,6 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import JSZip from 'jszip';
 
 interface GeneratedImage {
   id: string;
@@ -36,6 +41,11 @@ export default function GalleryPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+
+  // Multi-select state
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
+  const [downloadingZip, setDownloadingZip] = useState(false);
 
   useEffect(() => {
     fetchGenerations();
@@ -82,6 +92,110 @@ export default function GalleryPage() {
     }
   };
 
+  const handleDownloadSelected = async () => {
+    if (selectedImages.size === 0) {
+      toast.error('No images selected');
+      return;
+    }
+
+    setDownloadingZip(true);
+    const zip = new JSZip();
+    const folder = zip.folder('picloreai-images');
+
+    try {
+      const selectedImagesList = generatedImages.filter((img) =>
+        selectedImages.has(img.id)
+      );
+
+      // Download all images and add to zip
+      const downloadPromises = selectedImagesList.map(async (img, index) => {
+        try {
+          const proxyUrl = `/api/download?url=${encodeURIComponent(img.url)}`;
+          const response = await fetch(proxyUrl);
+
+          if (!response.ok) {
+            throw new Error(`Failed to download image ${img.id}`);
+          }
+
+          const blob = await response.blob();
+          const arrayBuffer = await blob.arrayBuffer();
+
+          // Create filename with index for ordering
+          const filename = `image-${String(index + 1).padStart(3, '0')}-${img.id.slice(0, 8)}.png`;
+          folder?.file(filename, arrayBuffer);
+
+          return { success: true, id: img.id };
+        } catch (error) {
+          console.error(`Failed to download image ${img.id}:`, error);
+          return { success: false, id: img.id };
+        }
+      });
+
+      const results = await Promise.all(downloadPromises);
+      const successCount = results.filter((r) => r.success).length;
+      const failCount = results.filter((r) => !r.success).length;
+
+      if (successCount === 0) {
+        toast.error('Failed to download any images');
+        setDownloadingZip(false);
+        return;
+      }
+
+      // Generate and download zip
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = window.URL.createObjectURL(zipBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `picloreai-images-${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      if (failCount > 0) {
+        toast.success(
+          `Downloaded ${successCount} images. ${failCount} failed.`
+        );
+      } else {
+        toast.success(`Downloaded ${successCount} images successfully`);
+      }
+
+      // Exit selection mode after download
+      setSelectionMode(false);
+      setSelectedImages(new Set());
+    } catch (error) {
+      console.error('Failed to create zip:', error);
+      toast.error('Failed to create zip file');
+    } finally {
+      setDownloadingZip(false);
+    }
+  };
+
+  const toggleImageSelection = (imageId: string) => {
+    setSelectedImages((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(imageId)) {
+        newSet.delete(imageId);
+      } else {
+        newSet.add(imageId);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllImages = () => {
+    setSelectedImages(new Set(generatedImages.map((img) => img.id)));
+  };
+
+  const deselectAllImages = () => {
+    setSelectedImages(new Set());
+  };
+
+  const exitSelectionMode = () => {
+    setSelectionMode(false);
+    setSelectedImages(new Set());
+  };
+
   const openDeleteDialog = (imageId: string) => {
     setImageToDelete(imageId);
     setDeleteDialogOpen(true);
@@ -102,6 +216,12 @@ export default function GalleryPage() {
         setGeneratedImages((prev) =>
           prev.filter((img) => img.id !== imageToDelete)
         );
+        // Remove from selection if selected
+        setSelectedImages((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(imageToDelete);
+          return newSet;
+        });
         // Close lightbox if deleted image was open
         if (
           lightboxOpen &&
@@ -123,6 +243,7 @@ export default function GalleryPage() {
   };
 
   const openLightbox = (index: number) => {
+    if (selectionMode) return; // Don't open lightbox in selection mode
     setCurrentImageIndex(index);
     setLightboxOpen(true);
   };
@@ -164,12 +285,77 @@ export default function GalleryPage() {
               All your generated images in one place
             </p>
           </div>
-          {/* <div className='flex gap-2'>
-            <button className='px-4 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-secondary/50 transition-colors'>
-              Clear All
-            </button>
-          </div> */}
+
+          {/* Selection Mode Controls */}
+          {generatedImages.length > 0 && (
+            <div className='flex gap-2'>
+              {selectionMode ? (
+                <>
+                  <button
+                    onClick={exitSelectionMode}
+                    className='px-4 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-secondary/50 transition-colors flex items-center gap-2'
+                  >
+                    <XCircle className='w-4 h-4' />
+                    Cancel
+                  </button>
+                  {selectedImages.size < generatedImages.length ? (
+                    <button
+                      onClick={selectAllImages}
+                      className='px-4 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-secondary/50 transition-colors flex items-center gap-2'
+                    >
+                      <CheckSquare className='w-4 h-4' />
+                      Select All
+                    </button>
+                  ) : (
+                    <button
+                      onClick={deselectAllImages}
+                      className='px-4 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-secondary/50 transition-colors flex items-center gap-2'
+                    >
+                      <Square className='w-4 h-4' />
+                      Deselect All
+                    </button>
+                  )}
+                  <button
+                    onClick={handleDownloadSelected}
+                    disabled={selectedImages.size === 0 || downloadingZip}
+                    className='px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    {downloadingZip ? (
+                      <>
+                        <Loader2 className='w-4 h-4 animate-spin' />
+                        Creating ZIP...
+                      </>
+                    ) : (
+                      <>
+                        <Archive className='w-4 h-4' />
+                        Download {selectedImages.size > 0 && `(${selectedImages.size})`}
+                      </>
+                    )}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setSelectionMode(true)}
+                  className='px-4 py-2 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-secondary/50 transition-colors flex items-center gap-2'
+                >
+                  <CheckSquare className='w-4 h-4' />
+                  Select Multiple
+                </button>
+              )}
+            </div>
+          )}
         </div>
+
+        {/* Selection Mode Banner */}
+        {selectionMode && (
+          <div className='mb-6 p-4 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between'>
+            <p className='text-sm'>
+              <span className='font-medium'>{selectedImages.size}</span> of{' '}
+              <span className='font-medium'>{generatedImages.length}</span> images
+              selected. Click on images to select/deselect.
+            </p>
+          </div>
+        )}
 
         {loading ? (
           <div className='flex items-center justify-center min-h-100'>
@@ -190,14 +376,24 @@ export default function GalleryPage() {
             {generatedImages.map((img, index) => (
               <div
                 key={img.id}
-                className='group relative break-inside-avoid mb-4 rounded-xl overflow-hidden bg-secondary/20 border border-border'
+                className={`group relative break-inside-avoid mb-4 rounded-xl overflow-hidden bg-secondary/20 border transition-all ${
+                  selectionMode && selectedImages.has(img.id)
+                    ? 'border-primary ring-2 ring-primary/50'
+                    : 'border-border'
+                }`}
               >
                 {img.url ? (
                   <img
                     src={img.url}
                     alt={img.prompt || 'Generated image'}
-                    className='w-full h-auto block transition-transform duration-500 group-hover:scale-105 cursor-pointer'
-                    onClick={() => openLightbox(index)}
+                    className={`w-full h-auto block transition-transform duration-500 cursor-pointer ${
+                      selectionMode ? '' : 'group-hover:scale-105'
+                    }`}
+                    onClick={() =>
+                      selectionMode
+                        ? toggleImageSelection(img.id)
+                        : openLightbox(index)
+                    }
                     onError={(e) => {
                       console.error('Image failed to load:', img.url);
                       e.currentTarget.src =
@@ -210,48 +406,66 @@ export default function GalleryPage() {
                   </div>
                 )}
 
-                {/* Overlay Actions */}
-                <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4'>
-                  <div className='transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300'>
-                    <div className='flex gap-2'>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownload(img.url, img.id);
-                        }}
-                        className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
-                        title='Download'
-                      >
-                        <Download className='w-4 h-4' />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openLightbox(index);
-                        }}
-                        className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
-                        title='Expand'
-                      >
-                        <Maximize2 className='w-4 h-4' />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDeleteDialog(img.id);
-                        }}
-                        disabled={deleting === img.id}
-                        className='p-2 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-500 backdrop-blur-sm transition-colors ml-auto disabled:opacity-50'
-                        title='Delete'
-                      >
-                        {deleting === img.id ? (
-                          <Loader2 className='w-4 h-4 animate-spin' />
-                        ) : (
-                          <Trash2 className='w-4 h-4' />
-                        )}
-                      </button>
+                {/* Selection Checkbox */}
+                {selectionMode && (
+                  <button
+                    onClick={() => toggleImageSelection(img.id)}
+                    className='absolute top-3 left-3 z-10'
+                  >
+                    {selectedImages.has(img.id) ? (
+                      <div className='w-6 h-6 rounded bg-primary flex items-center justify-center'>
+                        <CheckSquare className='w-5 h-5 text-primary-foreground' />
+                      </div>
+                    ) : (
+                      <div className='w-6 h-6 rounded border-2 border-white bg-black/30 backdrop-blur-sm' />
+                    )}
+                  </button>
+                )}
+
+                {/* Overlay Actions - Hide in selection mode */}
+                {!selectionMode && (
+                  <div className='absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4'>
+                    <div className='transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300'>
+                      <div className='flex gap-2'>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(img.url, img.id);
+                          }}
+                          className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
+                          title='Download'
+                        >
+                          <Download className='w-4 h-4' />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openLightbox(index);
+                          }}
+                          className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
+                          title='Expand'
+                        >
+                          <Maximize2 className='w-4 h-4' />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeleteDialog(img.id);
+                          }}
+                          disabled={deleting === img.id}
+                          className='p-2 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-500 backdrop-blur-sm transition-colors ml-auto disabled:opacity-50'
+                          title='Delete'
+                        >
+                          {deleting === img.id ? (
+                            <Loader2 className='w-4 h-4 animate-spin' />
+                          ) : (
+                            <Trash2 className='w-4 h-4' />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             ))}
           </div>
