@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       // Add reference image instructions with specific options
       if (referenceImage && referenceOptions.length > 0) {
         const optionsText = referenceOptions.join(', ');
-        enhancedPrompt += ` Use ONLY the ${optionsText} from the last reference image, but KEEP the face and body of the ${modelData.type} from the training images.`;
+        enhancedPrompt += ` Use ONLY the ${optionsText} from the last reference image, but KEEP the face and body of the model from first 4 images ${modelData.type} from the training images.`;
       }
 
       // Add user's custom prompt if provided
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       modelData.trainingImages.length > 0
     ) {
       console.log('Fetching training images from R2...');
-      const trainingImages = modelData.trainingImages.slice(0, 5); // Max 5 images
+      const trainingImages = modelData.trainingImages.slice(0, 4); // Max 5 images
 
       for (const imageUrl of trainingImages) {
         try {
