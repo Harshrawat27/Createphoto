@@ -20,6 +20,7 @@ interface PhotoTemplate {
   slug: string;
   imageUrl: string;
   prompt: string;
+  pseudoPrompt: string | null;
   modelName: string;
   tags: Tag[];
   createdAt: string;

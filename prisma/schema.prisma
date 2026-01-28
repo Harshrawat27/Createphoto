@@ -113,15 +113,16 @@ model Generation {
 }
 
 model PhotoTemplate {
-  id        String             @id @default(cuid())
-  heading   String
-  slug      String             @unique
-  imageUrl  String
-  prompt    String
-  modelName String
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
-  tags      PhotoTemplateTag[]
+  id           String             @id @default(cuid())
+  heading      String
+  slug         String             @unique
+  imageUrl     String
+  prompt       String             @db.Text
+  pseudoPrompt String?            @db.Text
+  modelName    String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  tags         PhotoTemplateTag[]
 
   @@map("photo_template")
 }

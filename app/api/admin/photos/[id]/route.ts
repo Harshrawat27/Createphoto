@@ -58,6 +58,7 @@ export async function PUT(
     const image = formData.get('image') as File | null;
     const heading = formData.get('heading') as string;
     const prompt = formData.get('prompt') as string;
+    const pseudoPrompt = formData.get('pseudoPrompt') as string | null;
     const modelName = formData.get('modelName') as string;
     const tagsJson = formData.get('tags') as string;
 
@@ -110,6 +111,7 @@ export async function PUT(
         slug,
         imageUrl,
         prompt: prompt || existingPhoto.prompt,
+        pseudoPrompt: pseudoPrompt !== undefined ? (pseudoPrompt || null) : existingPhoto.pseudoPrompt,
         modelName: modelName || existingPhoto.modelName,
         tags: {
           deleteMany: {},

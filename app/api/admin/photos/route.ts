@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     const image = formData.get('image') as File | null;
     const heading = formData.get('heading') as string;
     const prompt = formData.get('prompt') as string;
+    const pseudoPrompt = formData.get('pseudoPrompt') as string | null;
     const modelName = formData.get('modelName') as string;
     const tagsJson = formData.get('tags') as string;
 
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
         slug,
         imageUrl,
         prompt,
+        pseudoPrompt: pseudoPrompt || null,
         modelName,
         tags: {
           create: tagIds.map((tagId) => ({

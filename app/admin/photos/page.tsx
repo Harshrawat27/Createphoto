@@ -28,6 +28,7 @@ interface PhotoTemplate {
   slug: string;
   imageUrl: string;
   prompt: string;
+  pseudoPrompt: string | null;
   modelName: string;
   tags: Tag[];
   createdAt: string;
@@ -48,6 +49,7 @@ export default function AdminPhotosPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [heading, setHeading] = useState('');
   const [prompt, setPrompt] = useState('');
+  const [pseudoPrompt, setPseudoPrompt] = useState('');
   const [modelName, setModelName] = useState('');
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
@@ -182,6 +184,7 @@ export default function AdminPhotosPage() {
     setImagePreview(null);
     setHeading('');
     setPrompt('');
+    setPseudoPrompt('');
     setModelName('');
     setSelectedTags([]);
     setEditingId(null);
@@ -192,6 +195,7 @@ export default function AdminPhotosPage() {
     setEditingId(photo.id);
     setHeading(photo.heading);
     setPrompt(photo.prompt);
+    setPseudoPrompt(photo.pseudoPrompt || '');
     setModelName(photo.modelName);
     setSelectedTags(photo.tags);
     setImagePreview(photo.imageUrl);
@@ -215,6 +219,7 @@ export default function AdminPhotosPage() {
       if (image) formData.append('image', image);
       formData.append('heading', heading);
       formData.append('prompt', prompt);
+      formData.append('pseudoPrompt', pseudoPrompt);
       formData.append('modelName', modelName);
       formData.append('tags', JSON.stringify(selectedTags.map((t) => t.id)));
 
@@ -452,6 +457,23 @@ export default function AdminPhotosPage() {
                   rows={8}
                   className='w-full px-4 py-2 rounded-lg bg-background border border-border focus:border-primary focus:outline-none resize-none font-mono text-sm'
                 />
+              </div>
+
+              {/* Pseudo Prompt */}
+              <div>
+                <label className='block text-sm font-medium mb-2'>
+                  Pseudo Prompt <span className='text-muted-foreground text-xs'>(optional)</span>
+                </label>
+                <textarea
+                  value={pseudoPrompt}
+                  onChange={(e) => setPseudoPrompt(e.target.value)}
+                  placeholder='Enter a simplified/pseudo prompt for display...'
+                  rows={4}
+                  className='w-full px-4 py-2 rounded-lg bg-background border border-border focus:border-primary focus:outline-none resize-none font-mono text-sm'
+                />
+                <p className='text-xs text-muted-foreground mt-1'>
+                  A simplified version of the prompt shown to users (optional)
+                </p>
               </div>
             </div>
           </div>
