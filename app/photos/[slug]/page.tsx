@@ -1,105 +1,122 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/landing/Footer';
-import { Copy, Check, Sparkles, Loader2, Tag as TagIcon } from 'lucide-react';
+import { CopyPromptButton } from '@/components/photos/CopyPromptButton';
+import { Sparkles, Tag as TagIcon } from 'lucide-react';
+import prisma from '@/lib/prisma';
 
-interface Tag {
-  id: string;
-  name: string;
-  slug: string;
+interface PhotoPageProps {
+  params: Promise<{ slug: string }>;
 }
 
-interface PhotoTemplate {
-  id: string;
-  heading: string;
-  slug: string;
-  imageUrl: string;
-  prompt: string;
-  pseudoPrompt: string | null;
-  modelName: string;
-  tags: Tag[];
-  createdAt: string;
-}
+async function getPhoto(slug: string) {
+  const photo = await prisma.photoTemplate.findUnique({
+    where: { slug },
+    include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+  });
 
-export default function PhotoPage() {
-  const params = useParams();
-  const slug = params.slug as string;
+  if (!photo) return null;
 
-  const [photo, setPhoto] = useState<PhotoTemplate | null>(null);
-  const [relatedPhotos, setRelatedPhotos] = useState<PhotoTemplate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    async function fetchPhoto() {
-      try {
-        const res = await fetch(`/api/photos/${slug}`);
-        if (res.ok) {
-          const data = await res.json();
-          setPhoto(data.photo);
-          setRelatedPhotos(data.relatedPhotos);
-        } else {
-          setError(true);
-        }
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (slug) {
-      fetchPhoto();
-    }
-  }, [slug]);
-
-  const copyPrompt = async () => {
-    if (!photo) return;
-    try {
-      await navigator.clipboard.writeText(photo.pseudoPrompt || photo.prompt);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
+  return {
+    ...photo,
+    tags: photo.tags.map((t) => t.tag),
   };
+}
 
-  if (loading) {
-    return (
-      <div className='min-h-screen bg-background flex items-center justify-center'>
-        <Loader2 className='w-8 h-8 animate-spin text-primary' />
-      </div>
-    );
+async function getRelatedPhotos(photoId: string, tagIds: string[]) {
+  if (tagIds.length === 0) return [];
+
+  const photos = await prisma.photoTemplate.findMany({
+    where: {
+      id: { not: photoId },
+      tags: {
+        some: {
+          tagId: { in: tagIds },
+        },
+      },
+    },
+    include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+    take: 6,
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return photos.map((p) => ({
+    ...p,
+    tags: p.tags.map((t) => t.tag),
+  }));
+}
+
+export async function generateStaticParams() {
+  const photos = await prisma.photoTemplate.findMany({
+    select: { slug: true },
+  });
+  return photos.map((photo) => ({ slug: photo.slug }));
+}
+
+export async function generateMetadata({ params }: PhotoPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const photo = await getPhoto(slug);
+
+  if (!photo) {
+    return {
+      title: 'Photo Not Found - PicLoreAI',
+    };
   }
 
-  if (error || !photo) {
-    return (
-      <div className='min-h-screen bg-background flex flex-col'>
-        <Navbar />
-        <div className='flex-1 flex items-center justify-center'>
-          <div className='text-center'>
-            <h1 className='text-2xl font-bold mb-4'>Photo Not Found</h1>
-            <p className='text-muted-foreground mb-6'>
-              The photo you're looking for doesn't exist.
-            </p>
-            <Link
-              href='/'
-              className='px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90'
-            >
-              Go Home
-            </Link>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
+  const tagNames = photo.tags.map((t) => t.name);
+
+  return {
+    title: `${photo.heading} - AI Photo Prompt | PicLoreAI`,
+    description: `Generate stunning AI photos like "${photo.heading}" with this optimized prompt. Created with ${photo.modelName}. ${tagNames.length > 0 ? `Tags: ${tagNames.join(', ')}.` : ''}`,
+    keywords: [
+      photo.heading,
+      photo.modelName,
+      'AI photo',
+      'AI image generation',
+      'photo prompt',
+      ...tagNames,
+    ],
+    openGraph: {
+      title: `${photo.heading} - PicLoreAI`,
+      description: `Generate AI photos like this with our optimized prompt. Created with ${photo.modelName}.`,
+      images: [photo.imageUrl],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${photo.heading} - PicLoreAI`,
+      description: `Generate AI photos like this with our optimized prompt. Created with ${photo.modelName}.`,
+      images: [photo.imageUrl],
+    },
+  };
+}
+
+export default async function PhotoPage({ params }: PhotoPageProps) {
+  const { slug } = await params;
+  const photo = await getPhoto(slug);
+
+  if (!photo) {
+    notFound();
   }
+
+  const tagIds = photo.tags.map((t) => t.id);
+  const relatedPhotos = await getRelatedPhotos(photo.id, tagIds);
+  const displayPrompt = photo.pseudoPrompt || photo.prompt;
 
   return (
     <div className='min-h-screen bg-background text-foreground flex flex-col'>
@@ -156,31 +173,12 @@ export default function PhotoPage() {
                 <div className='space-y-3'>
                   <div className='flex items-center justify-between'>
                     <h2 className='text-xl font-heading font-bold'>Prompt</h2>
-                    <button
-                      onClick={copyPrompt}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        copied
-                          ? 'bg-green-500/20 text-green-500'
-                          : 'bg-primary/10 text-primary hover:bg-primary/20'
-                      }`}
-                    >
-                      {copied ? (
-                        <>
-                          <Check className='w-4 h-4' />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className='w-4 h-4' />
-                          Copy Prompt
-                        </>
-                      )}
-                    </button>
+                    <CopyPromptButton prompt={displayPrompt} />
                   </div>
 
                   <div className='relative'>
                     <pre className='bg-secondary/50 border border-border rounded-xl p-4 overflow-x-auto text-sm text-muted-foreground max-h-[400px] overflow-y-auto whitespace-pre-wrap'>
-                      <code>{photo.pseudoPrompt || photo.prompt}</code>
+                      <code>{displayPrompt}</code>
                     </pre>
                   </div>
 

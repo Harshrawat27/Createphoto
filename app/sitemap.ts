@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 import { getPublishedBlogs } from '@/lib/blog';
+import prisma from '@/lib/prisma';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://picloreai.com';
 
   // Static pages
@@ -20,6 +21,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/photos`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
@@ -47,5 +54,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...blogPages];
+  // Photo templates
+  const photos = await prisma.photoTemplate.findMany({
+    select: {
+      slug: true,
+      updatedAt: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const photoPages: MetadataRoute.Sitemap = photos.map((photo) => ({
+    url: `${baseUrl}/photos/${photo.slug}`,
+    lastModified: photo.updatedAt,
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
+
+  return [...staticPages, ...blogPages, ...photoPages];
 }

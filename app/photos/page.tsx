@@ -1,59 +1,58 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/landing/Footer';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import prisma from '@/lib/prisma';
 
-interface Tag {
-  id: string;
-  name: string;
-  slug: string;
+export const metadata: Metadata = {
+  title: 'AI Photo Templates - Browse & Use Prompts | PicLoreAI',
+  description:
+    'Browse our collection of AI-generated photo templates. Use these optimized prompts with your trained model to create stunning professional photos.',
+  keywords: [
+    'AI photo templates',
+    'AI image prompts',
+    'photo generation prompts',
+    'AI photography',
+    'professional AI photos',
+    'AI headshots',
+    'AI portraits',
+  ],
+  openGraph: {
+    title: 'AI Photo Templates - PicLoreAI',
+    description:
+      'Browse our collection of AI-generated photo templates. Use these prompts to create stunning photos.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AI Photo Templates - PicLoreAI',
+    description:
+      'Browse our collection of AI-generated photo templates. Use these prompts to create stunning photos.',
+  },
+};
+
+async function getPhotos() {
+  const photos = await prisma.photoTemplate.findMany({
+    include: {
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return photos.map((photo) => ({
+    ...photo,
+    tags: photo.tags.map((t) => t.tag),
+  }));
 }
 
-interface PhotoTemplate {
-  id: string;
-  heading: string;
-  slug: string;
-  imageUrl: string;
-  prompt: string;
-  pseudoPrompt: string | null;
-  modelName: string;
-  tags: Tag[];
-  createdAt: string;
-}
-
-export default function PhotosPage() {
-  const [photos, setPhotos] = useState<PhotoTemplate[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchPhotos() {
-      try {
-        const res = await fetch('/api/photos');
-        if (res.ok) {
-          const data = await res.json();
-          setPhotos(data);
-        }
-      } catch (error) {
-        console.error('Error fetching photos:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchPhotos();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className='min-h-screen bg-background flex items-center justify-center'>
-        <Loader2 className='w-8 h-8 animate-spin text-primary' />
-      </div>
-    );
-  }
+export default async function PhotosPage() {
+  const photos = await getPhotos();
 
   return (
     <div className='min-h-screen bg-background text-foreground flex flex-col'>
@@ -105,16 +104,9 @@ export default function PhotosPage() {
                           </p>
 
                           {/* Use Template Button */}
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              // Will implement later
-                            }}
-                            className='w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors'
-                          >
-                            {/* <Sparkles className='w-4 h-4' /> */}
+                          <span className='w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors'>
                             Use this template
-                          </button>
+                          </span>
                         </div>
                       </div>
 
