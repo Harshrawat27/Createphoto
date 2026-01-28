@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Instrument_Serif, JetBrains_Mono } from 'next/font/google';
+import { Instrument_Serif, JetBrains_Mono, Inria_Sans } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Analytics } from '@vercel/analytics/next';
@@ -14,6 +14,12 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-jetbrains-mono',
   subsets: ['latin'],
   weight: ['400', '500', '600'],
+});
+
+const inriaSans = Inria_Sans({
+  variable: '--font-inria-sans',
+  subsets: ['latin'],
+  weight: ['400'],
 });
 
 export const metadata: Metadata = {
@@ -51,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body
-        className={`${instrumentSerif.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${instrumentSerif.variable} ${jetbrainsMono.variable} ${inriaSans.variable} antialiased`}
       >
         <ThemeProvider
           defaultTheme='dark'

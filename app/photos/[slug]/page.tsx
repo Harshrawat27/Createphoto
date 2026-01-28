@@ -68,7 +68,9 @@ export async function generateStaticParams() {
   return photos.map((photo) => ({ slug: photo.slug }));
 }
 
-export async function generateMetadata({ params }: PhotoPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PhotoPageProps): Promise<Metadata> {
   const { slug } = await params;
   const photo = await getPhoto(slug);
 
@@ -82,7 +84,11 @@ export async function generateMetadata({ params }: PhotoPageProps): Promise<Meta
 
   return {
     title: `${photo.heading} - AI Photo Prompt | PicLoreAI`,
-    description: `Generate stunning AI photos like "${photo.heading}" with this optimized prompt. Created with ${photo.modelName}. ${tagNames.length > 0 ? `Tags: ${tagNames.join(', ')}.` : ''}`,
+    description: `Generate stunning AI photos like "${
+      photo.heading
+    }" with this optimized prompt. Created with ${photo.modelName}. ${
+      tagNames.length > 0 ? `Tags: ${tagNames.join(', ')}.` : ''
+    }`,
     keywords: [
       photo.heading,
       photo.modelName,
@@ -144,13 +150,16 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
               {/* Details - Right Side */}
               <div className='space-y-6'>
                 <div>
-                  <h1 className='text-3xl md:text-4xl font-heading font-bold tracking-tight mb-4'>
+                  <h1 className='text-3xl md:text-4xl font-second font-bold tracking-tight mb-4'>
                     {photo.heading}
                   </h1>
 
                   {/* Model Name */}
                   <p className='text-muted-foreground'>
-                    Generated with <span className='text-primary font-medium'>{photo.modelName}</span>
+                    Generated with{' '}
+                    <span className='text-primary font-medium'>
+                      {photo.modelName}
+                    </span>
                   </p>
                 </div>
 
@@ -183,7 +192,8 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
                   </div>
 
                   <p className='text-sm text-muted-foreground'>
-                    Copy this prompt and use it with your trained AI model to generate similar images.
+                    Copy this prompt and use it with your trained AI model to
+                    generate similar images.
                   </p>
                 </div>
               </div>
@@ -195,7 +205,9 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
         {relatedPhotos.length > 0 && (
           <section className='py-16 bg-secondary/20'>
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-              <h2 className='text-2xl font-heading font-bold mb-8'>Related Photos</h2>
+              <h2 className='text-2xl font-heading font-bold mb-8'>
+                Related Photos
+              </h2>
               <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
                 {relatedPhotos.map((relatedPhoto) => (
                   <Link
@@ -238,7 +250,8 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
                   Create Your Own AI Photos
                 </h2>
                 <p className='text-white/80 text-lg md:text-xl max-w-2xl mx-auto'>
-                  Train a personalized AI model on your face and generate unlimited professional photos using prompts like this.
+                  Train a personalized AI model on your face and generate
+                  unlimited professional photos using prompts like this.
                 </p>
                 <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
                   <Link
@@ -250,7 +263,8 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
                   </Link>
                 </div>
                 <p className='text-white/60 text-sm'>
-                  No credit card required. Generate your first photos in minutes.
+                  No credit card required. Generate your first photos in
+                  minutes.
                 </p>
               </div>
             </div>

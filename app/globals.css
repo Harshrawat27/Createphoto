@@ -10,6 +10,7 @@
   --font-sans: var(--font-jetbrains-mono);
   --font-heading: var(--font-instrument-serif);
   --font-mono: var(--font-jetbrains-mono);
+  --font-second: var(--font-inria-sans);
 
   /* Color system */
   --color-primary: var(--primary);
