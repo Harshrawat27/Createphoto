@@ -68,14 +68,17 @@ export default function PhotosPage() {
                 AI Photo Templates
               </h1>
               <p className='text-muted-foreground text-lg max-w-2xl mx-auto'>
-                Browse our collection of AI-generated photo templates. Use these prompts with your trained model to create stunning images.
+                Browse our collection of AI-generated photo templates. Use these
+                prompts with your trained model to create stunning images.
               </p>
             </div>
 
             {/* Photos Grid */}
             {photos.length === 0 ? (
               <div className='text-center py-20'>
-                <p className='text-muted-foreground text-lg'>No photos yet. Check back soon!</p>
+                <p className='text-muted-foreground text-lg'>
+                  No photos yet. Check back soon!
+                </p>
               </div>
             ) : (
               <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6'>
@@ -98,7 +101,7 @@ export default function PhotosPage() {
                         <div className='absolute bottom-0 left-0 right-0 p-4'>
                           {/* Prompt Preview */}
                           <p className='text-white/80 text-xs mb-3 line-clamp-2'>
-                            {photo.prompt}
+                            {photo.pseudoPrompt || photo.prompt}
                           </p>
 
                           {/* Use Template Button */}
@@ -109,7 +112,7 @@ export default function PhotosPage() {
                             }}
                             className='w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors'
                           >
-                            <Sparkles className='w-4 h-4' />
+                            {/* <Sparkles className='w-4 h-4' /> */}
                             Use this template
                           </button>
                         </div>
@@ -143,7 +146,8 @@ export default function PhotosPage() {
                   Create Your Own AI Photos
                 </h2>
                 <p className='text-white/80 text-lg md:text-xl max-w-2xl mx-auto'>
-                  Train a personalized AI model on your face and use any of these templates to generate stunning photos.
+                  Train a personalized AI model on your face and use any of
+                  these templates to generate stunning photos.
                 </p>
                 <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
                   <Link
@@ -155,7 +159,8 @@ export default function PhotosPage() {
                   </Link>
                 </div>
                 <p className='text-white/60 text-sm'>
-                  No credit card required. Generate your first photos in minutes.
+                  No credit card required. Generate your first photos in
+                  minutes.
                 </p>
               </div>
             </div>

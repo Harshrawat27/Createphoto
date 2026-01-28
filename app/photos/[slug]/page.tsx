@@ -62,7 +62,7 @@ export default function PhotoPage() {
   const copyPrompt = async () => {
     if (!photo) return;
     try {
-      await navigator.clipboard.writeText(photo.prompt);
+      await navigator.clipboard.writeText(photo.pseudoPrompt || photo.prompt);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -180,7 +180,7 @@ export default function PhotoPage() {
 
                   <div className='relative'>
                     <pre className='bg-secondary/50 border border-border rounded-xl p-4 overflow-x-auto text-sm text-muted-foreground max-h-[400px] overflow-y-auto whitespace-pre-wrap'>
-                      <code>{photo.prompt}</code>
+                      <code>{photo.pseudoPrompt || photo.prompt}</code>
                     </pre>
                   </div>
 
