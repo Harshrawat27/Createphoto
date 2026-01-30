@@ -108,24 +108,47 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
     }
   };
 
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+
+    const maxSize = 3 * 1024 * 1024; // 3MB
+    if (file.size > maxSize) {
+      toast.error('Image size exceeds 3MB limit');
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setSelectedImage(url);
+    setSelectedImageFile(file);
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check file size (3MB = 3 * 1024 * 1024 bytes)
-      const maxSize = 3 * 1024 * 1024; // 3MB in bytes
-
-      if (file.size > maxSize) {
-        toast.error('Image size exceeds 3MB limit');
-        // Reset the input
+      handleImageFile(file);
+      if (file.size > 3 * 1024 * 1024) {
         e.target.value = '';
-        return;
       }
-
-      const url = URL.createObjectURL(file);
-      setSelectedImage(url);
-      setSelectedImageFile(file);
     }
   };
+
+  // Paste image from clipboard into reference image
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) handleImageFile(file);
+          break;
+        }
+      }
+    };
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
 
   const toggleReferenceOption = (option: string) => {
     setReferenceOptions((prev) =>
@@ -352,7 +375,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
               <div className='flex flex-col items-center justify-center pt-5 pb-6'>
                 <Upload className='w-8 h-8 mb-2 text-muted-foreground' />
                 <p className='text-sm text-muted-foreground'>
-                  Click to upload or drag & drop
+                  Click to upload, drag & drop, or paste
                 </p>
               </div>
               <input
