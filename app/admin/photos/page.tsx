@@ -128,18 +128,42 @@ export default function AdminPhotosPage() {
     };
   }, [tagSearch, selectedTags]);
 
-  // Handle image selection
+  // Handle image from file
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      handleImageFile(file);
     }
   };
+
+  // Shared handler for both browse and paste
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    setImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle paste anywhere on the page
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) handleImageFile(file);
+          break;
+        }
+      }
+    };
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
 
   // Add existing tag
   const addTag = (tag: Tag) => {
@@ -335,7 +359,7 @@ export default function AdminPhotosPage() {
                 ) : (
                   <div className='text-center text-muted-foreground'>
                     <ImageIcon className='w-12 h-12 mx-auto mb-2' />
-                    <p className='text-sm'>Click to upload</p>
+                    <p className='text-sm'>Click to upload or paste</p>
                     <p className='text-xs'>9:16 aspect ratio</p>
                   </div>
                 )}
