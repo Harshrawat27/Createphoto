@@ -30,6 +30,7 @@ interface PhotoTemplate {
   prompt: string;
   pseudoPrompt: string | null;
   modelName: string;
+  useImage: boolean;
   tags: Tag[];
   createdAt: string;
 }
@@ -51,6 +52,7 @@ export default function AdminPhotosPage() {
   const [prompt, setPrompt] = useState('');
   const [pseudoPrompt, setPseudoPrompt] = useState('');
   const [modelName, setModelName] = useState('');
+  const [useImage, setUseImage] = useState(false);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
 
   // Tag search state
@@ -210,6 +212,7 @@ export default function AdminPhotosPage() {
     setPrompt('');
     setPseudoPrompt('');
     setModelName('');
+    setUseImage(false);
     setSelectedTags([]);
     setEditingId(null);
   };
@@ -221,6 +224,7 @@ export default function AdminPhotosPage() {
     setPrompt(photo.prompt);
     setPseudoPrompt(photo.pseudoPrompt || '');
     setModelName(photo.modelName);
+    setUseImage(photo.useImage);
     setSelectedTags(photo.tags);
     setImagePreview(photo.imageUrl);
     setImage(null);
@@ -245,6 +249,7 @@ export default function AdminPhotosPage() {
       formData.append('prompt', prompt);
       formData.append('pseudoPrompt', pseudoPrompt);
       formData.append('modelName', modelName);
+      formData.append('useImage', String(useImage));
       formData.append('tags', JSON.stringify(selectedTags.map((t) => t.id)));
 
       const url = editingId ? `/api/admin/photos/${editingId}` : '/api/admin/photos';
@@ -401,6 +406,24 @@ export default function AdminPhotosPage() {
                   placeholder='Gemini 3 Pro'
                   className='w-full px-4 py-2 rounded-lg bg-background border border-border focus:border-primary focus:outline-none'
                 />
+              </div>
+
+              {/* Use Image Toggle */}
+              <div className='flex items-center justify-between'>
+                <label className='text-sm font-medium'>Use Image</label>
+                <button
+                  type='button'
+                  onClick={() => setUseImage(!useImage)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    useImage ? 'bg-primary' : 'bg-border'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      useImage ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
 
               {/* Tags */}

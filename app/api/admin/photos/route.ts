@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
     const pseudoPrompt = formData.get('pseudoPrompt') as string | null;
     const modelName = formData.get('modelName') as string;
     const tagsJson = formData.get('tags') as string;
+    const useImage = formData.get('useImage') === 'true';
 
     // Validation
     if (!image || !heading || !prompt || !modelName) {
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
         prompt,
         pseudoPrompt: pseudoPrompt || null,
         modelName,
+        useImage,
         tags: {
           create: tagIds.map((tagId) => ({
             tagId,

@@ -120,6 +120,7 @@ model PhotoTemplate {
   prompt       String             @db.Text
   pseudoPrompt String?            @db.Text
   modelName    String
+  useImage     Boolean            @default(false)
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   tags         PhotoTemplateTag[]

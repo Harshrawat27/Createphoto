@@ -61,6 +61,8 @@ export async function PUT(
     const pseudoPrompt = formData.get('pseudoPrompt') as string | null;
     const modelName = formData.get('modelName') as string;
     const tagsJson = formData.get('tags') as string;
+    const useImageRaw = formData.get('useImage');
+    const useImage = useImageRaw !== null ? useImageRaw === 'true' : undefined;
 
     // Check if photo exists
     const existingPhoto = await prisma.photoTemplate.findUnique({
@@ -113,6 +115,7 @@ export async function PUT(
         prompt: prompt || existingPhoto.prompt,
         pseudoPrompt: pseudoPrompt !== undefined ? (pseudoPrompt || null) : existingPhoto.pseudoPrompt,
         modelName: modelName || existingPhoto.modelName,
+        useImage: useImage !== undefined ? useImage : existingPhoto.useImage,
         tags: {
           deleteMany: {},
           create: tagIds.map((tagId) => ({
