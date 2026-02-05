@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     const formData = await request.formData();
-    const prompt = formData.get('prompt') as string;
+    let prompt = formData.get('prompt') as string;
     const modelId = formData.get('modelId') as string;
     const aspectRatio = (formData.get('aspectRatio') as string) || '1:1';
     const resolution = (formData.get('resolution') as string) || '2K';
@@ -59,9 +59,34 @@ export async function POST(request: NextRequest) {
     const referenceImage = formData.get('referenceImage') as File | null;
     const referenceOptionsStr = formData.get('referenceOptions') as string;
     const aiModelId = formData.get('aiModelId') as string;
-    const referenceOptions: string[] = referenceOptionsStr
+    const templateSlug = formData.get('templateSlug') as string | null;
+    let referenceOptions: string[] = referenceOptionsStr
       ? JSON.parse(referenceOptionsStr)
       : [];
+
+    // If templateSlug is provided, fetch template and use its prompt/image
+    let templateImageUrl: string | null = null;
+    if (templateSlug) {
+      const template = await prisma.photoTemplate.findUnique({
+        where: { slug: templateSlug },
+      });
+
+      if (!template) {
+        return NextResponse.json(
+          { error: 'Template not found' },
+          { status: 404 }
+        );
+      }
+
+      // Use template's prompt
+      prompt = template.prompt;
+
+      // If useImage is true, use template's image as reference
+      if (template.useImage) {
+        templateImageUrl = template.imageUrl;
+        referenceOptions = ['pose', 'clothes', 'lighting', 'background'];
+      }
+    }
 
     // Get AI model from static config
     const aiModel = getModelById(aiModelId);
@@ -93,10 +118,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prompt is optional if reference image with options is provided
+    // Prompt is optional if reference image with options is provided or using template
     const hasReferenceWithOptions =
       referenceImage && referenceOptions.length > 0;
-    if (!prompt && !hasReferenceWithOptions) {
+    if (!prompt && !hasReferenceWithOptions && !templateSlug) {
       return NextResponse.json(
         {
           error: 'Prompt is required or provide a reference image with options',
@@ -172,6 +197,18 @@ export async function POST(request: NextRequest) {
       console.log('Adding reference image from user upload...');
       images.push(referenceImage);
       console.log('Added reference image to images array');
+    }
+
+    // Add template image as reference if useImage is true
+    if (templateImageUrl) {
+      console.log('Adding template image as reference...');
+      try {
+        const templateFile = await fetchImageAsFile(templateImageUrl, 'template-reference.jpg');
+        images.push(templateFile);
+        console.log('Added template image to images array');
+      } catch (err) {
+        console.error('Failed to fetch template image:', templateImageUrl, err);
+      }
     }
 
     // Map our format to OpenAI format

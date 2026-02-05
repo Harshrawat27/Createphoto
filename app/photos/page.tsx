@@ -82,11 +82,7 @@ export default async function PhotosPage() {
             ) : (
               <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6'>
                 {photos.map((photo) => (
-                  <Link
-                    key={photo.id}
-                    href={`/photos/${photo.slug}`}
-                    className='group block'
-                  >
+                  <div key={photo.id} className='group block relative'>
                     <div className='relative aspect-[9/16] rounded-xl overflow-hidden bg-secondary/30 shadow-lg'>
                       <Image
                         src={photo.imageUrl}
@@ -95,29 +91,39 @@ export default async function PhotosPage() {
                         className='object-cover transition-transform duration-300 group-hover:scale-105'
                       />
 
+                      {/* Full card link - goes to detail page */}
+                      <Link
+                        href={`/photos/${photo.slug}`}
+                        className='absolute inset-0 z-[1]'
+                        aria-label={`View ${photo.heading}`}
+                      />
+
                       {/* Hover Overlay */}
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                        <div className='absolute bottom-0 left-0 right-0 p-4'>
+                      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
+                        <div className='absolute bottom-0 left-0 right-0 p-4 pointer-events-auto'>
                           {/* Prompt Preview */}
                           <p className='text-white/80 text-xs mb-3 line-clamp-2'>
                             {photo.pseudoPrompt || photo.prompt}
                           </p>
 
-                          {/* Use Template Button */}
-                          <span className='w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors'>
+                          {/* Use Template Button - higher z-index, goes to create page */}
+                          <Link
+                            href={`/dashboard/create?template=${photo.slug}`}
+                            className='relative z-[2] w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors'
+                          >
                             Use this template
-                          </span>
+                          </Link>
                         </div>
                       </div>
 
                       {/* Always visible title at bottom */}
-                      <div className='absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent group-hover:opacity-0 transition-opacity duration-300'>
+                      <div className='absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent group-hover:opacity-0 transition-opacity duration-300 pointer-events-none'>
                         <h3 className='text-white text-sm font-medium line-clamp-2'>
                           {photo.heading}
                         </h3>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             )}

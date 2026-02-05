@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Upload, ImageIcon, Wand2, RefreshCw, X, Loader2 } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import {
+  Upload,
+  ImageIcon,
+  Wand2,
+  RefreshCw,
+  X,
+  Loader2,
+  FileImage,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Field, FieldLabel } from '@/components/ui/field';
 import {
@@ -37,11 +46,23 @@ interface AIModel {
   apiPath: string;
 }
 
+interface Template {
+  id: string;
+  heading: string;
+  slug: string;
+  imageUrl: string;
+  useImage: boolean;
+}
+
 interface CreationControlsProps {
   onGenerate?: (images: any[]) => void;
 }
 
 export function CreationControls({ onGenerate }: CreationControlsProps) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const templateSlug = searchParams.get('template');
+
   const [prompt, setPrompt] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -57,17 +78,52 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   const [imageCount, setImageCount] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [template, setTemplate] = useState<Template | null>(null);
+  const [loadingTemplate, setLoadingTemplate] = useState(false);
 
   // Get current AI model's capabilities
   const currentAiModel = aiModels.find((m) => m.id === selectedAiModel);
   const availableAspectRatios = currentAiModel?.capabilities.aspectRatios || [];
   const availableResolutions = currentAiModel?.capabilities.resolutions || [];
-  const maxImageCount = currentAiModel?.capabilities.features.maxImageCount || 4;
+  const maxImageCount =
+    currentAiModel?.capabilities.features.maxImageCount || 4;
 
   useEffect(() => {
     fetchModels();
     fetchAIModels();
   }, []);
+
+  // Fetch template if templateSlug is in URL
+  useEffect(() => {
+    if (templateSlug) {
+      setLoadingTemplate(true);
+      fetch(`/api/templates/${templateSlug}`)
+        .then((res) => {
+          if (res.ok) return res.json();
+          throw new Error('Template not found');
+        })
+        .then((data) => {
+          setTemplate(data);
+        })
+        .catch((err) => {
+          console.error('Failed to fetch template:', err);
+          toast.error('Template not found');
+          // Remove template param from URL
+          router.replace('/dashboard/create');
+        })
+        .finally(() => {
+          setLoadingTemplate(false);
+        });
+    } else {
+      setTemplate(null);
+    }
+  }, [templateSlug, router]);
+
+  // Remove template and go back to normal mode
+  const removeTemplate = () => {
+    setTemplate(null);
+    router.replace('/dashboard/create');
+  };
 
   const fetchModels = async () => {
     try {
@@ -132,9 +188,12 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
     }
   };
 
-  // Paste image from clipboard into reference image
+  // Paste image from clipboard into reference image (disabled in template mode)
   useEffect(() => {
     const handlePaste = (e: ClipboardEvent) => {
+      // Don't handle paste when using a template
+      if (template) return;
+
       const items = e.clipboardData?.items;
       if (!items) return;
       for (const item of items) {
@@ -148,7 +207,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
     };
     document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
-  }, []);
+  }, [template]);
 
   const toggleReferenceOption = (option: string) => {
     setReferenceOptions((prev) =>
@@ -159,15 +218,18 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
   };
 
   const handleGenerate = async () => {
-    // Prompt is optional if reference image with options is provided
-    const hasReferenceWithOptions =
-      selectedImageFile && referenceOptions.length > 0;
+    // If using template, we don't need prompt validation
+    if (!template) {
+      // Prompt is optional if reference image with options is provided
+      const hasReferenceWithOptions =
+        selectedImageFile && referenceOptions.length > 0;
 
-    if (!prompt.trim() && !hasReferenceWithOptions) {
-      setError(
-        'Please enter a prompt or upload a reference image with options'
-      );
-      return;
+      if (!prompt.trim() && !hasReferenceWithOptions) {
+        setError(
+          'Please enter a prompt or upload a reference image with options'
+        );
+        return;
+      }
     }
 
     // Get selected AI model details
@@ -191,7 +253,19 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
 
     try {
       const formData = new FormData();
-      formData.append('prompt', prompt);
+
+      // If using template, send templateSlug instead of prompt/referenceImage
+      if (template) {
+        formData.append('templateSlug', template.slug);
+      } else {
+        formData.append('prompt', prompt);
+        // Add reference image if uploaded
+        if (selectedImageFile) {
+          formData.append('referenceImage', selectedImageFile);
+          formData.append('referenceOptions', JSON.stringify(referenceOptions));
+        }
+      }
+
       // If 'none' is selected, send empty string for no model
       formData.append(
         'modelId',
@@ -201,12 +275,6 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
       formData.append('aspectRatio', aspectRatio);
       formData.append('resolution', resolution);
       formData.append('imageCount', imageCount.toString());
-
-      // Add reference image if uploaded
-      if (selectedImageFile) {
-        formData.append('referenceImage', selectedImageFile);
-        formData.append('referenceOptions', JSON.stringify(referenceOptions));
-      }
 
       // Use the AI model's apiPath to call the correct endpoint
       const response = await fetch(`/api/generate/${aiModel.apiPath}`, {
@@ -333,112 +401,153 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         </div>
       )}
 
-      {/* Prompt Input */}
-      <div className='space-y-3'>
-        <div className='flex justify-between'>
-          <label className='text-sm font-medium'>
-            Prompt{' '}
-            {selectedImageFile && referenceOptions.length > 0 && (
-              <span className='text-muted-foreground font-normal'>
-                (Optional)
-              </span>
-            )}
-          </label>
-          <span className='text-xs text-muted-foreground'>
-            Try "wearing a suit"
-          </span>
-        </div>
-        <textarea
-          className='flex min-h-30 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none'
-          placeholder={
-            selectedImageFile && referenceOptions.length > 0
-              ? 'Add additional details (optional)...'
-              : 'Describe the image you want to generate...'
-          }
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-        />
-      </div>
-
-      {/* Reference Image Upload */}
-      <div className='space-y-3'>
-        <label className='text-sm font-medium'>
-          Reference Image (Optional)
-        </label>
-        <p className='text-xs text-muted-foreground mb-2'>
-          Upload an image to copy a pose or style.
-        </p>
-
-        {!selectedImage ? (
-          <div className='flex items-center justify-center w-full'>
-            <label className='flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/20 hover:bg-secondary/40 border-border hover:border-primary transition-colors'>
-              <div className='flex flex-col items-center justify-center pt-5 pb-6'>
-                <Upload className='w-8 h-8 mb-2 text-muted-foreground' />
-                <p className='text-sm text-muted-foreground'>
-                  Click to upload, drag & drop, or paste
-                </p>
+      {/* Template Card OR Prompt/Reference Input */}
+      {template ? (
+        <div className='space-y-3'>
+          <label className='text-sm font-medium'>Using Template</label>
+          <div className='relative p-4 bg-secondary/30 border border-border rounded-xl mt-3'>
+            <div className='flex gap-4 items-start'>
+              <div className='relative w-20 h-28 rounded-lg overflow-hidden bg-secondary/50 shrink-0'>
+                <img
+                  src={template.imageUrl}
+                  alt={template.heading}
+                  className='w-full h-full object-cover'
+                />
               </div>
-              <input
-                type='file'
-                className='hidden'
-                accept='image/*'
-                onChange={handleImageUpload}
-              />
-            </label>
-          </div>
-        ) : (
-          <div className='relative w-full h-48 rounded-lg overflow-hidden border border-border group'>
-            <img
-              src={selectedImage}
-              alt='Reference'
-              className='w-full h-full object-cover'
-            />
+              <div className='flex-1 min-w-0'>
+                <h3 className='font-medium text-base line-clamp-2 mb-1'>
+                  {template.heading}
+                </h3>
+                {/* <div className='flex items-center gap-1.5 text-xs text-muted-foreground'>
+                  <FileImage className='w-3.5 h-3.5' />
+                  <span>Template prompt will be used</span>
+                </div> */}
+              </div>
+            </div>
             <button
-              onClick={() => {
-                setSelectedImage(null);
-                setSelectedImageFile(null);
-                setReferenceOptions([]);
-              }}
+              onClick={removeTemplate}
               className='absolute top-2 right-2 p-1.5 bg-background/80 text-foreground rounded-full hover:bg-red-500 hover:text-white transition-colors'
             >
               <X className='w-4 h-4' />
             </button>
           </div>
-        )}
-
-        {/* Reference Image Options */}
-        {selectedImage && (
-          <div className='space-y-2'>
-            <label className='text-sm font-medium'>
-              What to take from reference?
-            </label>
-            <p className='text-xs text-muted-foreground'>
-              Select what aspects to copy (face will always be from your model)
-            </p>
-            <div className='grid grid-cols-2 gap-2'>
-              {['pose', 'clothes', 'lighting', 'background'].map((option) => (
-                <button
-                  key={option}
-                  onClick={() => toggleReferenceOption(option)}
-                  className={`px-3 py-2 text-sm border rounded-md capitalize transition-colors ${
-                    referenceOptions.includes(option)
-                      ? 'bg-primary/10 border-primary text-primary'
-                      : 'hover:bg-secondary/50 border-border'
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
+          <p className='text-xs text-muted-foreground'>
+            The template's prompt and settings will be used for generation.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Prompt Input */}
+          <div className='space-y-3'>
+            <div className='flex justify-between'>
+              <label className='text-sm font-medium'>
+                Prompt{' '}
+                {selectedImageFile && referenceOptions.length > 0 && (
+                  <span className='text-muted-foreground font-normal'>
+                    (Optional)
+                  </span>
+                )}
+              </label>
+              <span className='text-xs text-muted-foreground'>
+                Try "wearing a suit"
+              </span>
             </div>
+            <textarea
+              className='flex min-h-30 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none'
+              placeholder={
+                selectedImageFile && referenceOptions.length > 0
+                  ? 'Add additional details (optional)...'
+                  : 'Describe the image you want to generate...'
+              }
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+            />
           </div>
-        )}
-      </div>
+
+          {/* Reference Image Upload */}
+          <div className='space-y-3'>
+            <label className='text-sm font-medium'>
+              Reference Image (Optional)
+            </label>
+            <p className='text-xs text-muted-foreground mb-2'>
+              Upload an image to copy a pose or style.
+            </p>
+
+            {!selectedImage ? (
+              <div className='flex items-center justify-center w-full'>
+                <label className='flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-secondary/20 hover:bg-secondary/40 border-border hover:border-primary transition-colors'>
+                  <div className='flex flex-col items-center justify-center pt-5 pb-6'>
+                    <Upload className='w-8 h-8 mb-2 text-muted-foreground' />
+                    <p className='text-sm text-muted-foreground'>
+                      Click to upload, drag & drop, or paste
+                    </p>
+                  </div>
+                  <input
+                    type='file'
+                    className='hidden'
+                    accept='image/*'
+                    onChange={handleImageUpload}
+                  />
+                </label>
+              </div>
+            ) : (
+              <div className='relative w-full h-48 rounded-lg overflow-hidden border border-border group'>
+                <img
+                  src={selectedImage}
+                  alt='Reference'
+                  className='w-full h-full object-cover'
+                />
+                <button
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setSelectedImageFile(null);
+                    setReferenceOptions([]);
+                  }}
+                  className='absolute top-2 right-2 p-1.5 bg-background/80 text-foreground rounded-full hover:bg-red-500 hover:text-white transition-colors'
+                >
+                  <X className='w-4 h-4' />
+                </button>
+              </div>
+            )}
+
+            {/* Reference Image Options */}
+            {selectedImage && (
+              <div className='space-y-2'>
+                <label className='text-sm font-medium'>
+                  What to take from reference?
+                </label>
+                <p className='text-xs text-muted-foreground'>
+                  Select what aspects to copy (face will always be from your
+                  model)
+                </p>
+                <div className='grid grid-cols-2 gap-2'>
+                  {['pose', 'clothes', 'lighting', 'background'].map(
+                    (option) => (
+                      <button
+                        key={option}
+                        onClick={() => toggleReferenceOption(option)}
+                        className={`px-3 py-2 text-sm border rounded-md capitalize transition-colors ${
+                          referenceOptions.includes(option)
+                            ? 'bg-primary/10 border-primary text-primary'
+                            : 'hover:bg-secondary/50 border-border'
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       {/* Settings */}
       <div className='grid grid-cols-2 gap-4'>
         <div className='space-y-2'>
           <label className='text-sm font-medium'>Aspect Ratio</label>
-          <div className='flex gap-2 flex-wrap'>
+          <div className='flex gap-2 flex-wrap mt-3'>
             {availableAspectRatios.map((ratio) => (
               <button
                 key={ratio}
@@ -456,7 +565,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         </div>
         <div className='space-y-2'>
           <label className='text-sm font-medium'>Resolution</label>
-          <div className='flex gap-2 flex-wrap'>
+          <div className='flex gap-2 flex-wrap mt-3'>
             {availableResolutions.map((res) => (
               <button
                 key={res}
@@ -487,11 +596,13 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className='bg-background'>
-              {[1, 2, 4].filter((count) => count <= maxImageCount).map((count) => (
-                <SelectItem key={count} value={count.toString()}>
-                  {count} {count === 1 ? 'Image' : 'Images'}
-                </SelectItem>
-              ))}
+              {[1, 2, 4]
+                .filter((count) => count <= maxImageCount)
+                .map((count) => (
+                  <SelectItem key={count} value={count.toString()}>
+                    {count} {count === 1 ? 'Image' : 'Images'}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </Field>
@@ -502,8 +613,10 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
         onClick={handleGenerate}
         disabled={
           isGenerating ||
+          loadingTemplate ||
           !selectedAiModel ||
-          (!prompt.trim() &&
+          (!template &&
+            !prompt.trim() &&
             !(selectedImageFile && referenceOptions.length > 0))
         }
         className='w-full py-4 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-colors shadow-lg flex items-center justify-center gap-2 mt-auto disabled:opacity-50 disabled:cursor-not-allowed'

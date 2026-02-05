@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/landing/Footer';
 import { CopyPromptButton } from '@/components/photos/CopyPromptButton';
-import { Sparkles, Tag as TagIcon } from 'lucide-react';
+import { Sparkles, Tag as TagIcon, Wand2 } from 'lucide-react';
 import prisma from '@/lib/prisma';
 
 interface PhotoPageProps {
@@ -196,6 +196,15 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
                     generate similar images.
                   </p>
                 </div>
+
+                {/* Use Template Button */}
+                <Link
+                  href={`/dashboard/create?template=${photo.slug}`}
+                  className='inline-flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 rounded-xl text-lg font-bold transition-colors shadow-lg'
+                >
+                  <Wand2 className='w-5 h-5' />
+                  Use This Template
+                </Link>
               </div>
             </div>
           </div>
