@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     'AI headshots',
     'AI portraits',
   ],
+  alternates: {
+    canonical: 'https://picloreai.com/photos',
+  },
   openGraph: {
     title: 'AI Photo Templates - PicLoreAI',
     description:

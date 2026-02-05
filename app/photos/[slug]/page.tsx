@@ -82,6 +82,8 @@ export async function generateMetadata({
 
   const tagNames = photo.tags.map((t) => t.name);
 
+  const baseUrl = 'https://picloreai.com';
+
   return {
     title: `${photo.heading} - AI Photo Prompt | PicLoreAI`,
     description: `Generate stunning AI photos like "${
@@ -97,6 +99,9 @@ export async function generateMetadata({
       'photo prompt',
       ...tagNames,
     ],
+    alternates: {
+      canonical: `${baseUrl}/photos/${slug}`,
+    },
     openGraph: {
       title: `${photo.heading} - PicLoreAI`,
       description: `Generate AI photos like this with our optimized prompt. Created with ${photo.modelName}.`,
