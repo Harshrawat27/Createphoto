@@ -104,10 +104,19 @@ export default async function Home() {
                 {/* Social Proof */}
                 <div className='flex items-center gap-4 pt-4'>
                   <div className='flex -space-x-2'>
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div
+                    {[
+                      'https://pub-dae4dc46f1b149f981bfbd413762b534.r2.dev/models/1769858631603-image%2041.png',
+                      'https://pub-dae4dc46f1b149f981bfbd413762b534.r2.dev/models/1767872008404-ChatGPT%20Image%20Jan%208,%202026,%2004_58_52%20PM.png',
+                      'https://pub-dae4dc46f1b149f981bfbd413762b534.r2.dev/models/1769846887851-fitness%20model%20just%20face.png',
+                      'https://pub-dae4dc46f1b149f981bfbd413762b534.r2.dev/models/1769024030811-image%209.png',
+                    ].map((src, i) => (
+                      <Image
                         key={i}
-                        className='w-10 h-10 rounded-full bg-gradient-to-br from-primary/80 to-primary border-2 border-background'
+                        src={src}
+                        alt={`User ${i + 1}`}
+                        width={40}
+                        height={40}
+                        className='w-10 h-10 rounded-full object-cover border-2 border-background'
                       />
                     ))}
                   </div>
