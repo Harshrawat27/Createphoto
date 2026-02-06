@@ -451,7 +451,7 @@ export default function PromotionVideo() {
             <div className='price-card bg-zinc-900/80 border border-zinc-700 rounded-2xl p-6 md:p-8'>
               <p className='text-zinc-400 mb-2'>Free</p>
               <p className='text-4xl md:text-5xl font-bold'>$0</p>
-              <p className='text-zinc-500 mt-2'>100 credits</p>
+              <p className='text-zinc-500 mt-2'>50 credits</p>
             </div>
             <div className='price-card featured bg-gradient-to-br from-[#ee575a]/20 to-rose-900/20 border-2 border-[#ee575a] rounded-2xl p-6 md:p-8 scale-110'>
               <p className='text-[#ee575a] mb-2'>Pro</p>

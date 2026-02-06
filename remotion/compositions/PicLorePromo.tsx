@@ -9,48 +9,48 @@ import {
   Easing,
   Audio,
   Sequence,
-} from "remotion";
-import { TransitionSeries, linearTiming } from "@remotion/transitions";
-import { slide } from "@remotion/transitions/slide";
-import { fade } from "@remotion/transitions/fade";
-import { wipe } from "@remotion/transitions/wipe";
-import { loadFont } from "@remotion/google-fonts/Inter";
-import { loadFont as loadSerif } from "@remotion/google-fonts/Playfair";
+} from 'remotion';
+import { TransitionSeries, linearTiming } from '@remotion/transitions';
+import { slide } from '@remotion/transitions/slide';
+import { fade } from '@remotion/transitions/fade';
+import { wipe } from '@remotion/transitions/wipe';
+import { loadFont } from '@remotion/google-fonts/Inter';
+import { loadFont as loadSerif } from '@remotion/google-fonts/Playfair';
 
 // Load fonts
-const { fontFamily: interFont } = loadFont("normal", {
-  weights: ["400", "600", "700", "900"],
-  subsets: ["latin"],
+const { fontFamily: interFont } = loadFont('normal', {
+  weights: ['400', '600', '700', '900'],
+  subsets: ['latin'],
 });
 
-const { fontFamily: serifFont } = loadSerif("normal", {
-  weights: ["400", "700"],
-  subsets: ["latin"],
+const { fontFamily: serifFont } = loadSerif('normal', {
+  weights: ['400', '700'],
+  subsets: ['latin'],
 });
 
 // Colors
 const COLORS = {
-  primary: "#ee575a",
-  primaryGlow: "#ee575a80",
-  background: "#020617",
-  backgroundLight: "#0f172a",
-  foreground: "#f8fafc",
-  muted: "#94a3b8",
-  card: "#0f172a",
-  accent: "#8b5cf6",
-  cyan: "#06b6d4",
-  green: "#10b981",
+  primary: '#ee575a',
+  primaryGlow: '#ee575a80',
+  background: '#020617',
+  backgroundLight: '#0f172a',
+  foreground: '#f8fafc',
+  muted: '#94a3b8',
+  card: '#0f172a',
+  accent: '#8b5cf6',
+  cyan: '#06b6d4',
+  green: '#10b981',
 };
 
 // Utility: Noise pattern for texture
 const NoiseOverlay: React.FC<{ opacity?: number }> = ({ opacity = 0.03 }) => (
   <div
     style={{
-      position: "absolute",
+      position: 'absolute',
       inset: 0,
       backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
       opacity,
-      pointerEvents: "none",
+      pointerEvents: 'none',
     }}
   />
 );
@@ -61,15 +61,15 @@ const AnimatedGrid: React.FC<{ frame: number }> = ({ frame }) => {
   return (
     <div
       style={{
-        position: "absolute",
+        position: 'absolute',
         inset: -100,
         backgroundImage: `
           linear-gradient(${COLORS.primary}08 1px, transparent 1px),
           linear-gradient(90deg, ${COLORS.primary}08 1px, transparent 1px)
         `,
-        backgroundSize: "60px 60px",
+        backgroundSize: '60px 60px',
         transform: `perspective(500px) rotateX(60deg) translateY(${offset}px)`,
-        transformOrigin: "center top",
+        transformOrigin: 'center top',
       }}
     />
   );
@@ -90,7 +90,7 @@ const LogoIntro: React.FC = () => {
   const logoScale = interpolate(logoProgress, [0, 1], [0, 1]);
   const logoRotateZ = interpolate(logoProgress, [0, 1], [720, 0]);
   const logoRotateY = interpolate(frame, [0, 30], [90, 0], {
-    extrapolateRight: "clamp",
+    extrapolateRight: 'clamp',
     easing: Easing.out(Easing.exp),
   });
 
@@ -102,23 +102,15 @@ const LogoIntro: React.FC = () => {
   });
 
   const letterSpacing = interpolate(frame, [15, 45], [50, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
     easing: Easing.out(Easing.exp),
   });
 
   // Glow pulse
-  const glowScale = interpolate(
-    frame % 60,
-    [0, 30, 60],
-    [1, 1.3, 1]
-  );
+  const glowScale = interpolate(frame % 60, [0, 30, 60], [1, 1.3, 1]);
 
-  const glowOpacity = interpolate(
-    frame % 60,
-    [0, 30, 60],
-    [0.3, 0.6, 0.3]
-  );
+  const glowOpacity = interpolate(frame % 60, [0, 30, 60], [0.3, 0.6, 0.3]);
 
   // Particles explosion
   const particles = Array.from({ length: 40 }, (_, i) => {
@@ -129,7 +121,7 @@ const LogoIntro: React.FC = () => {
     const particleFrame = Math.max(0, frame - startFrame);
     const distance = particleFrame * speed;
     const opacity = interpolate(particleFrame, [0, 30], [1, 0], {
-      extrapolateRight: "clamp",
+      extrapolateRight: 'clamp',
     });
     const size = 3 + (i % 4) * 2;
 
@@ -138,7 +130,12 @@ const LogoIntro: React.FC = () => {
       y: Math.sin(angle) * distance,
       opacity,
       size,
-      color: i % 3 === 0 ? COLORS.primary : i % 3 === 1 ? COLORS.accent : COLORS.cyan,
+      color:
+        i % 3 === 0
+          ? COLORS.primary
+          : i % 3 === 1
+          ? COLORS.accent
+          : COLORS.cyan,
     };
   });
 
@@ -146,12 +143,12 @@ const LogoIntro: React.FC = () => {
   const rays = Array.from({ length: 12 }, (_, i) => {
     const angle = (i / 12) * 360;
     const rayOpacity = interpolate(frame, [10, 40, 70], [0, 0.3, 0], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
     });
     const rayLength = interpolate(frame, [10, 50], [0, 800], {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
     });
 
     return { angle, opacity: rayOpacity, length: rayLength };
@@ -159,12 +156,12 @@ const LogoIntro: React.FC = () => {
 
   // Tagline
   const taglineOpacity = interpolate(frame, [55, 75], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
   });
   const taglineY = interpolate(frame, [55, 75], [40, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
     easing: Easing.out(Easing.exp),
   });
 
@@ -172,9 +169,9 @@ const LogoIntro: React.FC = () => {
     <AbsoluteFill
       style={{
         backgroundColor: COLORS.background,
-        justifyContent: "center",
-        alignItems: "center",
-        overflow: "hidden",
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
       }}
     >
       <NoiseOverlay />
@@ -184,12 +181,12 @@ const LogoIntro: React.FC = () => {
         <div
           key={i}
           style={{
-            position: "absolute",
+            position: 'absolute',
             width: 4,
             height: ray.length,
             background: `linear-gradient(to bottom, ${COLORS.primary}, transparent)`,
             transform: `rotate(${ray.angle}deg)`,
-            transformOrigin: "center top",
+            transformOrigin: 'center top',
             opacity: ray.opacity,
           }}
         />
@@ -200,10 +197,10 @@ const LogoIntro: React.FC = () => {
         <div
           key={i}
           style={{
-            position: "absolute",
+            position: 'absolute',
             width: p.size,
             height: p.size,
-            borderRadius: "50%",
+            borderRadius: '50%',
             backgroundColor: p.color,
             transform: `translate(${p.x}px, ${p.y}px)`,
             opacity: p.opacity,
@@ -215,10 +212,10 @@ const LogoIntro: React.FC = () => {
       {/* Main glow */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           width: 500,
           height: 500,
-          borderRadius: "50%",
+          borderRadius: '50%',
           background: `radial-gradient(circle, ${COLORS.primary}40 0%, transparent 70%)`,
           transform: `scale(${glowScale})`,
           opacity: glowOpacity,
@@ -228,8 +225,8 @@ const LogoIntro: React.FC = () => {
       {/* Logo and text container */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           gap: 40,
           perspective: 1000,
         }}
@@ -238,11 +235,11 @@ const LogoIntro: React.FC = () => {
         <div
           style={{
             transform: `scale(${logoScale}) rotateZ(${logoRotateZ}deg) rotateY(${logoRotateY}deg)`,
-            transformStyle: "preserve-3d",
+            transformStyle: 'preserve-3d',
           }}
         >
           <Img
-            src={staticFile("logo.png")}
+            src={staticFile('logo.png')}
             style={{
               width: 160,
               height: 160,
@@ -286,7 +283,7 @@ const LogoIntro: React.FC = () => {
       {/* Tagline */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           bottom: 180,
           opacity: taglineOpacity,
           transform: `translateY(${taglineY}px)`,
@@ -308,11 +305,11 @@ const LogoIntro: React.FC = () => {
       {/* Bottom accent line */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           bottom: 120,
           width: interpolate(frame, [70, 100], [0, 400], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
           }),
           height: 3,
           background: `linear-gradient(90deg, transparent, ${COLORS.primary}, transparent)`,
@@ -329,11 +326,11 @@ const TrainModelScene: React.FC = () => {
 
   // Title animation
   const titleY = interpolate(frame, [0, 25], [-80, 0], {
-    extrapolateRight: "clamp",
+    extrapolateRight: 'clamp',
     easing: Easing.out(Easing.exp),
   });
   const titleOpacity = interpolate(frame, [0, 20], [0, 1], {
-    extrapolateRight: "clamp",
+    extrapolateRight: 'clamp',
   });
 
   // Image animation
@@ -344,15 +341,15 @@ const TrainModelScene: React.FC = () => {
   });
 
   const imageRotate = interpolate(frame, [20, 60], [-8, 2], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
   });
 
   // Scanning effect
   const scanY = interpolate(frame % 80, [0, 80], [0, 100], {});
   const scanOpacity = interpolate(frame, [25, 40, 120, 135], [0, 1, 1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
   });
 
   // Data points animation
@@ -378,23 +375,42 @@ const TrainModelScene: React.FC = () => {
 
   // Steps
   const steps = [
-    { icon: "📸", text: "Upload 3-5 selfies", subtext: "Different angles work best" },
-    { icon: "🧠", text: "AI learns your features", subtext: "Neural network training" },
-    { icon: "⚡", text: "Ready in ~5 minutes", subtext: "GPU-accelerated processing" },
+    {
+      icon: '📸',
+      text: 'Upload 3-5 selfies',
+      subtext: 'Different angles work best',
+    },
+    {
+      icon: '🧠',
+      text: 'AI learns your features',
+      subtext: 'Neural network training',
+    },
+    {
+      icon: '⚡',
+      text: 'Ready in ~5 minutes',
+      subtext: 'GPU-accelerated processing',
+    },
   ];
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor: COLORS.background,
-        overflow: "hidden",
+        overflow: 'hidden',
       }}
     >
       <AnimatedGrid frame={frame} />
       <NoiseOverlay />
 
       {/* Content */}
-      <div style={{ padding: 80, height: "100%", display: "flex", flexDirection: "column" }}>
+      <div
+        style={{
+          padding: 80,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {/* Header */}
         <div
           style={{
@@ -405,9 +421,9 @@ const TrainModelScene: React.FC = () => {
         >
           <div
             style={{
-              display: "inline-block",
-              padding: "8px 24px",
-              backgroundColor: COLORS.primary + "20",
+              display: 'inline-block',
+              padding: '8px 24px',
+              backgroundColor: COLORS.primary + '20',
               borderRadius: 100,
               marginBottom: 16,
             }}
@@ -418,7 +434,7 @@ const TrainModelScene: React.FC = () => {
                 fontSize: 20,
                 color: COLORS.primary,
                 fontWeight: 700,
-                textTransform: "uppercase",
+                textTransform: 'uppercase',
                 letterSpacing: 3,
               }}
             >
@@ -438,18 +454,21 @@ const TrainModelScene: React.FC = () => {
         </div>
 
         {/* Main content */}
-        <div style={{ display: "flex", flex: 1, gap: 80 }}>
+        <div style={{ display: 'flex', flex: 1, gap: 80 }}>
           {/* Image section */}
           <div
             style={{
-              position: "relative",
-              transform: `scale(${Math.max(0, imageScale)}) rotate(${imageRotate}deg)`,
+              position: 'relative',
+              transform: `scale(${Math.max(
+                0,
+                imageScale
+              )}) rotate(${imageRotate}deg)`,
             }}
           >
             {/* Glow behind image */}
             <div
               style={{
-                position: "absolute",
+                position: 'absolute',
                 inset: -40,
                 background: `radial-gradient(ellipse, ${COLORS.primary}30 0%, transparent 70%)`,
                 borderRadius: 40,
@@ -462,9 +481,9 @@ const TrainModelScene: React.FC = () => {
                 width: 450,
                 height: 550,
                 borderRadius: 28,
-                overflow: "hidden",
+                overflow: 'hidden',
                 border: `3px solid ${COLORS.primary}`,
-                position: "relative",
+                position: 'relative',
                 boxShadow: `
                   0 0 0 1px ${COLORS.primary}40,
                   0 25px 50px -12px rgba(0, 0, 0, 0.5),
@@ -473,18 +492,18 @@ const TrainModelScene: React.FC = () => {
               }}
             >
               <Img
-                src={staticFile("selfie-image.png")}
+                src={staticFile('selfie-image.png')}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
                 }}
               />
 
               {/* Scan line */}
               <div
                 style={{
-                  position: "absolute",
+                  position: 'absolute',
                   top: `${scanY}%`,
                   left: 0,
                   right: 0,
@@ -497,20 +516,20 @@ const TrainModelScene: React.FC = () => {
 
               {/* Corner brackets */}
               {[
-                { top: 16, left: 16, borderWidth: "3px 0 0 3px" },
-                { top: 16, right: 16, borderWidth: "3px 3px 0 0" },
-                { bottom: 16, left: 16, borderWidth: "0 0 3px 3px" },
-                { bottom: 16, right: 16, borderWidth: "0 3px 3px 0" },
+                { top: 16, left: 16, borderWidth: '3px 0 0 3px' },
+                { top: 16, right: 16, borderWidth: '3px 3px 0 0' },
+                { bottom: 16, left: 16, borderWidth: '0 0 3px 3px' },
+                { bottom: 16, right: 16, borderWidth: '0 3px 3px 0' },
               ].map((pos, i) => (
                 <div
                   key={i}
                   style={{
-                    position: "absolute",
+                    position: 'absolute',
                     ...pos,
                     width: 40,
                     height: 40,
                     borderColor: COLORS.cyan,
-                    borderStyle: "solid",
+                    borderStyle: 'solid',
                     borderWidth: pos.borderWidth,
                     opacity: scanOpacity,
                   }}
@@ -521,16 +540,16 @@ const TrainModelScene: React.FC = () => {
             {/* Upload indicator */}
             <div
               style={{
-                position: "absolute",
+                position: 'absolute',
                 bottom: -30,
-                left: "50%",
-                transform: "translateX(-50%)",
+                left: '50%',
+                transform: 'translateX(-50%)',
                 backgroundColor: COLORS.backgroundLight,
                 border: `2px solid ${COLORS.primary}40`,
                 borderRadius: 12,
-                padding: "10px 24px",
-                display: "flex",
-                alignItems: "center",
+                padding: '10px 24px',
+                display: 'flex',
+                alignItems: 'center',
                 gap: 10,
               }}
             >
@@ -538,7 +557,7 @@ const TrainModelScene: React.FC = () => {
                 style={{
                   width: 12,
                   height: 12,
-                  borderRadius: "50%",
+                  borderRadius: '50%',
                   backgroundColor: COLORS.green,
                   boxShadow: `0 0 10px ${COLORS.green}`,
                 }}
@@ -561,12 +580,12 @@ const TrainModelScene: React.FC = () => {
             <div
               key={i}
               style={{
-                position: "absolute",
+                position: 'absolute',
                 left: dp.x,
                 top: dp.y,
                 width: dp.size,
                 height: dp.size,
-                borderRadius: "50%",
+                borderRadius: '50%',
                 backgroundColor: COLORS.primary,
                 opacity: dp.opacity,
                 boxShadow: `0 0 ${dp.size}px ${COLORS.primary}`,
@@ -578,22 +597,32 @@ const TrainModelScene: React.FC = () => {
           <div style={{ flex: 1, paddingTop: 20 }}>
             {steps.map((step, i) => {
               const stepDelay = 40 + i * 25;
-              const stepOpacity = interpolate(frame, [stepDelay, stepDelay + 20], [0, 1], {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              });
-              const stepX = interpolate(frame, [stepDelay, stepDelay + 20], [80, 0], {
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-                easing: Easing.out(Easing.exp),
-              });
+              const stepOpacity = interpolate(
+                frame,
+                [stepDelay, stepDelay + 20],
+                [0, 1],
+                {
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
+                }
+              );
+              const stepX = interpolate(
+                frame,
+                [stepDelay, stepDelay + 20],
+                [80, 0],
+                {
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
+                  easing: Easing.out(Easing.exp),
+                }
+              );
 
               return (
                 <div
                   key={i}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
+                    display: 'flex',
+                    alignItems: 'center',
                     gap: 28,
                     marginBottom: 40,
                     opacity: stepOpacity,
@@ -607,9 +636,9 @@ const TrainModelScene: React.FC = () => {
                       borderRadius: 20,
                       backgroundColor: COLORS.card,
                       border: `2px solid ${COLORS.primary}30`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       fontSize: 42,
                       boxShadow: `0 0 30px ${COLORS.primary}10`,
                     }}
@@ -633,7 +662,7 @@ const TrainModelScene: React.FC = () => {
                         fontFamily: interFont,
                         fontSize: 20,
                         color: COLORS.muted,
-                        margin: "6px 0 0 0",
+                        margin: '6px 0 0 0',
                       }}
                     >
                       {step.subtext}
@@ -648,8 +677,8 @@ const TrainModelScene: React.FC = () => {
               style={{
                 marginTop: 40,
                 opacity: interpolate(frame, [100, 120], [0, 1], {
-                  extrapolateLeft: "clamp",
-                  extrapolateRight: "clamp",
+                  extrapolateLeft: 'clamp',
+                  extrapolateRight: 'clamp',
                 }),
               }}
             >
@@ -658,15 +687,15 @@ const TrainModelScene: React.FC = () => {
                   height: 8,
                   backgroundColor: COLORS.card,
                   borderRadius: 100,
-                  overflow: "hidden",
+                  overflow: 'hidden',
                 }}
               >
                 <div
                   style={{
-                    height: "100%",
+                    height: '100%',
                     width: `${interpolate(frame, [100, 140], [0, 100], {
-                      extrapolateLeft: "clamp",
-                      extrapolateRight: "clamp",
+                      extrapolateLeft: 'clamp',
+                      extrapolateRight: 'clamp',
                     })}%`,
                     background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.accent})`,
                     borderRadius: 100,
@@ -681,10 +710,14 @@ const TrainModelScene: React.FC = () => {
                   marginTop: 12,
                 }}
               >
-                Model training: {Math.round(interpolate(frame, [100, 140], [0, 100], {
-                  extrapolateLeft: "clamp",
-                  extrapolateRight: "clamp",
-                }))}%
+                Model training:{' '}
+                {Math.round(
+                  interpolate(frame, [100, 140], [0, 100], {
+                    extrapolateLeft: 'clamp',
+                    extrapolateRight: 'clamp',
+                  })
+                )}
+                %
               </p>
             </div>
           </div>
@@ -714,7 +747,7 @@ const GenerateScene: React.FC = () => {
   // Orbiting elements
   const orbitItems = Array.from({ length: 8 }, (_, i) => {
     const baseAngle = (i / 8) * Math.PI * 2;
-    const angle = baseAngle + (frame * 0.02);
+    const angle = baseAngle + frame * 0.02;
     const radius = 380;
     const verticalSquash = 0.3;
 
@@ -723,7 +756,7 @@ const GenerateScene: React.FC = () => {
       y: Math.sin(angle) * radius * verticalSquash,
       scale: interpolate(Math.sin(angle), [-1, 1], [0.6, 1]),
       zIndex: Math.sin(angle) > 0 ? 1 : -1,
-      icon: ["🎨", "👔", "🌴", "🏢", "🎭", "📸", "✨", "🌟"][i],
+      icon: ['🎨', '👔', '🌴', '🏢', '🎭', '📸', '✨', '🌟'][i],
     };
   });
 
@@ -747,9 +780,9 @@ const GenerateScene: React.FC = () => {
     <AbsoluteFill
       style={{
         backgroundColor: COLORS.background,
-        justifyContent: "center",
-        alignItems: "center",
-        overflow: "hidden",
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
       }}
     >
       <NoiseOverlay />
@@ -757,10 +790,10 @@ const GenerateScene: React.FC = () => {
       {/* Radial glow */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           width: 1000,
           height: 1000,
-          borderRadius: "50%",
+          borderRadius: '50%',
           background: `radial-gradient(circle, ${COLORS.primary}25 0%, ${COLORS.accent}10 40%, transparent 70%)`,
           transform: `scale(${1 + Math.sin(frame * 0.05) * 0.1})`,
         }}
@@ -769,17 +802,17 @@ const GenerateScene: React.FC = () => {
       {/* Header */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           top: 80,
-          textAlign: "center",
+          textAlign: 'center',
           transform: `scale(${titleScale})`,
         }}
       >
         <div
           style={{
-            display: "inline-block",
-            padding: "8px 24px",
-            backgroundColor: COLORS.accent + "20",
+            display: 'inline-block',
+            padding: '8px 24px',
+            backgroundColor: COLORS.accent + '20',
             borderRadius: 100,
             marginBottom: 16,
           }}
@@ -790,7 +823,7 @@ const GenerateScene: React.FC = () => {
               fontSize: 20,
               color: COLORS.accent,
               fontWeight: 700,
-              textTransform: "uppercase",
+              textTransform: 'uppercase',
               letterSpacing: 3,
             }}
           >
@@ -805,27 +838,30 @@ const GenerateScene: React.FC = () => {
             margin: 0,
           }}
         >
-          Generate <span style={{ color: COLORS.primary }}>Unlimited</span> Photos
+          Generate <span style={{ color: COLORS.primary }}>Unlimited</span>{' '}
+          Photos
         </h2>
       </div>
 
       {/* Main image with orbit */}
-      <div style={{ position: "relative", marginTop: 40 }}>
+      <div style={{ position: 'relative', marginTop: 40 }}>
         {/* Sparkles */}
         {sparkles.map((s, i) => (
           <div
             key={i}
             style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
               width: s.size,
               height: s.size,
-              borderRadius: "50%",
+              borderRadius: '50%',
               backgroundColor: i % 2 === 0 ? COLORS.primary : COLORS.accent,
               transform: `translate(${s.x}px, ${s.y}px)`,
               opacity: s.opacity,
-              boxShadow: `0 0 ${s.size * 2}px ${i % 2 === 0 ? COLORS.primary : COLORS.accent}`,
+              boxShadow: `0 0 ${s.size * 2}px ${
+                i % 2 === 0 ? COLORS.primary : COLORS.accent
+              }`,
             }}
           />
         ))}
@@ -837,9 +873,9 @@ const GenerateScene: React.FC = () => {
             <div
               key={i}
               style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
                 transform: `translate(calc(-50% + ${item.x}px), calc(-50% + ${item.y}px)) scale(${item.scale})`,
                 fontSize: 48,
                 opacity: 0.5 + item.scale * 0.5,
@@ -854,7 +890,7 @@ const GenerateScene: React.FC = () => {
         <div
           style={{
             transform: `scale(${Math.max(0, imageScale)})`,
-            position: "relative",
+            position: 'relative',
             zIndex: 10,
           }}
         >
@@ -863,7 +899,7 @@ const GenerateScene: React.FC = () => {
               width: 500,
               height: 500,
               borderRadius: 32,
-              overflow: "hidden",
+              overflow: 'hidden',
               border: `4px solid ${COLORS.primary}`,
               boxShadow: `
                 0 0 0 2px ${COLORS.primary}40,
@@ -873,11 +909,11 @@ const GenerateScene: React.FC = () => {
             }}
           >
             <Img
-              src={staticFile("generated.jpg")}
+              src={staticFile('generated.jpg')}
               style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
               }}
             />
           </div>
@@ -885,15 +921,15 @@ const GenerateScene: React.FC = () => {
           {/* AI Generated badge */}
           <div
             style={{
-              position: "absolute",
+              position: 'absolute',
               bottom: -25,
-              left: "50%",
-              transform: "translateX(-50%)",
+              left: '50%',
+              transform: 'translateX(-50%)',
               background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`,
-              padding: "14px 36px",
+              padding: '14px 36px',
               borderRadius: 100,
-              display: "flex",
-              alignItems: "center",
+              display: 'flex',
+              alignItems: 'center',
               gap: 12,
               boxShadow: `0 10px 40px ${COLORS.primary}50`,
             }}
@@ -904,7 +940,7 @@ const GenerateScene: React.FC = () => {
                 fontFamily: interFont,
                 fontSize: 22,
                 fontWeight: 700,
-                color: "white",
+                color: 'white',
               }}
             >
               AI Generated
@@ -919,9 +955,9 @@ const GenerateScene: React.FC = () => {
             <div
               key={i}
               style={{
-                position: "absolute",
-                left: "50%",
-                top: "50%",
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
                 transform: `translate(calc(-50% + ${item.x}px), calc(-50% + ${item.y}px)) scale(${item.scale})`,
                 fontSize: 48,
                 opacity: 0.5 + item.scale * 0.5,
@@ -942,24 +978,44 @@ const FeaturesScene: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const features = [
-    { icon: "📸", title: "AI Headshots", desc: "Professional quality", color: COLORS.primary },
-    { icon: "👔", title: "Virtual Try-On", desc: "See any outfit", color: COLORS.accent },
-    { icon: "🤳", title: "AI Influencer", desc: "Consistent persona", color: COLORS.cyan },
-    { icon: "🎨", title: "Any Style", desc: "Unlimited creativity", color: COLORS.green },
+    {
+      icon: '📸',
+      title: 'AI Headshots',
+      desc: 'Professional quality',
+      color: COLORS.primary,
+    },
+    {
+      icon: '👔',
+      title: 'Virtual Try-On',
+      desc: 'See any outfit',
+      color: COLORS.accent,
+    },
+    {
+      icon: '🤳',
+      title: 'AI Influencer',
+      desc: 'Consistent persona',
+      color: COLORS.cyan,
+    },
+    {
+      icon: '🎨',
+      title: 'Any Style',
+      desc: 'Unlimited creativity',
+      color: COLORS.green,
+    },
   ];
 
   const titleOpacity = interpolate(frame, [0, 20], [0, 1], {
-    extrapolateRight: "clamp",
+    extrapolateRight: 'clamp',
   });
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor: COLORS.background,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         padding: 80,
-        overflow: "hidden",
+        overflow: 'hidden',
       }}
     >
       <NoiseOverlay />
@@ -967,23 +1023,23 @@ const FeaturesScene: React.FC = () => {
       {/* Background accents */}
       <div
         style={{
-          position: "absolute",
-          top: "20%",
-          left: "-10%",
+          position: 'absolute',
+          top: '20%',
+          left: '-10%',
           width: 600,
           height: 600,
-          borderRadius: "50%",
+          borderRadius: '50%',
           background: `radial-gradient(circle, ${COLORS.primary}15 0%, transparent 60%)`,
         }}
       />
       <div
         style={{
-          position: "absolute",
-          bottom: "10%",
-          right: "-5%",
+          position: 'absolute',
+          bottom: '10%',
+          right: '-5%',
           width: 500,
           height: 500,
-          borderRadius: "50%",
+          borderRadius: '50%',
           background: `radial-gradient(circle, ${COLORS.accent}15 0%, transparent 60%)`,
         }}
       />
@@ -996,7 +1052,7 @@ const FeaturesScene: React.FC = () => {
           color: COLORS.foreground,
           marginBottom: 80,
           opacity: titleOpacity,
-          textAlign: "center",
+          textAlign: 'center',
         }}
       >
         Everything You <span style={{ color: COLORS.primary }}>Need</span>
@@ -1005,9 +1061,9 @@ const FeaturesScene: React.FC = () => {
       {/* Features grid */}
       <div
         style={{
-          display: "flex",
+          display: 'flex',
           gap: 40,
-          justifyContent: "center",
+          justifyContent: 'center',
         }}
       >
         {features.map((feature, i) => {
@@ -1019,8 +1075,8 @@ const FeaturesScene: React.FC = () => {
           });
 
           const cardRotate = interpolate(frame, [delay, delay + 25], [20, 0], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
           });
 
           return (
@@ -1032,8 +1088,11 @@ const FeaturesScene: React.FC = () => {
                 backgroundColor: COLORS.card,
                 borderRadius: 28,
                 border: `2px solid ${feature.color}30`,
-                transform: `scale(${Math.max(0, cardScale)}) rotate(${cardRotate}deg)`,
-                textAlign: "center",
+                transform: `scale(${Math.max(
+                  0,
+                  cardScale
+                )}) rotate(${cardRotate}deg)`,
+                textAlign: 'center',
                 boxShadow: `
                   0 20px 40px rgba(0, 0, 0, 0.3),
                   0 0 60px ${feature.color}10
@@ -1045,12 +1104,12 @@ const FeaturesScene: React.FC = () => {
                   width: 100,
                   height: 100,
                   borderRadius: 24,
-                  backgroundColor: feature.color + "20",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  backgroundColor: feature.color + '20',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   fontSize: 52,
-                  margin: "0 auto 24px",
+                  margin: '0 auto 24px',
                   border: `2px solid ${feature.color}40`,
                 }}
               >
@@ -1062,7 +1121,7 @@ const FeaturesScene: React.FC = () => {
                   fontSize: 30,
                   fontWeight: 700,
                   color: COLORS.foreground,
-                  margin: "0 0 12px 0",
+                  margin: '0 0 12px 0',
                 }}
               >
                 {feature.title}
@@ -1102,15 +1161,11 @@ const CTAScene: React.FC = () => {
     config: { damping: 8, stiffness: 100 },
   });
 
-  const glowPulse = interpolate(
-    frame % 50,
-    [0, 25, 50],
-    [0.5, 1, 0.5]
-  );
+  const glowPulse = interpolate(frame % 50, [0, 25, 50], [0.5, 1, 0.5]);
 
   const pricingOpacity = interpolate(frame, [50, 70], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
   });
 
   // Floating particles
@@ -1133,9 +1188,9 @@ const CTAScene: React.FC = () => {
     <AbsoluteFill
       style={{
         backgroundColor: COLORS.background,
-        justifyContent: "center",
-        alignItems: "center",
-        overflow: "hidden",
+        justifyContent: 'center',
+        alignItems: 'center',
+        overflow: 'hidden',
       }}
     >
       <NoiseOverlay />
@@ -1145,12 +1200,12 @@ const CTAScene: React.FC = () => {
         <div
           key={i}
           style={{
-            position: "absolute",
+            position: 'absolute',
             left: p.left,
             top: p.top,
             width: p.size,
             height: p.size,
-            borderRadius: "50%",
+            borderRadius: '50%',
             backgroundColor: COLORS.primary,
             transform: p.transform,
             opacity: p.opacity,
@@ -1161,18 +1216,22 @@ const CTAScene: React.FC = () => {
       {/* Background glow */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           width: 1200,
           height: 1200,
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${COLORS.primary}${Math.round(glowPulse * 25).toString(16).padStart(2, "0")} 0%, transparent 50%)`,
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${COLORS.primary}${Math.round(
+            glowPulse * 25
+          )
+            .toString(16)
+            .padStart(2, '0')} 0%, transparent 50%)`,
         }}
       />
 
       {/* Main content */}
       <div
         style={{
-          textAlign: "center",
+          textAlign: 'center',
           zIndex: 10,
           transform: `scale(${titleScale})`,
         }}
@@ -1210,14 +1269,14 @@ const CTAScene: React.FC = () => {
         <div
           style={{
             background: `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`,
-            padding: "28px 72px",
+            padding: '28px 72px',
             borderRadius: 100,
             boxShadow: `
               0 0 ${60 * glowPulse}px ${COLORS.primary}60,
               0 20px 40px rgba(0, 0, 0, 0.3)
             `,
-            display: "flex",
-            alignItems: "center",
+            display: 'flex',
+            alignItems: 'center',
             gap: 16,
           }}
         >
@@ -1227,7 +1286,7 @@ const CTAScene: React.FC = () => {
               fontFamily: interFont,
               fontSize: 38,
               fontWeight: 700,
-              color: "white",
+              color: 'white',
             }}
           >
             Try Free - 100 Credits
@@ -1239,35 +1298,35 @@ const CTAScene: React.FC = () => {
       <div
         style={{
           marginTop: 60,
-          display: "flex",
+          display: 'flex',
           gap: 30,
           opacity: pricingOpacity,
           zIndex: 10,
         }}
       >
         {[
-          { plan: "Free", price: "$0", credits: "100 credits" },
-          { plan: "Pro", price: "$10", credits: "300/month", highlight: true },
-          { plan: "Ultra", price: "$24", credits: "1000/month" },
+          { plan: 'Free', price: '$0', credits: '50 credits' },
+          { plan: 'Pro', price: '$10', credits: '300/month', highlight: true },
+          { plan: 'Ultra', price: '$24', credits: '1000/month' },
         ].map((p, i) => (
           <div
             key={i}
             style={{
-              padding: "24px 40px",
+              padding: '24px 40px',
               borderRadius: 20,
               backgroundColor: p.highlight ? COLORS.primary : COLORS.card,
               border: `2px solid ${p.highlight ? COLORS.primary : COLORS.card}`,
-              textAlign: "center",
-              transform: p.highlight ? "scale(1.1)" : "scale(1)",
-              boxShadow: p.highlight ? `0 0 40px ${COLORS.primary}40` : "none",
+              textAlign: 'center',
+              transform: p.highlight ? 'scale(1.1)' : 'scale(1)',
+              boxShadow: p.highlight ? `0 0 40px ${COLORS.primary}40` : 'none',
             }}
           >
             <span
               style={{
                 fontFamily: interFont,
                 fontSize: 18,
-                color: p.highlight ? "white" : COLORS.muted,
-                display: "block",
+                color: p.highlight ? 'white' : COLORS.muted,
+                display: 'block',
                 fontWeight: 600,
               }}
             >
@@ -1278,9 +1337,9 @@ const CTAScene: React.FC = () => {
                 fontFamily: interFont,
                 fontSize: 36,
                 fontWeight: 700,
-                color: p.highlight ? "white" : COLORS.foreground,
-                display: "block",
-                margin: "4px 0",
+                color: p.highlight ? 'white' : COLORS.foreground,
+                display: 'block',
+                margin: '4px 0',
               }}
             >
               {p.price}
@@ -1289,7 +1348,7 @@ const CTAScene: React.FC = () => {
               style={{
                 fontFamily: interFont,
                 fontSize: 14,
-                color: p.highlight ? "rgba(255,255,255,0.8)" : COLORS.muted,
+                color: p.highlight ? 'rgba(255,255,255,0.8)' : COLORS.muted,
               }}
             >
               {p.credits}
@@ -1301,19 +1360,19 @@ const CTAScene: React.FC = () => {
       {/* Website URL */}
       <div
         style={{
-          position: "absolute",
+          position: 'absolute',
           bottom: 60,
           opacity: interpolate(frame, [60, 80], [0, 1], {
-            extrapolateLeft: "clamp",
-            extrapolateRight: "clamp",
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
           }),
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center',
           gap: 16,
         }}
       >
         <Img
-          src={staticFile("logo.png")}
+          src={staticFile('logo.png')}
           style={{
             width: 40,
             height: 40,
@@ -1341,27 +1400,36 @@ export const PicLorePromo: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: COLORS.background }}>
       <TransitionSeries>
         {/* Scene 1: Logo Intro (0-4s = 120 frames) */}
-        <TransitionSeries.Sequence durationInFrames={120} style={{ overflow: "hidden" }}>
+        <TransitionSeries.Sequence
+          durationInFrames={120}
+          style={{ overflow: 'hidden' }}
+        >
           <LogoIntro />
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={wipe({ direction: "from-right" })}
+          presentation={wipe({ direction: 'from-right' })}
           timing={linearTiming({ durationInFrames: 20 })}
         />
 
         {/* Scene 2: Train Model (4-9s = 150 frames) */}
-        <TransitionSeries.Sequence durationInFrames={150} style={{ overflow: "hidden" }}>
+        <TransitionSeries.Sequence
+          durationInFrames={150}
+          style={{ overflow: 'hidden' }}
+        >
           <TrainModelScene />
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={slide({ direction: "from-bottom" })}
+          presentation={slide({ direction: 'from-bottom' })}
           timing={linearTiming({ durationInFrames: 20 })}
         />
 
         {/* Scene 3: Generate Photos (9-13s = 120 frames) */}
-        <TransitionSeries.Sequence durationInFrames={120} style={{ overflow: "hidden" }}>
+        <TransitionSeries.Sequence
+          durationInFrames={120}
+          style={{ overflow: 'hidden' }}
+        >
           <GenerateScene />
         </TransitionSeries.Sequence>
 
@@ -1371,17 +1439,23 @@ export const PicLorePromo: React.FC = () => {
         />
 
         {/* Scene 4: Features (13-17s = 120 frames) */}
-        <TransitionSeries.Sequence durationInFrames={120} style={{ overflow: "hidden" }}>
+        <TransitionSeries.Sequence
+          durationInFrames={120}
+          style={{ overflow: 'hidden' }}
+        >
           <FeaturesScene />
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={wipe({ direction: "from-left" })}
+          presentation={wipe({ direction: 'from-left' })}
           timing={linearTiming({ durationInFrames: 20 })}
         />
 
         {/* Scene 5: CTA (17-20s = 130 frames - extended for final hold) */}
-        <TransitionSeries.Sequence durationInFrames={130} style={{ overflow: "hidden" }}>
+        <TransitionSeries.Sequence
+          durationInFrames={130}
+          style={{ overflow: 'hidden' }}
+        >
           <CTAScene />
         </TransitionSeries.Sequence>
       </TransitionSeries>
