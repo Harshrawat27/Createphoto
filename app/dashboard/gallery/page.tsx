@@ -398,6 +398,7 @@ export default function GalleryPage() {
             </p>
           </div>
         ) : (
+          <>
           <div className='columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 mb-8'>
             {generatedImages.map((img, index) => (
               <div
@@ -523,6 +524,7 @@ export default function GalleryPage() {
               </p>
             )}
           </div>
+          </>
         )}
 
         {/* Lightbox Modal */}
