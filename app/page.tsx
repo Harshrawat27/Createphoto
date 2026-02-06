@@ -118,7 +118,7 @@ export default async function Home() {
                       ))}
                     </div>
                     <p className='text-muted-foreground'>
-                      Loved by 2,000+ creators
+                      Loved by 100+ creators
                     </p>
                   </div>
                 </div>

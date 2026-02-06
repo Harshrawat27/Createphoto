@@ -47,22 +47,46 @@ export default function GalleryPage() {
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [downloadingZip, setDownloadingZip] = useState(false);
 
+  // Pagination state
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+
   useEffect(() => {
     fetchGenerations();
   }, []);
 
-  const fetchGenerations = async () => {
+  const fetchGenerations = async (skip = 0, append = false) => {
     try {
-      const response = await fetch('/api/generations');
+      if (append) {
+        setLoadingMore(true);
+      }
+
+      const response = await fetch(`/api/generations?skip=${skip}&take=30`);
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched generations:', data);
-        setGeneratedImages(data);
+
+        if (append) {
+          setGeneratedImages((prev) => [...prev, ...data.images]);
+        } else {
+          setGeneratedImages(data.images);
+        }
+
+        setHasMore(data.pagination.hasMore);
+        setTotalCount(data.pagination.total);
       }
     } catch (error) {
       console.error('Failed to fetch generations:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (!loadingMore && hasMore) {
+      fetchGenerations(generatedImages.length, true);
     }
   };
 
@@ -282,7 +306,9 @@ export default function GalleryPage() {
           <div>
             <h1 className='text-4xl font-heading font-bold mb-2'>Gallery</h1>
             <p className='text-muted-foreground'>
-              All your generated images in one place
+              {totalCount > 0
+                ? `${totalCount} generated image${totalCount !== 1 ? 's' : ''}`
+                : 'All your generated images in one place'}
             </p>
           </div>
 
@@ -372,7 +398,7 @@ export default function GalleryPage() {
             </p>
           </div>
         ) : (
-          <div className='columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4'>
+          <div className='columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4 mb-8'>
             {generatedImages.map((img, index) => (
               <div
                 key={img.id}
@@ -468,6 +494,34 @@ export default function GalleryPage() {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Load More / Pagination Info */}
+          <div className='flex flex-col items-center gap-4 py-8'>
+            <p className='text-sm text-muted-foreground'>
+              Showing {generatedImages.length} of {totalCount} images
+            </p>
+            {hasMore && (
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className='px-6 py-3 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg font-medium transition-colors flex items-center gap-2 disabled:opacity-50'
+              >
+                {loadingMore ? (
+                  <>
+                    <Loader2 className='w-4 h-4 animate-spin' />
+                    Loading...
+                  </>
+                ) : (
+                  'Load More'
+                )}
+              </button>
+            )}
+            {!hasMore && generatedImages.length > 0 && (
+              <p className='text-sm text-muted-foreground'>
+                You've seen all your images
+              </p>
+            )}
           </div>
         )}
 

@@ -1,17 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/get-user';
 
-export async function GET() {
+const PAGE_SIZE = 30;
+
+export async function GET(request: NextRequest) {
   try {
     // Check authentication
     const user = await getAuthenticatedUser();
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get pagination params
+    const searchParams = request.nextUrl.searchParams;
+    const skip = parseInt(searchParams.get('skip') || '0');
+    const take = parseInt(searchParams.get('take') || String(PAGE_SIZE));
+
+    // Get total count for pagination info
+    const totalCount = await prisma.generation.count({
+      where: { userId: user.id },
+    });
 
     const generations = await prisma.generation.findMany({
       where: {
@@ -20,7 +29,8 @@ export async function GET() {
       orderBy: {
         createdAt: 'desc',
       },
-      take: 50, // Limit to last 50 generations
+      skip,
+      take,
       include: {
         model: {
           select: {
@@ -38,7 +48,15 @@ export async function GET() {
       createdAt: gen.createdAt,
     }));
 
-    return NextResponse.json(formattedGenerations);
+    return NextResponse.json({
+      images: formattedGenerations,
+      pagination: {
+        total: totalCount,
+        skip,
+        take,
+        hasMore: skip + take < totalCount,
+      },
+    });
   } catch (error) {
     console.error('Error fetching generations:', error);
     return NextResponse.json(
