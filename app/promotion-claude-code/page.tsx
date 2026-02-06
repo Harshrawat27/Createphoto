@@ -431,7 +431,7 @@ export default function PromotionVideo() {
               Ready in just
             </p>
             <h2 className='text-7xl md:text-[10rem] font-heading text-[#ee575a] countdown-text'>
-              5 MIN
+              30 Seconds
             </h2>
           </div>
         </div>

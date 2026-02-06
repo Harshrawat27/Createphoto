@@ -71,7 +71,7 @@ export default async function Home() {
                 <div className='flex flex-wrap gap-6 text-sm text-muted-foreground'>
                   <div className='flex items-center gap-2'>
                     <Check className='w-5 h-5 text-green-500' />
-                    <span>Ready in 5 minutes</span>
+                    <span>Ready in 30 seconds</span>
                   </div>
                   <div className='flex items-center gap-2'>
                     <Check className='w-5 h-5 text-green-500' />
@@ -155,7 +155,7 @@ export default async function Home() {
                       <Zap className='w-6 h-6 text-green-500' />
                     </div>
                     <div>
-                      <p className='font-bold'>5 min</p>
+                      <p className='font-bold'>30 Seconds</p>
                       <p className='text-sm text-muted-foreground'>
                         Average creation time
                       </p>
@@ -248,8 +248,8 @@ export default async function Home() {
                 </div>
                 <h3 className='text-xl font-bold mb-3'>Save Hours</h3>
                 <p className='text-muted-foreground'>
-                  Skip the studio booking, travel, and waiting. Get
-                  professional photos in minutes from your couch.
+                  Skip the studio booking, travel, and waiting. Get professional
+                  photos in minutes from your couch.
                 </p>
               </div>
               <div className='text-center p-8'>

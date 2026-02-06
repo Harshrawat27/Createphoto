@@ -387,7 +387,7 @@ const TrainModelScene: React.FC = () => {
     },
     {
       icon: '⚡',
-      text: 'Ready in ~5 minutes',
+      text: 'Ready in ~30 seconds',
       subtext: 'GPU-accelerated processing',
     },
   ];
