@@ -17,7 +17,7 @@ model User {
   email          String
   emailVerified  Boolean
   image          String?
-  credits        Int           @default(100)
+  credits        Int           @default(50)
   plan           UserPlan      @default(FREE)
   subscriptionId String?
   createdAt      DateTime
