@@ -70,5 +70,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...blogPages, ...photoPages];
+  // Tag/Category pages
+  const tags = await prisma.tag.findMany({
+    select: {
+      slug: true,
+      createdAt: true,
+    },
+    orderBy: { name: 'asc' },
+  });
+
+  const categoryPages: MetadataRoute.Sitemap = tags.map((tag) => ({
+    url: `${baseUrl}/photos/category/${tag.slug}`,
+    lastModified: tag.createdAt,
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...blogPages, ...photoPages, ...categoryPages];
 }
