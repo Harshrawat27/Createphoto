@@ -3,13 +3,16 @@
 import { useState } from 'react';
 import { CreationControls } from '@/components/dashboard/create/CreationControls';
 import { ResultsGallery } from '@/components/dashboard/create/ResultsGallery';
+import { MobileResultsSheet } from '@/components/dashboard/create/MobileResultsSheet';
 import { Toaster } from '@/components/ui/sonner';
 
 export default function CreatePage() {
   const [newImages, setNewImages] = useState<any[]>([]);
+  const [allSessionImages, setAllSessionImages] = useState<any[]>([]);
 
   const handleGenerate = (images: any[]) => {
     setNewImages(images);
+    setAllSessionImages((prev) => [...images, ...prev]);
   };
 
   return (
@@ -20,11 +23,15 @@ export default function CreatePage() {
           <CreationControls onGenerate={handleGenerate} />
         </div>
 
-        {/* Right Panel: Results */}
-        <div className='flex-1 bg-secondary/10 h-full'>
+        {/* Right Panel: Results - Hidden on mobile */}
+        <div className='hidden md:block flex-1 bg-secondary/10 h-full'>
           <ResultsGallery newImages={newImages} />
         </div>
       </div>
+
+      {/* Mobile Bottom Sheet */}
+      <MobileResultsSheet images={allSessionImages} />
+
       <Toaster />
     </>
   );

@@ -1,4 +1,5 @@
 import { Sidebar } from '@/components/dashboard/Sidebar';
+import { MobileSidebar } from '@/components/dashboard/MobileSidebar';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { CreditsDisplay } from '@/components/dashboard/CreditsDisplay';
 import { getAuthenticatedUser } from '@/lib/get-user';
@@ -20,22 +21,31 @@ export default async function DashboardLayout({
         <Sidebar />
       </div>
       <main className='md:pl-72 h-full bg-background min-h-screen'>
-        <header className='flex justify-end items-center p-4 border-b border-border gap-4 bg-background/80 backdrop-blur sticky top-0 z-50'>
-          <CreditsDisplay variant='compact' className='hidden sm:block' />
-          <div className='w-8 h-8 rounded-full bg-primary/20 border border-primary/50 overflow-hidden flex items-center justify-center'>
-            {user.image ? (
-              <Image
-                src={user.image}
-                alt='user image'
-                width={32}
-                height={32}
-                className='object-cover'
-              />
-            ) : (
-              <User className='w-4 h-4 text-primary' />
-            )}
+        <header className='flex justify-between items-center p-4 border-b border-border gap-4 bg-background/80 backdrop-blur sticky top-0 z-50'>
+          {/* Mobile: Logo + Hamburger */}
+          <MobileSidebar />
+
+          {/* Desktop: Empty spacer */}
+          <div className='hidden md:block' />
+
+          {/* Right side items */}
+          <div className='flex items-center gap-4'>
+            <CreditsDisplay variant='compact' className='hidden sm:block' />
+            <div className='w-8 h-8 rounded-full bg-primary/20 border border-primary/50 overflow-hidden flex items-center justify-center'>
+              {user.image ? (
+                <Image
+                  src={user.image}
+                  alt='user image'
+                  width={32}
+                  height={32}
+                  className='object-cover'
+                />
+              ) : (
+                <User className='w-4 h-4 text-primary' />
+              )}
+            </div>
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
         </header>
         {children}
       </main>

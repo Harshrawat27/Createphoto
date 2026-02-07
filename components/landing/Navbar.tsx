@@ -1,13 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Menu, X } from 'lucide-react';
 import { useSession, authClient } from '@/lib/auth-client';
 
 export function Navbar() {
   const session = useSession();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <nav className='border-b bg-background/80 backdrop-blur-md sticky top-0 z-50'>
@@ -54,6 +56,17 @@ export function Navbar() {
           </div>
 
           <div className='flex items-center gap-4'>
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className='md:hidden p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors'
+            >
+              {mobileMenuOpen ? (
+                <X className='w-5 h-5' />
+              ) : (
+                <Menu className='w-5 h-5' />
+              )}
+            </button>
             <ThemeToggle />
             {session.isPending ? (
               <div className='h-8 w-20 bg-muted animate-pulse rounded-md' />
@@ -116,6 +129,58 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className='md:hidden border-t border-border bg-background absolute w-full'>
+          <div className='px-4 py-4 space-y-3'>
+            <Link
+              href='#features'
+              onClick={() => setMobileMenuOpen(false)}
+              className='block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2'
+            >
+              Features
+            </Link>
+            <Link
+              href='#how-it-works'
+              onClick={() => setMobileMenuOpen(false)}
+              className='block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2'
+            >
+              How it Works
+            </Link>
+            <Link
+              href='#pricing'
+              onClick={() => setMobileMenuOpen(false)}
+              className='block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2'
+            >
+              Pricing
+            </Link>
+            <Link
+              href='/blog'
+              onClick={() => setMobileMenuOpen(false)}
+              className='block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2'
+            >
+              Blog
+            </Link>
+            <Link
+              href='/photos'
+              onClick={() => setMobileMenuOpen(false)}
+              className='block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2'
+            >
+              Templates
+            </Link>
+            {!session.data?.user && (
+              <Link
+                href='/login'
+                onClick={() => setMobileMenuOpen(false)}
+                className='block text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2'
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
