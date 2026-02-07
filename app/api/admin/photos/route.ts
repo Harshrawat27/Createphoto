@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const image = formData.get('image') as File | null;
+    const imageUrlDirect = formData.get('imageUrl') as string | null;
     const heading = formData.get('heading') as string;
     const prompt = formData.get('prompt') as string;
     const pseudoPrompt = formData.get('pseudoPrompt') as string | null;
@@ -52,10 +53,10 @@ export async function POST(request: NextRequest) {
     const tagsJson = formData.get('tags') as string;
     const useImage = formData.get('useImage') === 'true';
 
-    // Validation
-    if (!image || !heading || !prompt || !modelName) {
+    // Validation - need either image file or imageUrl
+    if ((!image && !imageUrlDirect) || !heading || !prompt || !modelName) {
       return NextResponse.json(
-        { error: 'Image, heading, prompt, and model name are required' },
+        { error: 'Image (or imageUrl), heading, prompt, and model name are required' },
         { status: 400 }
       );
     }
@@ -75,8 +76,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Upload image to R2
-    const imageUrl = await uploadToR2(image, 'photos');
+    // Upload image to R2 if file provided, otherwise use direct URL
+    const imageUrl = image ? await uploadToR2(image, 'photos') : imageUrlDirect!;
 
     // Parse tags
     const tagIds: string[] = tagsJson ? JSON.parse(tagsJson) : [];
