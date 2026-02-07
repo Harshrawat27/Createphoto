@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
               type: 'text',
               text: `You are the expert in programmatic SEO. Analyze this photo and provide the following in JSON format:
 {
-  "heading": "A catchy, SEO-friendly heading, long tail keyword types heading for this photo template (5-10 words, capitalize important words)",
-  "description": "A brief 1-2 sentence description of the scene, setting, and style of the photo",
+  "heading": "A catchy, SEO-friendly heading, long tail keyword types heading for this photo template (5-10 words, capitalize important words). never use words like man, women, use word model if you have to use",
+  "description": "A brief 1-2 sentence description of the scene, setting, and style of the photo, never use words like man, women instead use word model",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"]
 }
 
