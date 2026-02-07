@@ -30,22 +30,22 @@ export async function POST(request: NextRequest) {
 
     // Use OpenAI Vision to analyze the image
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'user',
           content: [
             {
               type: 'text',
-              text: `Analyze this photo and provide the following in JSON format:
+              text: `You are the expert in programmatic SEO. Analyze this photo and provide the following in JSON format:
 {
-  "heading": "A catchy, SEO-friendly heading for this photo template (5-10 words, capitalize important words)",
+  "heading": "A catchy, SEO-friendly heading, long tail keyword types heading for this photo template (5-10 words, capitalize important words)",
   "description": "A brief 1-2 sentence description of the scene, setting, and style of the photo",
   "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"]
 }
 
-The tags should be relevant categories like: Professional, Business, Casual, Outdoor, Indoor, Portrait, Headshot, Fashion, Lifestyle, etc.
-Focus on the style, setting, mood, and use case of the photo.
+The tags should be relevant categories, long tail for good seo and explanation of image like: gym outfit mirror selfie, minimal fashion look, editorial photoshoot ai, clean background portrait, Circular Spotlight Lighting, moody indoor portrait, etc.
+Focus on the style, lighitng, setting, mood, and use case of the photo.
 Return ONLY the JSON, no markdown or extra text.`,
             },
             {
