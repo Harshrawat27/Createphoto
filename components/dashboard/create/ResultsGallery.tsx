@@ -8,7 +8,9 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Pencil,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface GeneratedImage {
@@ -22,6 +24,7 @@ interface ResultsGalleryProps {
 }
 
 export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
+  const router = useRouter();
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -173,10 +176,14 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
                       <Maximize2 className='w-4 h-4' />
                     </button>
                     <button
-                      className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors ml-auto'
-                      title='More'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/dashboard/edit/${img.id}`);
+                      }}
+                      className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
+                      title='Edit'
                     >
-                      <MoreHorizontal className='w-4 h-4' />
+                      <Pencil className='w-4 h-4' />
                     </button>
                   </div>
                 </div>

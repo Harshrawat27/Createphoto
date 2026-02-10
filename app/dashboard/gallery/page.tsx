@@ -13,7 +13,9 @@ import {
   Square,
   XCircle,
   Archive,
+  Pencil,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import {
@@ -34,6 +36,7 @@ interface GeneratedImage {
 }
 
 export default function GalleryPage() {
+  const router = useRouter();
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -477,6 +480,16 @@ export default function GalleryPage() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
+                            router.push(`/dashboard/edit/${img.id}`);
+                          }}
+                          className='p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition-colors'
+                          title='Edit'
+                        >
+                          <Pencil className='w-4 h-4' />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
                             openDeleteDialog(img.id);
                           }}
                           disabled={deleting === img.id}
@@ -594,6 +607,15 @@ export default function GalleryPage() {
                   >
                     <Download className='w-4 h-4' />
                     Download
+                  </button>
+                  <button
+                    onClick={() =>
+                      router.push(`/dashboard/edit/${generatedImages[currentImageIndex].id}`)
+                    }
+                    className='px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors flex items-center gap-2'
+                  >
+                    <Pencil className='w-4 h-4' />
+                    Edit
                   </button>
                   <button
                     onClick={() =>

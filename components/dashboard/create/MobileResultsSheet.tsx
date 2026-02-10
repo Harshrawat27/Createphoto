@@ -8,7 +8,9 @@ import {
   ChevronUp,
   ChevronDown,
   Images,
+  Pencil,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +25,7 @@ interface MobileResultsSheetProps {
 }
 
 export function MobileResultsSheet({ images }: MobileResultsSheetProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<GeneratedImage | null>(null);
@@ -173,6 +176,15 @@ export function MobileResultsSheet({ images }: MobileResultsSheetProps) {
                           className='p-1.5 rounded-full bg-white/20 text-white'
                         >
                           <Maximize2 className='w-3.5 h-3.5' />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/dashboard/edit/${img.id}`);
+                          }}
+                          className='p-1.5 rounded-full bg-white/20 text-white'
+                        >
+                          <Pencil className='w-3.5 h-3.5' />
                         </button>
                       </div>
                     </div>
