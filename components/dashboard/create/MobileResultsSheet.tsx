@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { ImageLoadingCard } from './ImageLoadingCard';
 
 interface GeneratedImage {
   id: string;
@@ -22,20 +23,22 @@ interface GeneratedImage {
 
 interface MobileResultsSheetProps {
   images: GeneratedImage[];
+  isGenerating?: boolean;
+  expectedCount?: number;
 }
 
-export function MobileResultsSheet({ images }: MobileResultsSheetProps) {
+export function MobileResultsSheet({ images, isGenerating = false, expectedCount = 0 }: MobileResultsSheetProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<GeneratedImage | null>(null);
 
-  // Open sheet when new images arrive
+  // Open sheet when generating or when new images arrive
   useEffect(() => {
-    if (images.length > 0) {
+    if (images.length > 0 || isGenerating) {
       setIsOpen(true);
     }
-  }, [images]);
+  }, [images, isGenerating]);
 
   const handleDownload = async (imageUrl: string, imageId: string) => {
     try {
@@ -62,20 +65,23 @@ export function MobileResultsSheet({ images }: MobileResultsSheetProps) {
     }
   };
 
-  if (images.length === 0) {
+  if (images.length === 0 && !isGenerating) {
     return null;
   }
 
   return (
     <>
       {/* Floating Button - shown when sheet is closed */}
-      {!isOpen && (
+      {!isOpen && (images.length > 0 || isGenerating) && (
         <button
           onClick={() => setIsOpen(true)}
           className='md:hidden fixed bottom-4 right-4 z-[60] flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 rounded-full shadow-lg'
         >
           <Images className='w-5 h-5' />
-          <span className='font-medium'>{images.length}</span>
+          <span className='font-medium'>{isGenerating ? expectedCount : images.length}</span>
+          {isGenerating && (
+            <span className='w-2 h-2 bg-white rounded-full animate-pulse' />
+          )}
         </button>
       )}
 
@@ -108,9 +114,11 @@ export function MobileResultsSheet({ images }: MobileResultsSheetProps) {
             {/* Header */}
             <div className='flex items-center justify-between px-4 pb-3'>
               <div className='flex items-center gap-2'>
-                <h3 className='font-bold text-lg'>Generated Images</h3>
+                <h3 className='font-bold text-lg'>
+                  {isGenerating ? 'Generating...' : 'Generated Images'}
+                </h3>
                 <span className='text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full'>
-                  {images.length}
+                  {isGenerating ? expectedCount : images.length}
                 </span>
               </div>
               <div className='flex items-center gap-2'>
@@ -141,6 +149,19 @@ export function MobileResultsSheet({ images }: MobileResultsSheetProps) {
                   isExpanded ? 'grid-cols-2' : 'grid-cols-3'
                 )}
               >
+                {/* Show loading cards while generating */}
+                {isGenerating && Array.from({ length: expectedCount }).map((_, index) => (
+                  <div
+                    key={`loading-${index}`}
+                    className={cn(
+                      'rounded-xl overflow-hidden',
+                      isExpanded ? 'aspect-[3/4]' : 'aspect-square'
+                    )}
+                  >
+                    <ImageLoadingCard status="loading" />
+                  </div>
+                ))}
+
                 {images.map((img) => (
                   <div
                     key={img.id}

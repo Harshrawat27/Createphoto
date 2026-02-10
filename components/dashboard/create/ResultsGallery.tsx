@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Download,
   Maximize2,
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { ImageLoadingCard } from './ImageLoadingCard';
 
 interface GeneratedImage {
   id: string;
@@ -21,20 +22,32 @@ interface GeneratedImage {
 
 interface ResultsGalleryProps {
   newImages?: GeneratedImage[];
+  isGenerating?: boolean;
+  expectedCount?: number;
 }
 
-export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
+export function ResultsGallery({ newImages = [], isGenerating = false, expectedCount = 0 }: ResultsGalleryProps) {
   const router = useRouter();
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [failedCount, setFailedCount] = useState(0);
+  const prevNewImagesRef = useRef<GeneratedImage[]>([]);
 
   useEffect(() => {
-    if (newImages.length > 0) {
+    // Only update if newImages actually changed (not just a new array reference)
+    if (newImages.length > 0 && newImages !== prevNewImagesRef.current) {
       console.log('New images received:', newImages);
       setGeneratedImages((prev) => [...newImages, ...prev]);
+      // Calculate failed count
+      if (expectedCount > newImages.length) {
+        setFailedCount(expectedCount - newImages.length);
+      } else {
+        setFailedCount(0);
+      }
+      prevNewImagesRef.current = newImages;
     }
-  }, [newImages]);
+  }, [newImages, expectedCount]);
 
   const handleDownload = async (imageUrl: string, imageId: string) => {
     try {
@@ -112,7 +125,7 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
         </div> */}
       </div>
 
-      {generatedImages.length === 0 ? (
+      {generatedImages.length === 0 && !isGenerating ? (
         <div className='flex flex-col items-center justify-center min-h-100 text-center'>
           <div className='w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4'>
             <Maximize2 className='w-8 h-8 text-muted-foreground' />
@@ -127,6 +140,20 @@ export function ResultsGallery({ newImages = [] }: ResultsGalleryProps) {
         </div>
       ) : (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          {/* Show loading cards while generating */}
+          {isGenerating && Array.from({ length: expectedCount }).map((_, index) => (
+            <ImageLoadingCard key={`loading-${index}`} status="loading" />
+          ))}
+
+          {/* Show failed count message if any images failed */}
+          {failedCount > 0 && !isGenerating && (
+            <div className='col-span-full mb-2'>
+              <p className='text-sm text-amber-500'>
+                {failedCount} image{failedCount > 1 ? 's' : ''} failed to generate
+              </p>
+            </div>
+          )}
+
           {generatedImages.map((img, index) => (
             <div
               key={img.id}

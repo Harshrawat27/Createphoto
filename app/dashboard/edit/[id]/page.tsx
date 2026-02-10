@@ -282,6 +282,51 @@ export default function EditPage({
           {/* Image Container */}
           <div className='flex-1 flex items-center justify-center py-4 min-h-0'>
             <div className='relative w-full max-w-2xl flex items-center justify-center'>
+              {/* Loading Overlay when generating */}
+              {generating && (
+                <div className='absolute inset-0 z-10 flex items-center justify-center'>
+                  <div className='relative w-full max-w-sm aspect-[2/3] rounded-xl overflow-hidden border border-border'>
+                    <div className='absolute inset-0 edit-orb-container'>
+                      <div className='edit-orb edit-orb-1' />
+                      <div className='edit-orb edit-orb-2' />
+                      <div className='edit-orb edit-orb-3' />
+                      <div className='edit-orb edit-orb-4' />
+                      <div className='edit-orb edit-orb-5' />
+                      <div className='edit-orb edit-orb-6' />
+                      <div className='edit-orb edit-orb-7' />
+                      <div className='edit-orb edit-orb-8' />
+                      <div className='edit-orb edit-orb-9' />
+                      <div className='edit-orb edit-orb-10' />
+                    </div>
+
+                    <style jsx>{`
+                      .edit-orb-container { background: #0f0f18; }
+                      .edit-orb { position: absolute; width: 55%; height: 40%; border-radius: 50%; filter: blur(35px); opacity: 0.9; }
+                      .edit-orb-1 { background: radial-gradient(circle, #ff6b6b 0%, #ff6b6b88 50%, transparent 70%); animation: e-orbit-1 4s ease-in-out infinite; }
+                      .edit-orb-2 { background: radial-gradient(circle, #ffd93d 0%, #ffd93d88 50%, transparent 70%); animation: e-orbit-2 4.5s ease-in-out infinite; }
+                      .edit-orb-3 { background: radial-gradient(circle, #6bcb77 0%, #6bcb7788 50%, transparent 70%); animation: e-orbit-3 3.5s ease-in-out infinite; }
+                      .edit-orb-4 { background: radial-gradient(circle, #4d96ff 0%, #4d96ff88 50%, transparent 70%); animation: e-orbit-4 5s ease-in-out infinite; }
+                      .edit-orb-5 { background: radial-gradient(circle, #9b5de5 0%, #9b5de588 50%, transparent 70%); animation: e-orbit-5 4.2s ease-in-out infinite; }
+                      .edit-orb-6 { background: radial-gradient(circle, #f15bb5 0%, #f15bb588 50%, transparent 70%); animation: e-orbit-6 3.8s ease-in-out infinite; }
+                      .edit-orb-7 { background: radial-gradient(circle, #00f5d4 0%, #00f5d488 50%, transparent 70%); animation: e-orbit-7 4.8s ease-in-out infinite; }
+                      .edit-orb-8 { background: radial-gradient(circle, #ff9f1c 0%, #ff9f1c88 50%, transparent 70%); animation: e-orbit-8 3.2s ease-in-out infinite; }
+                      .edit-orb-9 { background: radial-gradient(circle, #00bbf9 0%, #00bbf988 50%, transparent 70%); animation: e-orbit-9 4.6s ease-in-out infinite; }
+                      .edit-orb-10 { background: radial-gradient(circle, #e056fd 0%, #e056fd88 50%, transparent 70%); animation: e-orbit-10 3.6s ease-in-out infinite; }
+                      @keyframes e-orbit-1 { 0%, 100% { transform: translate(-20%, -10%); } 50% { transform: translate(60%, 70%); } }
+                      @keyframes e-orbit-2 { 0%, 100% { transform: translate(50%, -15%); } 50% { transform: translate(-10%, 65%); } }
+                      @keyframes e-orbit-3 { 0%, 100% { transform: translate(70%, 30%); } 50% { transform: translate(-15%, 50%); } }
+                      @keyframes e-orbit-4 { 0%, 100% { transform: translate(-10%, 75%); } 50% { transform: translate(55%, -5%); } }
+                      @keyframes e-orbit-5 { 0%, 100% { transform: translate(40%, 55%); } 50% { transform: translate(10%, 10%); } }
+                      @keyframes e-orbit-6 { 0%, 100% { transform: translate(65%, 80%); } 50% { transform: translate(-5%, 25%); } }
+                      @keyframes e-orbit-7 { 0%, 100% { transform: translate(-15%, 45%); } 50% { transform: translate(70%, 60%); } }
+                      @keyframes e-orbit-8 { 0%, 100% { transform: translate(55%, 15%); } 50% { transform: translate(5%, 80%); } }
+                      @keyframes e-orbit-9 { 0%, 100% { transform: translate(20%, 85%); } 50% { transform: translate(45%, 5%); } }
+                      @keyframes e-orbit-10 { 0%, 100% { transform: translate(75%, 50%); } 50% { transform: translate(-10%, 35%); } }
+                    `}</style>
+                  </div>
+                </div>
+              )}
+
               {/* Show comparison if edited */}
               {editedImage ? (
                 <div className='flex gap-4 items-center justify-center'>

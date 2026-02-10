@@ -55,10 +55,11 @@ interface Template {
 }
 
 interface CreationControlsProps {
-  onGenerate?: (images: any[]) => void;
+  onGenerateStart?: (count: number) => void;
+  onGenerateComplete?: (result: { images: any[]; expectedCount: number }) => void;
 }
 
-export function CreationControls({ onGenerate }: CreationControlsProps) {
+export function CreationControls({ onGenerateStart, onGenerateComplete }: CreationControlsProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const templateSlug = searchParams.get('template');
@@ -250,6 +251,7 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
 
     setError('');
     setIsGenerating(true);
+    onGenerateStart?.(imageCount);
 
     try {
       const formData = new FormData();
@@ -292,14 +294,16 @@ export function CreationControls({ onGenerate }: CreationControlsProps) {
 
       if (data.success && data.images) {
         console.log('Generated images:', data.images);
-        onGenerate?.(data.images);
+        onGenerateComplete?.({ images: data.images, expectedCount: imageCount });
         // Update credits
         setUserCredits(data.remainingCredits);
       } else {
         console.error('No images in response:', data);
+        onGenerateComplete?.({ images: [], expectedCount: imageCount });
       }
     } catch (err: any) {
       setError(err.message || 'Failed to generate images');
+      onGenerateComplete?.({ images: [], expectedCount: imageCount });
     } finally {
       setIsGenerating(false);
     }
