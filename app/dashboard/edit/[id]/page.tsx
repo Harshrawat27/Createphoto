@@ -36,9 +36,37 @@ export default function EditPage({
   const [editHistory, setEditHistory] = useState<string[]>([]);
   const [aspectRatio, setAspectRatio] = useState('9:16');
   const [resolution, setResolution] = useState('1K');
+  const [selectedFilter, setSelectedFilter] = useState('none');
+  const [applyingFilter, setApplyingFilter] = useState(false);
 
   const aspectRatios = ['1:1', '9:16', '16:9'];
   const resolutions = ['1K', '2K', '4K'];
+
+  // 20 popular photo filters
+  const filters = [
+    { id: 'none', name: 'Original', css: 'none' },
+    { id: 'grayscale', name: 'B&W', css: 'grayscale(100%)' },
+    { id: 'sepia', name: 'Sepia', css: 'sepia(80%)' },
+    { id: 'vintage', name: 'Vintage', css: 'sepia(40%) contrast(90%) brightness(90%)' },
+    { id: 'warm', name: 'Warm', css: 'sepia(30%) saturate(120%) brightness(105%)' },
+    { id: 'cool', name: 'Cool', css: 'saturate(90%) hue-rotate(20deg) brightness(105%)' },
+    { id: 'vivid', name: 'Vivid', css: 'saturate(150%) contrast(110%)' },
+    { id: 'dramatic', name: 'Dramatic', css: 'contrast(130%) saturate(110%) brightness(90%)' },
+    { id: 'fade', name: 'Fade', css: 'contrast(90%) brightness(110%) saturate(80%)' },
+    { id: 'matte', name: 'Matte', css: 'contrast(90%) brightness(105%) saturate(90%)' },
+    { id: 'noir', name: 'Noir', css: 'grayscale(100%) contrast(120%) brightness(90%)' },
+    { id: 'chrome', name: 'Chrome', css: 'saturate(130%) contrast(120%)' },
+    { id: 'mono', name: 'Mono', css: 'grayscale(100%) brightness(110%)' },
+    { id: 'tonal', name: 'Tonal', css: 'sepia(20%) saturate(80%) contrast(105%)' },
+    { id: 'silvertone', name: 'Silver', css: 'grayscale(50%) brightness(105%) contrast(95%)' },
+    { id: 'clarendon', name: 'Clarendon', css: 'contrast(120%) saturate(125%)' },
+    { id: 'gingham', name: 'Gingham', css: 'brightness(105%) hue-rotate(350deg)' },
+    { id: 'moon', name: 'Moon', css: 'grayscale(100%) contrast(110%) brightness(110%)' },
+    { id: 'lark', name: 'Lark', css: 'contrast(90%) saturate(130%) brightness(110%)' },
+    { id: 'reyes', name: 'Reyes', css: 'sepia(22%) contrast(85%) brightness(110%) saturate(75%)' },
+  ];
+
+  const currentFilter = filters.find((f) => f.id === selectedFilter) || filters[0];
 
   // Fetch the original generation
   useEffect(() => {
@@ -124,6 +152,75 @@ export default function EditPage({
     }
   };
 
+  // Apply filter and save as new image
+  const applyFilter = async () => {
+    if (selectedFilter === 'none' || !generation) return;
+
+    setApplyingFilter(true);
+    try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      // Use proxy to avoid CORS
+      const proxyUrl = `/api/download?url=${encodeURIComponent(editedImage || generation.url)}`;
+      const response = await fetch(proxyUrl);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+
+      img.src = objectUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      // Create canvas and apply filter
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d')!;
+      ctx.filter = currentFilter.css;
+      ctx.drawImage(img, 0, 0);
+
+      // Convert to blob
+      const filteredBlob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob!), 'image/png', 1);
+      });
+
+      // Upload to server
+      const formData = new FormData();
+      formData.append('image', filteredBlob, 'filtered-image.png');
+      formData.append('folder', 'generated');
+
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error('Failed to upload filtered image');
+      }
+
+      const uploadData = await uploadRes.json();
+
+      // Save to history
+      if (editedImage) {
+        setEditHistory((prev) => [...prev, editedImage]);
+      } else {
+        setEditHistory((prev) => [...prev, generation.url]);
+      }
+
+      setEditedImage(uploadData.url);
+      setSelectedFilter('none');
+      URL.revokeObjectURL(objectUrl);
+      toast.success(`${currentFilter.name} filter applied!`);
+    } catch (error) {
+      console.error('Filter error:', error);
+      toast.error('Failed to apply filter');
+    } finally {
+      setApplyingFilter(false);
+    }
+  };
+
   // Download image
   const handleDownload = async (imageUrl: string) => {
     try {
@@ -166,9 +263,9 @@ export default function EditPage({
 
   return (
     <>
-      <div className='min-h-[calc(100vh-65px)] flex flex-col md:flex-row'>
+      <div className='h-[calc(100vh-65px)] flex flex-col md:flex-row overflow-hidden'>
         {/* Left Side: Image Display */}
-        <div className='flex-1 bg-secondary/10 p-4 md:p-8 flex flex-col'>
+        <div className='flex-1 bg-secondary/10 p-4 md:p-8 flex flex-col min-h-0'>
           {/* Header */}
           <div className='flex items-center gap-4 mb-6'>
             <button
@@ -183,7 +280,7 @@ export default function EditPage({
           </div>
 
           {/* Image Container */}
-          <div className='flex-1 flex items-center justify-center overflow-auto py-4'>
+          <div className='flex-1 flex items-center justify-center py-4 min-h-0'>
             <div className='relative w-full max-w-2xl flex items-center justify-center'>
               {/* Show comparison if edited */}
               {editedImage ? (
@@ -207,24 +304,33 @@ export default function EditPage({
                   {/* Current/Edited */}
                   <div className='flex-1 max-w-sm'>
                     <p className='text-xs text-muted-foreground mb-2 text-center'>
-                      Edited
+                      {selectedFilter !== 'none' ? `Preview: ${currentFilter.name}` : 'Edited'}
                     </p>
                     <div className='rounded-xl overflow-hidden border-2 border-primary shadow-xl bg-secondary/20'>
                       <img
                         src={editedImage}
                         alt='Edited'
                         className='w-full h-auto object-contain max-h-[60vh]'
+                        style={{ filter: currentFilter.css }}
                       />
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className='rounded-xl overflow-hidden border border-border shadow-xl bg-secondary/20 max-w-sm'>
-                  <img
-                    src={generation.url}
-                    alt='Original'
-                    className='w-full h-auto object-contain max-h-[60vh]'
-                  />
+                <div className='max-w-sm'>
+                  {selectedFilter !== 'none' && (
+                    <p className='text-xs text-muted-foreground mb-2 text-center'>
+                      Preview: {currentFilter.name}
+                    </p>
+                  )}
+                  <div className={`rounded-xl overflow-hidden shadow-xl bg-secondary/20 ${selectedFilter !== 'none' ? 'border-2 border-primary' : 'border border-border'}`}>
+                    <img
+                      src={generation.url}
+                      alt='Original'
+                      className='w-full h-auto object-contain max-h-[60vh]'
+                      style={{ filter: currentFilter.css }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -252,120 +358,183 @@ export default function EditPage({
         </div>
 
         {/* Right Side: Edit Controls */}
-        <div className='w-full md:w-96 border-t md:border-t-0 md:border-l border-border bg-card p-6'>
-          <h2 className='text-lg font-bold mb-4'>Edit with AI</h2>
+        <div className='w-full md:w-96 md:h-full border-t md:border-t-0 md:border-l border-border bg-card flex flex-col'>
+          <div className='flex-1 overflow-y-auto p-6'>
+            {/* AI Edit Section */}
+            <h2 className='text-lg font-bold mb-4'>Edit with AI</h2>
 
-          <div className='space-y-4'>
-            {/* Edit Prompt */}
-            <div>
-              <label className='block text-sm font-medium mb-2'>
-                What would you like to change?
-              </label>
-              <textarea
-                value={editPrompt}
-                onChange={(e) => setEditPrompt(e.target.value)}
-                placeholder='e.g., "Change the background to a beach sunset" or "Add sunglasses" or "Make the lighting warmer"'
-                rows={4}
-                className='w-full px-4 py-3 rounded-xl bg-secondary/50 border border-border focus:border-primary focus:outline-none resize-none text-sm'
-                disabled={generating}
-              />
+            <div className='space-y-4'>
+              {/* Edit Prompt */}
+              <div>
+                <label className='block text-sm font-medium mb-2'>
+                  What would you like to change?
+                </label>
+                <textarea
+                  value={editPrompt}
+                  onChange={(e) => setEditPrompt(e.target.value)}
+                  placeholder='e.g., "Change the background to a beach sunset" or "Add sunglasses" or "Make the lighting warmer"'
+                  rows={4}
+                  className='w-full px-4 py-3 rounded-xl bg-secondary/50 border border-border focus:border-primary focus:outline-none resize-none text-sm'
+                  disabled={generating}
+                />
+              </div>
+
+              {/* Quick Edit Suggestions */}
+              <div>
+                <p className='text-xs text-muted-foreground mb-2'>
+                  Quick suggestions:
+                </p>
+                <div className='flex flex-wrap gap-2'>
+                  {[
+                    'Change background',
+                    'Improve lighting',
+                    'Add smile',
+                    'Change outfit color',
+                    'Make it warmer',
+                    'Add blur to background',
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => setEditPrompt(suggestion)}
+                      className='px-3 py-1 text-xs rounded-full bg-secondary hover:bg-secondary/80 transition-colors'
+                      disabled={generating}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Output Settings */}
+              <div className='grid grid-cols-2 gap-4 pt-2'>
+                <div>
+                  <label className='block text-sm font-medium mb-2'>
+                    Aspect Ratio
+                  </label>
+                  <div className='flex gap-2'>
+                    {aspectRatios.map((ratio) => (
+                      <button
+                        key={ratio}
+                        onClick={() => setAspectRatio(ratio)}
+                        disabled={generating}
+                        className={`flex-1 py-2 text-xs border rounded-lg transition-colors ${
+                          aspectRatio === ratio
+                            ? 'bg-primary/10 border-primary text-primary'
+                            : 'border-border hover:bg-secondary/50'
+                        }`}
+                      >
+                        {ratio}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className='block text-sm font-medium mb-2'>
+                    Resolution
+                  </label>
+                  <div className='flex gap-2'>
+                    {resolutions.map((res) => (
+                      <button
+                        key={res}
+                        onClick={() => setResolution(res)}
+                        disabled={generating}
+                        className={`flex-1 py-2 text-xs border rounded-lg transition-colors ${
+                          resolution === res
+                            ? 'bg-primary/10 border-primary text-primary'
+                            : 'border-border hover:bg-secondary/50'
+                        }`}
+                      >
+                        {res}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Generate Button */}
+              <button
+                onClick={handleEdit}
+                disabled={generating || !editPrompt.trim()}
+                className='w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+              >
+                {generating ? (
+                  <>
+                    <Loader2 className='w-5 h-5 animate-spin' />
+                    Applying Edit...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className='w-5 h-5' />
+                    Apply Edit
+                  </>
+                )}
+              </button>
+
+              {/* Info */}
+              <p className='text-xs text-muted-foreground text-center'>
+                Each edit uses credits from your account
+              </p>
             </div>
 
-            {/* Quick Edit Suggestions */}
+            {/* Divider */}
+            <div className='border-t border-border my-6' />
+
+            {/* Quick Filters Section */}
             <div>
-              <p className='text-xs text-muted-foreground mb-2'>
-                Quick suggestions:
+              <h2 className='text-lg font-bold mb-3'>Quick Filters</h2>
+              <p className='text-xs text-muted-foreground mb-3'>
+                Apply instant filters - no credits needed
               </p>
-              <div className='flex flex-wrap gap-2'>
-                {[
-                  'Change background',
-                  'Improve lighting',
-                  'Add smile',
-                  'Change outfit color',
-                  'Make it warmer',
-                  'Add blur to background',
-                ].map((suggestion) => (
+
+              {/* Filter Grid */}
+              <div className='grid grid-cols-4 gap-2 mb-3'>
+                {filters.map((filter) => (
                   <button
-                    key={suggestion}
-                    onClick={() => setEditPrompt(suggestion)}
-                    className='px-3 py-1 text-xs rounded-full bg-secondary hover:bg-secondary/80 transition-colors'
-                    disabled={generating}
+                    key={filter.id}
+                    onClick={() => setSelectedFilter(filter.id)}
+                    className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedFilter === filter.id
+                        ? 'border-primary ring-2 ring-primary/30'
+                        : 'border-transparent hover:border-border'
+                    }`}
                   >
-                    {suggestion}
+                    <div className='aspect-square bg-secondary/30'>
+                      <img
+                        src={generation.url}
+                        alt={filter.name}
+                        className='w-full h-full object-cover'
+                        style={{ filter: filter.css }}
+                      />
+                    </div>
+                    <div className='absolute bottom-0 left-0 right-0 bg-black/60 px-1 py-0.5'>
+                      <p className='text-[9px] text-white text-center truncate'>
+                        {filter.name}
+                      </p>
+                    </div>
                   </button>
                 ))}
               </div>
-            </div>
 
-            {/* Output Settings */}
-            <div className='grid grid-cols-2 gap-4 pt-2'>
-              <div>
-                <label className='block text-sm font-medium mb-2'>
-                  Aspect Ratio
-                </label>
-                <div className='flex gap-2'>
-                  {aspectRatios.map((ratio) => (
-                    <button
-                      key={ratio}
-                      onClick={() => setAspectRatio(ratio)}
-                      disabled={generating}
-                      className={`flex-1 py-2 text-xs border rounded-lg transition-colors ${
-                        aspectRatio === ratio
-                          ? 'bg-primary/10 border-primary text-primary'
-                          : 'border-border hover:bg-secondary/50'
-                      }`}
-                    >
-                      {ratio}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className='block text-sm font-medium mb-2'>
-                  Resolution
-                </label>
-                <div className='flex gap-2'>
-                  {resolutions.map((res) => (
-                    <button
-                      key={res}
-                      onClick={() => setResolution(res)}
-                      disabled={generating}
-                      className={`flex-1 py-2 text-xs border rounded-lg transition-colors ${
-                        resolution === res
-                          ? 'bg-primary/10 border-primary text-primary'
-                          : 'border-border hover:bg-secondary/50'
-                      }`}
-                    >
-                      {res}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Generate Button */}
-            <button
-              onClick={handleEdit}
-              disabled={generating || !editPrompt.trim()}
-              className='w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-4 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-            >
-              {generating ? (
-                <>
-                  <Loader2 className='w-5 h-5 animate-spin' />
-                  Applying Edit...
-                </>
-              ) : (
-                <>
-                  <Sparkles className='w-5 h-5' />
-                  Apply Edit
-                </>
+              {/* Apply Filter Button */}
+              {selectedFilter !== 'none' && (
+                <button
+                  onClick={applyFilter}
+                  disabled={applyingFilter}
+                  className='w-full flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/80 px-4 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50'
+                >
+                  {applyingFilter ? (
+                    <>
+                      <Loader2 className='w-4 h-4 animate-spin' />
+                      Applying Filter...
+                    </>
+                  ) : (
+                    <>
+                      Apply {currentFilter.name} Filter
+                    </>
+                  )}
+                </button>
               )}
-            </button>
-
-            {/* Info */}
-            <p className='text-xs text-muted-foreground text-center'>
-              Each edit uses credits from your account
-            </p>
+            </div>
           </div>
         </div>
       </div>
