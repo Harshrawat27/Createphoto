@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     'AI portraits',
   ],
   alternates: {
-    canonical: 'https://picloreai.com/photos',
+    canonical: 'https://www.picloreai.com/photos',
   },
   openGraph: {
     title: 'AI Photo Templates - PicLoreAI',

@@ -3,7 +3,7 @@ import { getPublishedBlogs } from '@/lib/blog';
 import prisma from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://picloreai.com';
+  const baseUrl = 'https://www.picloreai.com';
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

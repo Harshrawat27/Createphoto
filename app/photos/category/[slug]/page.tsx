@@ -69,7 +69,7 @@ export async function generateMetadata({
     };
   }
 
-  const baseUrl = 'https://picloreai.com';
+  const baseUrl = 'https://www.picloreai.com';
 
   return {
     title: `${tag.name} AI Photo Templates - Generate ${tag.name} Photos | PicLoreAI`,

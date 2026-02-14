@@ -82,7 +82,7 @@ export async function generateMetadata({
 
   const tagNames = photo.tags.map((t) => t.name);
 
-  const baseUrl = 'https://picloreai.com';
+  const baseUrl = 'https://www.picloreai.com';
 
   return {
     title: `${photo.heading} - AI Photo Prompt | PicLoreAI`,
