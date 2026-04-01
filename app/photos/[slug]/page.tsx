@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { Navbar } from '@/components/landing/Navbar';
 import { Footer } from '@/components/landing/Footer';
 import { CopyPromptButton } from '@/components/photos/CopyPromptButton';
-import { Sparkles, Tag as TagIcon, Wand2 } from 'lucide-react';
+import { Sparkles, Tag as TagIcon, Wand2, ChevronRight } from 'lucide-react';
 import prisma from '@/lib/prisma';
+
+const BASE_URL = 'https://www.picloreai.com';
 
 interface PhotoPageProps {
   params: Promise<{ slug: string }>;
@@ -82,8 +84,6 @@ export async function generateMetadata({
 
   const tagNames = photo.tags.map((t) => t.name);
 
-  const baseUrl = 'https://www.picloreai.com';
-
   return {
     title: `${photo.heading} - AI Photo Prompt | PicLoreAI`,
     description: `Generate stunning AI photos like "${
@@ -100,12 +100,12 @@ export async function generateMetadata({
       ...tagNames,
     ],
     alternates: {
-      canonical: `${baseUrl}/photos/${slug}`,
+      canonical: `${BASE_URL}/photos/${slug}`,
     },
     openGraph: {
       title: `${photo.heading} - PicLoreAI`,
       description: `Generate AI photos like this with our optimized prompt. Created with ${photo.modelName}.`,
-      images: [photo.imageUrl],
+      images: [{ url: photo.imageUrl, alt: photo.heading }],
       type: 'article',
     },
     twitter: {
@@ -128,15 +128,117 @@ export default async function PhotoPage({ params }: PhotoPageProps) {
   const tagIds = photo.tags.map((t) => t.id);
   const relatedPhotos = await getRelatedPhotos(photo.id, tagIds);
   const displayPrompt = photo.pseudoPrompt || photo.prompt;
+  const tagNames = photo.tags.map((t) => t.name);
+
+  const imageObjectSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ImageObject',
+    name: photo.heading,
+    description: `AI-generated photo using the prompt: ${displayPrompt.slice(0, 200)}`,
+    contentUrl: photo.imageUrl,
+    url: `${BASE_URL}/photos/${slug}`,
+    creator: {
+      '@type': 'Organization',
+      name: 'PicLoreAI',
+      url: BASE_URL,
+    },
+    keywords: tagNames.join(', '),
+    datePublished: photo.createdAt.toISOString(),
+    dateModified: photo.updatedAt.toISOString(),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'AI Photo Templates',
+        item: `${BASE_URL}/photos`,
+      },
+      ...(photo.tags.length > 0
+        ? [
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: photo.tags[0].name,
+              item: `${BASE_URL}/photos/category/${photo.tags[0].slug}`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 4,
+              name: photo.heading,
+              item: `${BASE_URL}/photos/${slug}`,
+            },
+          ]
+        : [
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: photo.heading,
+              item: `${BASE_URL}/photos/${slug}`,
+            },
+          ]),
+    ],
+  };
 
   return (
     <div className='min-h-screen bg-background text-foreground flex flex-col'>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageObjectSchema) }}
+      />
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Navbar />
 
       <main className='flex-1 w-full'>
         {/* Main Content */}
         <section className='py-12 md:py-20'>
           <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+            {/* Breadcrumb */}
+            <nav aria-label='Breadcrumb' className='mb-8'>
+              <ol className='flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap'>
+                <li>
+                  <Link href='/' className='hover:text-foreground transition-colors'>
+                    Home
+                  </Link>
+                </li>
+                <li><ChevronRight className='w-3.5 h-3.5' /></li>
+                <li>
+                  <Link href='/photos' className='hover:text-foreground transition-colors'>
+                    AI Photo Templates
+                  </Link>
+                </li>
+                {photo.tags.length > 0 && (
+                  <>
+                    <li><ChevronRight className='w-3.5 h-3.5' /></li>
+                    <li>
+                      <Link
+                        href={`/photos/category/${photo.tags[0].slug}`}
+                        className='hover:text-foreground transition-colors'
+                      >
+                        {photo.tags[0].name}
+                      </Link>
+                    </li>
+                  </>
+                )}
+                <li><ChevronRight className='w-3.5 h-3.5' /></li>
+                <li className='text-foreground font-medium truncate max-w-[200px]'>
+                  {photo.heading}
+                </li>
+              </ol>
+            </nav>
+
             {/* Main Content Grid */}
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start'>
               {/* Image - Left Side */}

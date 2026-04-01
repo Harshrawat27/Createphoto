@@ -66,7 +66,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const photoPages: MetadataRoute.Sitemap = photos.map((photo) => ({
     url: `${baseUrl}/photos/${photo.slug}`,
     lastModified: photo.updatedAt,
-    changeFrequency: 'daily' as const,
+    changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 
@@ -82,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoryPages: MetadataRoute.Sitemap = tags.map((tag) => ({
     url: `${baseUrl}/photos/category/${tag.slug}`,
     lastModified: tag.createdAt,
-    changeFrequency: 'daily' as const,
+    changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
 
